@@ -1,0 +1,38 @@
+name: Book checks
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      - "README.md"
+      - "**/*.md"
+      - "php-systems-lab/tools/**"
+      - ".github/workflows/book.yml"
+  pull_request:
+    paths:
+      - "README.md"
+      - "**/*.md"
+      - "php-systems-lab/tools/**"
+      - ".github/workflows/book.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify lab READMEs
+        run: |
+          test -f README.md
+          for lab in php-systems-lab algorithms-lab architecture-lab architecture-decision-lab system-design-lab; do
+            test -f "$lab/README.md"
+            grep -Fq "($lab/README.md)" README.md
+          done
+      - name: Verify code blocks and pinned links
+        working-directory: php-systems-lab
+        run: python3 tools/check_book.py
