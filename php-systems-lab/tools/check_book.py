@@ -2,7 +2,8 @@
 """Verify the book against its pinned GitHub sources.
 
 Checks:
-  * all 26 chapter files exist and every fenced code block is closed;
+  * all expected chapter files exist (26 by default) and every fenced code
+    block is closed;
   * every code block followed by a GitHub link matches the pinned lines;
   * every GitHub link points to an existing file and valid line range;
   * every local Markdown link in README.md resolves.
@@ -124,8 +125,17 @@ def next_content(lines: list[str], index: int) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-root", type=Path, default=None)
+    parser.add_argument(
+        "--expected-chapters",
+        type=int,
+        default=26,
+        help="number of numbered chapter files expected (default: 26)",
+    )
     parser.add_argument("chapters", nargs="*", type=Path)
     args = parser.parse_args()
+
+    if args.expected_chapters < 1:
+        parser.error("--expected-chapters must be at least 1")
 
     chapters = args.chapters or sorted(Path(".").glob("[0-9][0-9]-*.md"))
     if not chapters:
@@ -145,7 +155,9 @@ def main() -> int:
     seen_links: set[str] = set()
 
     if full_run:
-        expected = [f"{number:02d}" for number in range(1, 27)]
+        expected = [
+            f"{number:02d}" for number in range(1, args.expected_chapters + 1)
+        ]
         actual = [chapter.name[:2] for chapter in chapters]
         if actual != expected:
             failures.append(

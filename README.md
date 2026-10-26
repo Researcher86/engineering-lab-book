@@ -7,8 +7,8 @@
 
 - [PHP Systems Lab](php-systems-lab/README.md) — 26 готовых глав об устройстве
   backend-инфраструктуры на PHP.
-- [Algorithms Lab](algorithms-lab/README.md) — 7 запланированных глав об
-  алгоритмах, сложности и поведении на реальных данных.
+- [Algorithms Lab](algorithms-lab/README.md) — 7 готовых глав об алгоритмах,
+  сложности и поведении на реальных данных; код закреплён тегом `v1.0.0`.
 - [Architecture Lab](architecture-lab/README.md) — 7 запланированных глав о
   структуре кода и управлении зависимостями.
 - [Architecture Decision Lab](architecture-decision-lab/README.md) — 7

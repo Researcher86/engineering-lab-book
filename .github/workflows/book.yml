@@ -36,3 +36,6 @@ jobs:
       - name: Verify code blocks and pinned links
         working-directory: php-systems-lab
         run: python3 tools/check_book.py
+      - name: Verify Algorithms Lab chapters
+        working-directory: algorithms-lab
+        run: python3 ../php-systems-lab/tools/check_book.py --expected-chapters=7
