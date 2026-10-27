@@ -9,8 +9,8 @@
   backend-инфраструктуры на PHP.
 - [Algorithms Lab](algorithms-lab/README.md) — 7 готовых глав об алгоритмах,
   сложности и поведении на реальных данных; код закреплён тегом `v1.0.0`.
-- [Architecture Lab](architecture-lab/README.md) — 7 запланированных глав о
-  структуре кода и управлении зависимостями.
+- [Architecture Lab](architecture-lab/README.md) — 7 готовых глав о структуре
+  кода и управлении зависимостями; код закреплён тегом `v1.0.0`.
 - [Architecture Decision Lab](architecture-decision-lab/README.md) — 7
   запланированных глав о trade-off архитектурных решений.
 - [System Design Lab](system-design-lab/README.md) — 7 запланированных глав о
