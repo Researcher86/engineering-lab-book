@@ -1,15 +1,147 @@
-# System Design Lab
+# Книга System Design Lab
 
-> Статус: черновик. Главы ещё не написаны.
+> Статус: **7 глав готовы**. Код закреплён тегом
+> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
 
-Как проектировать системы, которые выдерживают нагрузку, сбои и рост данных.
+Учебник по проектированию backend-систем, написанный по коду лаборатории
+[`system-design-lab`](https://github.com/Researcher86/system-design-lab). Каждая
+глава разбирает один механизм на настоящем PHP-коде, показывает эксперимент,
+числа и зависимости, а затем явно перечисляет, что осталось за пределами
+измерения.
 
-## План глав
+Это не набор рецептов «как сделать высоконагруженную систему». Лаборатория
+отвечает на вопрос «что здесь реализовано и чем это проверено», а книга — на
+вопрос «почему это устроено так, сколько стоит и где ломается».
 
-1. [Rate Limiter](01-rate-limiter.md)
-2. [URL Shortener](02-url-shortener.md)
-3. [Notification Service](03-notification-service.md)
-4. [Job Queue](04-job-queue.md)
-5. [Distributed Cache](05-distributed-cache.md)
-6. [Webhook Delivery Platform](06-webhook-delivery-platform.md)
-7. [Search Engine](07-search-engine.md)
+## Что вы сможете
+
+Книга рассчитана на PHP-разработчика, который уже писал код и хочет разобраться
+в механизмах системного дизайна на уровне, достаточном для чтения и изменения
+системы. После неё вы сможете:
+
+- сравнить token bucket, fixed window, sliding log и sliding counter по burst,
+  точности и памяти на одном потоке запросов;
+- объяснить, почему короткий id требует оценки ёмкости, а коллизии — это
+  вероятность, а не «магия» base62;
+- отделить событие от сообщения, посчитать fan-out по каналам и проверить
+  дедупликацию, тихие часы и дайджест;
+- построить очередь с lease, visibility timeout, retry budget и dead letter и
+  честно назвать границу at-least-once;
+- выбрать стратегию размещения ключей, измерить remap, hit ratio и цену
+  репликации при отказе узла;
+- подписать webhook точные байты, пережить потерянный ответ, retry и открытый
+  circuit breaker;
+- собрать inverted index, посчитать BM25 и увидеть, почему шардирование
+  сохраняет postings, но меняет глобальный ranking;
+- читать числа экспериментов вместе с окружением и счётчиками, а не как
+  универсальный рейтинг механизмов.
+
+## Как читать
+
+Главы идут в фиксированном порядке: каждая использует идеи предыдущих. Полный
+маршрут — читать 1–7 подряд. Если механизм уже знаком, главу можно пропустить,
+но ссылки «предыдущая / следующая глава» показывают, где он разбирается.
+
+Стандартная глава устроена так:
+
+1. **Проблема** — какой отказ или компромисс рассматривается.
+2. **Устройство** — как механизм реализован, с выдержками из кода.
+3. **Эксперимент** — что запустить, чтобы увидеть механизм живым.
+4. **Бенчмарк** — повторные измерения стоимости операций.
+5. **Что ломается** — ограничения, failure modes и честные оговорки.
+6. **Как это проверено** — тесты, счётчики и инварианты.
+7. **Что запомнить** — сжатый итог.
+8. **Упражнения** — задачи на понимание и измерение.
+
+Выдержки кода скопированы из файлов как есть и снабжены ссылкой на GitHub с
+диапазоном строк. Ссылки привязаны к тегу `v1.0.0`, а не к ветке `master`,
+поэтому номера строк не «уплывут» после следующих коммитов. Комментарии в коде
+лаборатории на английском; книга на русском.
+
+## Оглавление
+
+|   # | Глава                                                        | Тема                                               | Основные эксперименты                                                                           |
+| --: | ------------------------------------------------------------ | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+|   1 | [Rate Limiter](01-rate-limiter.md)                           | burst, точность, память, распределённый счётчик    | `rate:burst`, `rate:accuracy`, `rate:memory`                                                    |
+|   2 | [URL Shortener](02-url-shortener.md)                         | base62, коллизии, ёмкость, идемпотентность         | `shorten:collisions`, `shorten:space`, `shorten:idempotency`, `shorten:memory`                  |
+|   3 | [Notification Service](03-notification-service.md)           | fan-out, дедупликация, тихие часы, дайджест        | `notify:fanout`, `notify:dedup`, `notify:digest`, `notify:quiet-hours`                          |
+|   4 | [Job Queue](04-job-queue.md)                                 | приоритет, delayed, lease, retry, dead letter      | `queue:retry`, `queue:leases`, `queue:priority`, `queue:backlog`                                |
+|   5 | [Distributed Cache](05-distributed-cache.md)                 | consistent hashing, LRU, репликация, read repair   | `cache:remap`, `cache:hit-ratio`, `cache:failure`, `cache:balance`                              |
+|   6 | [Webhook Delivery Platform](06-webhook-delivery-platform.md) | HMAC, retry, breaker, идемпотентность, dead letter | `webhook:retry`, `webhook:duplicates`, `webhook:fanout`, `webhook:signature`, `webhook:circuit` |
+|   7 | [Search Engine](07-search-engine.md)                         | inverted index, BM25, prefix, шарды, ranking drift | `search:index`, `search:ranking`, `search:prefix`, `search:shards`                              |
+
+Сквозной сценарий запускается одной командой `make scenario`:
+
+```text
+900 запросов → rate limiter → short links → cache / search
+             → notifications / webhooks → job queue → retries
+             → отказ и восстановление cache-узла → отчёт
+```
+
+Сценарий проверяет 35 инвариантов: сохранение запросов, разделение creates и
+resolves, соответствие cache reads и resolves, fan-out уведомлений и webhook-ов,
+сохранение очереди (`completed + dead = enqueued`), обработанные id и полностью
+осушенную очередь. Отчёт пишется текстом и JSON в `var/results/`.
+
+## Как запустить
+
+Все команды выполняются в Docker-контейнере проекта; на хост не нужно ставить
+PHP или расширения. Если репозиторий лаборатории лежит рядом с книгой:
+
+```bash
+cd ../../system-design-lab
+make build install      # один раз
+make check              # PHPUnit + PHPStan level 8 + PHP-CS-Fixer
+make experiment         # список экспериментов
+make scenario           # интеграционный сценарий
+make benchmark          # список бенчмарков
+```
+
+Полный список экспериментов и бенчмарков — в `make experiment` и
+`make benchmark`; измеренные таблицы с окружением лежат в
+[`docs/BENCHMARKS.md`](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/docs/BENCHMARKS.md).
+Числа в главах — один прогон в Docker на виртуализированном Linux, а не
+универсальная константа. Сравнивайте счётчики, форму зависимостей и порядок
+величин, а не только миллисекунды.
+
+## Проверка книги
+
+Каждый показанный код-блок сверяется с закреплённым тегом и диапазоном строк;
+все GitHub-ссылки проверяются на существование файла и валидность диапазона;
+локальные ссылки README должны резолвиться. Из каталога книги:
+
+```bash
+python3 ../php-systems-lab/tools/check_book.py \
+  --expected-chapters=7 \
+  --source-root ../..
+```
+
+`--source-root ../..` читает локальные репозитории без сети и ожидает структуру
+`<repo>/<path>`, то есть `engineering-lab/system-design-lab/...`. В CI тот же
+checker запускается с `--expected-chapters=7` для System Design Lab и читает
+исходники из GitHub по тегу `v1.0.0`.
+
+## Что не обещается
+
+- Это не рейтинг механизмов. Числа зависят от PHP, Docker, хоста и fixture; в
+  главах указано, где именно сделан один прогон.
+- Это не production-система: всё работает в одном PHP-процессе, без сети,
+  брокера, базы данных, аутентификации и конкурентной нагрузки.
+- Это не exactly-once: очередь и webhook-и дают at-least-once, а идемпотентность
+  остаётся обязанностью получателя.
+- Это не распределённая система: «узлы» кэша, шарды поиска и worker-ы очереди —
+  объекты в памяти, а не отдельные процессы или машины.
+- Это не полноценный поисковик: нет stemming, stop words, phrase search,
+  обновлений, удалений, репликации, сети и segment merging.
+- Это не замена системному проектированию: лаборатория измеряет выбранные
+  механизмы, но не моделирует сетевые задержки, отказы железа и операционные
+  ограничения production-кластера.
+
+## Репозиторий и релиз
+
+- Код:
+  [`Researcher86/system-design-lab`](https://github.com/Researcher86/system-design-lab)
+- Релиз:
+  [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0)
+- Проверки релиза: 396 тестов / 19 064 assertions, PHPStan level 8 без ошибок,
+  PHP-CS-Fixer чист.
