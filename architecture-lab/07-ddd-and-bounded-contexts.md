@@ -58,13 +58,13 @@ Bounded context — это граница, внутри которой язык 
 
 Пять контекстов и их роли:
 
-| Контекст | Агрегат | Что означает | Публичный API |
-| --- | --- | --- | --- |
-| `Catalog` | `CourseOffering` | курс, расписание, места | `CatalogApi` |
-| `Enrollment` | `Enrollment` | попытка студента записаться | `EnrollmentApi` |
-| `Billing` | `Invoice` | счёт и решение платежа | `BillingApi` |
-| `Reporting` | проекции | ответы на запросы | query objects/views |
-| `Notifications` | лог | наблюдаемый side effect | событие/лог |
+| Контекст        | Агрегат          | Что означает                | Публичный API       |
+| --------------- | ---------------- | --------------------------- | ------------------- |
+| `Catalog`       | `CourseOffering` | курс, расписание, места     | `CatalogApi`        |
+| `Enrollment`    | `Enrollment`     | попытка студента записаться | `EnrollmentApi`     |
+| `Billing`       | `Invoice`        | счёт и решение платежа      | `BillingApi`        |
+| `Reporting`     | проекции         | ответы на запросы           | query objects/views |
+| `Notifications` | лог              | наблюдаемый side effect     | событие/лог         |
 
 `Shared` содержит только то, что действительно общее: `Money`, типизированные
 идентификаторы (`StudentId`, `OfferingId`, `EnrollmentId`, `InvoiceId`), `Clock`,
@@ -658,10 +658,10 @@ notifications: 10, stale entries before delivery: 0
 
 Бенчмарк контекстов:
 
-| Benchmark                    | Итерации | Медиана   | p95       | max       | ops/sec | PHP delta | peak delta |
-| ---------------------------- | -------: | --------: | --------: | --------: | ------: | --------: | ---------: |
-| `ddd.sync_contexts`          |       20 | 5 695.327ms | 9 231.261ms | 9 231.261ms |       4 |  +2.60 MB |  +11.51 MB |
-| `ddd.event_driven_contexts`  |       20 | 5 948.853ms | 9 416.664ms | 9 416.664ms |       3 |  +2.60 MB |   +3.31 MB |
+| Benchmark                   | Итерации |     Медиана |         p95 |         max | ops/sec | PHP delta | peak delta |
+| --------------------------- | -------: | ----------: | ----------: | ----------: | ------: | --------: | ---------: |
+| `ddd.sync_contexts`         |       20 | 5 695.327ms | 9 231.261ms | 9 231.261ms |       4 |  +2.60 MB |  +11.51 MB |
+| `ddd.event_driven_contexts` |       20 | 5 948.853ms | 9 416.664ms | 9 416.664ms |       3 |  +2.60 MB |   +3.31 MB |
 
 Каждая итерация — 50 зачислений, то есть 1 000 на измерение. Эти числа
 доминируются SQLite-запросами и цепочкой outbox, а не «стоимостью границы
@@ -745,6 +745,7 @@ capacity каждого курса.
   параметры дают понятную ошибку, а не тихий ноль.
 
 Архитектурные тесты дополнительно требуют:
+
 - `cross-context-public-api` для всех межконтекстных импортов;
 - `application-no-foreign-context` — application не вызывает чужой контекст;
 - `delivery-public-api` — сценарий видит только публичные API;

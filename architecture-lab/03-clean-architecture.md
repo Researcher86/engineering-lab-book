@@ -83,7 +83,8 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
 имён. PHP разрешает `use` для замыканий, и без проверки `$depth === 0` сканер
 ловил бы их как зависимости.
 
-Импорты читаются до `;` или `{`, затем обрезаются по ` as ` и ведущему слешу:
+Импорты читаются до `;` или `{`, затем обрезаются по ключевому слову `as` и
+ведущему слешу:
 
 ```php
             if ($token[0] === T_USE && $depth === 0) {
@@ -220,15 +221,15 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
 определяются модуль источника и модуль цели, затем проверяются направления.
 Семь правил:
 
-| Правило | Что запрещает |
-| --- | --- |
-| `domain-purity` | `Domain` импортирует что-либо, кроме `Shared` |
-| `application-port-only` | application импортирует `Persistence` |
-| `application-no-adapter` | application импортирует собственный `Infrastructure` |
-| `application-no-foreign-context` | application импортирует другой контекст напрямую |
-| `cross-context-public-api` | импорт между контекстами идёт мимо `PublicApi` |
-| `delivery-public-api` | `Integration`/`Cli` видит внутренности контекста |
-| `delivery-no-persistence` | delivery импортирует `Persistence` |
+| Правило                          | Что запрещает                                        |
+| -------------------------------- | ---------------------------------------------------- |
+| `domain-purity`                  | `Domain` импортирует что-либо, кроме `Shared`        |
+| `application-port-only`          | application импортирует `Persistence`                |
+| `application-no-adapter`         | application импортирует собственный `Infrastructure` |
+| `application-no-foreign-context` | application импортирует другой контекст напрямую     |
+| `cross-context-public-api`       | импорт между контекстами идёт мимо `PublicApi`       |
+| `delivery-public-api`            | `Integration`/`Cli` видит внутренности контекста     |
+| `delivery-no-persistence`        | delivery импортирует `Persistence`                   |
 
 Вот центральная часть проверки:
 
@@ -538,10 +539,10 @@ runtime подписывает их слушателей, а не импорти
 
 Бенчмарк измеряет стоимость проверки:
 
-| Benchmark     | Итерации | Медиана  | p95      | max      | ops/sec | PHP delta | peak delta |
-| ------------- | -------: | -------: | -------: | -------: | ------: | --------: | ---------: |
-| `clean.scan`  |        3 | 95.163ms | 117.870ms | 117.870ms |      32 | +44 392B |  +42 384B |
-| `layered.scan`|       20 | 39.401ms | 43.602ms | 43.602ms |     508 | +320 592B |         0B |
+| Benchmark      | Итерации |  Медиана |       p95 |       max | ops/sec | PHP delta | peak delta |
+| -------------- | -------: | -------: | --------: | --------: | ------: | --------: | ---------: |
+| `clean.scan`   |        3 | 95.163ms | 117.870ms | 117.870ms |      32 |  +44 392B |   +42 384B |
+| `layered.scan` |       20 | 39.401ms |  43.602ms |  43.602ms |     508 | +320 592B |         0B |
 
 `clean.scan` выполняет три полных сканирования за повторение, поэтому медиана
 95 мс — это примерно 31.7 мс на одно сканирование 127 файлов и 247 рёбер.

@@ -59,15 +59,15 @@
 
 ## Оглавление
 
-|   # | Глава                                                                              | Тема                                              | Основной эксперимент      |
-| --: | ---------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------- |
-|   1 | [Layered Architecture](01-layered-architecture.md)                                 | слои, layer skip, transaction script              | `layered:cost`            |
-|   2 | [Hexagonal Architecture](02-hexagonal-architecture-ports-and-adapters.md)          | порты, адаптеры, цена замены                      | `hexagonal:adapter-swap`  |
-|   3 | [Clean Architecture](03-clean-architecture.md)                                     | правило зависимостей, циклы, метрики              | `clean:dependency-rule`   |
-|   4 | [Modular Monolith](04-modular-monolith.md)                                         | `PublicApi`, ACL, границы модулей                 | `modules:coupling`        |
-|   5 | [CQRS](05-cqrs.md)                                                                 | команды, запросы, проекции, устаревание           | `cqrs:queries`            |
-|   6 | [Event-Driven Architecture](06-event-driven-architecture.md)                       | outbox, повторы, dead letter, идемпотентность     | `events:delivery`         |
-|   7 | [DDD и bounded contexts](07-ddd-and-bounded-contexts.md)                           | агрегаты, языки контекстов, сквозной сценарий     | `ddd:contexts`            |
+|   # | Глава                                                                     | Тема                                          | Основной эксперимент     |
+| --: | ------------------------------------------------------------------------- | --------------------------------------------- | ------------------------ |
+|   1 | [Layered Architecture](01-layered-architecture.md)                        | слои, layer skip, transaction script          | `layered:cost`           |
+|   2 | [Hexagonal Architecture](02-hexagonal-architecture-ports-and-adapters.md) | порты, адаптеры, цена замены                  | `hexagonal:adapter-swap` |
+|   3 | [Clean Architecture](03-clean-architecture.md)                            | правило зависимостей, циклы, метрики          | `clean:dependency-rule`  |
+|   4 | [Modular Monolith](04-modular-monolith.md)                                | `PublicApi`, ACL, границы модулей             | `modules:coupling`       |
+|   5 | [CQRS](05-cqrs.md)                                                        | команды, запросы, проекции, устаревание       | `cqrs:queries`           |
+|   6 | [Event-Driven Architecture](06-event-driven-architecture.md)              | outbox, повторы, dead letter, идемпотентность | `events:delivery`        |
+|   7 | [DDD и bounded contexts](07-ddd-and-bounded-contexts.md)                  | агрегаты, языки контекстов, сквозной сценарий | `ddd:contexts`           |
 
 Сквозной сценарий из главы 7 запускается одной командой `make scenario`:
 публикация двух курсов → 12 запросов на зачисление → резервирование мест →
