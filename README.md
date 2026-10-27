@@ -11,7 +11,7 @@
   сложности и поведении на реальных данных; код закреплён тегом `v1.0.0`.
 - [Architecture Lab](architecture-lab/README.md) — 7 готовых глав о структуре
   кода и управлении зависимостями; код закреплён тегом `v1.0.0`.
-- [Architecture Decision Lab](architecture-decision-lab/README.md) — 7
-  запланированных глав о trade-off архитектурных решений.
+- [Architecture Decision Lab](architecture-decision-lab/README.md) — 7 готовых
+  глав о trade-off архитектурных решений; код закреплён тегом `v1.0.0`.
 - [System Design Lab](system-design-lab/README.md) — 7 запланированных глав о
   проектировании систем под нагрузку, сбои и рост данных.
