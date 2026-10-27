@@ -42,3 +42,6 @@ jobs:
       - name: Verify Architecture Lab chapters
         working-directory: architecture-lab
         run: python3 ../php-systems-lab/tools/check_book.py --expected-chapters=7
+      - name: Verify Architecture Decision Lab chapters
+        working-directory: architecture-decision-lab
+        run: python3 ../php-systems-lab/tools/check_book.py --expected-chapters=7
