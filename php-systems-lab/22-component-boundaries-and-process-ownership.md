@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
-> (коммит `9a6a916`) — первая из трёх глав этой части. Нужно знать: как
+> (коммит `2a28621`) — первая из трёх глав этой части. Нужно знать: как
 > компонент становится процессом (→ главы 6–7), очередь и воркеров (→ главы 8–9)
 > и производные данные (→ глава 21). Пригодится дальше: как отказы
 > распространяются через эти границы (→ глава 23) и что видно снаружи (→ глава
@@ -211,7 +211,7 @@ probe the address (pid status, TCP connect, or a pool ping)
  */
 ```
 
-[`src/Support/ShutdownStack.php#L10-L24`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/ShutdownStack.php#L10-L24)
+[`src/Support/ShutdownStack.php#L10-L24`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/ShutdownStack.php#L10-L24)
 
 **Перевод комментариев:**
 - `ShutdownStack` (PHPDoc): ресурсы, запущенные одной командой, освобождаются в
@@ -240,7 +240,7 @@ public function push(Closure $step, string $name = ''): void
 }
 ```
 
-[`src/Support/ShutdownStack.php#L39-L47`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/ShutdownStack.php#L39-L47)
+[`src/Support/ShutdownStack.php#L39-L47`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/ShutdownStack.php#L39-L47)
 
 **Перевод комментариев:**
 - `// Register one release step; $name is what a failing step reports.` —
@@ -281,7 +281,7 @@ public function run(): void
 }
 ```
 
-[`src/Support/ShutdownStack.php#L49-L75`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/ShutdownStack.php#L49-L75)
+[`src/Support/ShutdownStack.php#L49-L75`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/ShutdownStack.php#L49-L75)
 
 **Перевод комментариев:**
 - `run()` (PHPDoc): освободить всё, от новейшего к первому. Идемпотентно,
@@ -311,7 +311,7 @@ public function run(): void
  */
 ```
 
-[`src/Support/OwnedProcess.php#L10-L23`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L10-L23)
+[`src/Support/OwnedProcess.php#L10-L23`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L10-L23)
 
 **Перевод комментариев:**
 - `OwnedProcess` (PHPDoc): дочерний процесс, запущенный этим процессом, плюс
@@ -359,7 +359,7 @@ public static function start(array $argv, string $name, string $logDir, array $e
 }
 ```
 
-[`src/Support/OwnedProcess.php#L89-L113`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L89-L113)
+[`src/Support/OwnedProcess.php#L89-L113`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L89-L113)
 
 `stop()` возвращает код выхода, и в этом коде различаются две разные вещи:
 ребёнок остановился по `SIGTERM` или его пришлось убивать. Строка
@@ -390,7 +390,7 @@ public function stop(float $deadlineSeconds = self::STOP_DEADLINE_SECONDS): int
 }
 ```
 
-[`src/Support/OwnedProcess.php#L164-L184`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L164-L184)
+[`src/Support/OwnedProcess.php#L164-L184`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L164-L184)
 
 **Перевод комментариев:**
 - `stop()` (PHPDoc): попросить ребёнка остановиться так, как это сделал бы
@@ -443,7 +443,7 @@ public static function terminate(mixed $process, float $deadlineSeconds = self::
 }
 ```
 
-[`src/Support/OwnedProcess.php#L186-L218`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L186-L218)
+[`src/Support/OwnedProcess.php#L186-L218`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L186-L218)
 
 **Перевод комментариев:**
 - `terminate()` (PHPDoc): послать `$process` `SIGTERM` и ждать выхода, повторяя
@@ -495,7 +495,7 @@ public static function endpointAnswers(string $address, float $timeoutSeconds): 
 }
 ```
 
-[`src/Support/OwnedProcess.php#L226-L254`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L226-L254)
+[`src/Support/OwnedProcess.php#L226-L254`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L226-L254)
 
 **Перевод комментариев:**
 - `portAnswers()` (PHPDoc): успевает ли TCP-подключение за `$timeoutSeconds`.
@@ -541,7 +541,7 @@ public static function stopStaleDatabaseServer(
 }
 ```
 
-[`src/Support/OwnedProcess.php#L292-L320`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Support/OwnedProcess.php#L292-L320)
+[`src/Support/OwnedProcess.php#L292-L320`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Support/OwnedProcess.php#L292-L320)
 
 **Перевод комментариев:**
 - `stopStaleDatabaseServer()` (PHPDoc): убитая `serve` может оставить после себя
@@ -578,7 +578,7 @@ public static function stopStaleDatabaseServer(
  */
 ```
 
-[`src/Cli/PlatformCli.php#L91-L108`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L91-L108)
+[`src/Cli/PlatformCli.php#L91-L108`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L91-L108)
 
 **Перевод комментариев:**
 - `PlatformCli` (PHPDoc): вся CLI-поверхность платформы в одном месте. Намеренно
@@ -630,7 +630,7 @@ private function serve(): int
         $this->requestReindexIfNeeded($search, $producer);
 ```
 
-[`src/Cli/PlatformCli.php#L212-L241`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L212-L241)
+[`src/Cli/PlatformCli.php#L212-L241`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L212-L241)
 
 **Перевод комментариев:**
 - `// One registry every component reports into, and one trace journal` — один
@@ -654,7 +654,7 @@ private function serve(): int
 }
 ```
 
-[`src/Cli/PlatformCli.php#L287-L297`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L287-L297)
+[`src/Cli/PlatformCli.php#L287-L297`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L287-L297)
 
 Правило «pid-файл авторитетен, порт — контрольная проверка» живёт в
 `ensureDatabaseServer()`: шаг остановки регистрируется **только** после удачного
@@ -716,7 +716,7 @@ private function ensureDatabaseServer(ShutdownStack $shutdown, array $config): v
 }
 ```
 
-[`src/Cli/PlatformCli.php#L460-L511`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L460-L511)
+[`src/Cli/PlatformCli.php#L460-L511`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L460-L511)
 
 **Перевод комментариев:**
 - `// The pid file alone is not enough: it can be stale, or belong to` — одного
@@ -784,7 +784,7 @@ private function ensureSearchServer(ShutdownStack $shutdown, array $config): ?Se
 }
 ```
 
-[`src/Cli/PlatformCli.php#L580-L629`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L580-L629)
+[`src/Cli/PlatformCli.php#L580-L629`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L580-L629)
 
 **Перевод комментариев:**
 - `ensureSearchServer()` (PHPDoc): `php-mini-search`, шестой компонент (PLAN
@@ -819,7 +819,7 @@ private function spawnOwned(ShutdownStack $shutdown, string $name, string $scrip
 }
 ```
 
-[`src/Cli/PlatformCli.php#L744-L760`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L744-L760)
+[`src/Cli/PlatformCli.php#L744-L760`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L744-L760)
 
 **Перевод комментариев:**
 - `spawnOwned()` (PHPDoc): породить дочерний сервер и сразу зарегистрировать его
@@ -855,7 +855,7 @@ private function spawnOwned(ShutdownStack $shutdown, string $name, string $scrip
  */
 ```
 
-[`bin/worker.php#L17-L34`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/bin/worker.php#L17-L34)
+[`bin/worker.php#L17-L34`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/bin/worker.php#L17-L34)
 
 **Перевод комментариев:**
 - `bin/worker.php` (PHPDoc): мастер пула воркеров платформы — один процесс,
@@ -902,7 +902,7 @@ $bootstrapTimeout = (float) $workers['bootstrap_timeout'];
 $departureTimeout = (float) $workers['departure_timeout'];
 ```
 
-[`bin/worker.php#L36-L56`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/bin/worker.php#L36-L56)
+[`bin/worker.php#L36-L56`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/bin/worker.php#L36-L56)
 
 **Перевод комментариев:**
 - `// serve launches the pool with the config's socket and autoscaling...` —
@@ -957,7 +957,7 @@ $master = new Master(
 $master->run();
 ```
 
-[`bin/worker.php#L71-L101`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/bin/worker.php#L71-L101)
+[`bin/worker.php#L71-L101`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/bin/worker.php#L71-L101)
 
 ### Мост через границу: очередь → пул
 
@@ -981,7 +981,7 @@ $master->run();
  */
 ```
 
-[`src/Workers/WorkerManager.php#L14-L27`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerManager.php#L14-L27)
+[`src/Workers/WorkerManager.php#L14-L27`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerManager.php#L14-L27)
 
 **Перевод комментариев:**
 - `WorkerManager` (PHPDoc): единственный шов платформы между очередью и
@@ -1014,7 +1014,7 @@ public static function forwarder(string $socketPath, float $timeoutSeconds): Clo
 }
 ```
 
-[`src/Workers/WorkerManager.php#L44-L54`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerManager.php#L44-L54)
+[`src/Workers/WorkerManager.php#L44-L54`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerManager.php#L44-L54)
 
 ## 4. Эксперимент
 

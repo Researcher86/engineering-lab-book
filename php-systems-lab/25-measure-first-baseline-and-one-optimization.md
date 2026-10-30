@@ -3,7 +3,7 @@
 > Проекты: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
 > (тег `v1.0.1`, `3014fa5`) и
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
-> (коммит `9a6a916`). Нужно знать: анализатор, индекс и BM25 (→ главы 19–20),
+> (коммит `2a28621`). Нужно знать: анализатор, индекс и BM25 (→ главы 19–20),
 > кеш и его предел (→ глава 19), наблюдаемость (→ глава 24).
 >
 > Здесь начинается последняя часть — инженерная практика. И первое её правило:
@@ -385,7 +385,7 @@ final class TopHits extends SplHeap
  */
 ```
 
-[`src/Benchmarks/LoadTestRunner.php#L17-L48`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/LoadTestRunner.php#L17-L48)
+[`src/Benchmarks/LoadTestRunner.php#L17-L48`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/LoadTestRunner.php#L17-L48)
 
 **Перевод комментариев:**
 - `LoadTestRunner` (PHPDoc): нагрузочные тесты PLAN Step 29 одной командой,
@@ -436,7 +436,7 @@ final class HttpLoadTest
 {
 ```
 
-[`src/Benchmarks/HttpLoadTest.php#L13-L27`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/HttpLoadTest.php#L13-L27)
+[`src/Benchmarks/HttpLoadTest.php#L13-L27`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/HttpLoadTest.php#L13-L27)
 
 ### Результат фазы: хвост, а не среднее
 
@@ -473,7 +473,7 @@ final readonly class HttpLoadResult
     }
 ```
 
-[`src/Benchmarks/HttpLoadResult.php#L7-L32`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/HttpLoadResult.php#L7-L32)
+[`src/Benchmarks/HttpLoadResult.php#L7-L32`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/HttpLoadResult.php#L7-L32)
 
 **Перевод комментариев:**
 - `HttpLoadResult` (PHPDoc): что измерила одна фаза нагрузки (тесты A, B и C из
@@ -518,7 +518,7 @@ final readonly class LoadTestReport
     }
 ```
 
-[`src/Benchmarks/LoadTestReport.php#L7-L29`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/LoadTestReport.php#L7-L29)
+[`src/Benchmarks/LoadTestReport.php#L7-L29`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/LoadTestReport.php#L7-L29)
 
 **Перевод комментариев:**
 - `LoadTestReport` (PHPDoc): что измерил прогон нагрузки (PLAN Step 29): payload
@@ -572,7 +572,7 @@ final readonly class ProcessCost
 }
 ```
 
-[`src/Benchmarks/ProcessCost.php#L7-L38`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/ProcessCost.php#L7-L38)
+[`src/Benchmarks/ProcessCost.php#L7-L38`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/ProcessCost.php#L7-L38)
 
 **Перевод комментариев:**
 - `ProcessCost` (PHPDoc): одно чтение CPU и памяти процесса, из ядра. CPU —
@@ -624,7 +624,7 @@ final class ProcessCostReader
     }
 ```
 
-[`src/Benchmarks/ProcessCostReader.php#L10-L39`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Benchmarks/ProcessCostReader.php#L10-L39)
+[`src/Benchmarks/ProcessCostReader.php#L10-L39`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Benchmarks/ProcessCostReader.php#L10-L39)
 
 **Перевод комментариев:**
 - `ProcessCostReader` (PHPDoc): читает `ProcessCost` из `/proc`: `VmRSS` и

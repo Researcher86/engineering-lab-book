@@ -3,7 +3,7 @@
 > Проекты: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
 > (релиз `v1.0.1`, коммит `3014fa5`) и
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
-> (коммит `9a6a916`). Нужно знать: журнал как единственное надёжное состояние (→
+> (коммит `2a28621`). Нужно знать: журнал как единственное надёжное состояние (→
 > глава 18), анализ текста (→ глава 19), инвертированный индекс (→ глава 20).
 > Пригодится дальше: границы компонентов (→ глава 22) и как распространяются
 > отказы (→ глава 23).
@@ -654,7 +654,7 @@ use PhpSystemsPlatform\Storage\Database;
  * time, so two writes to one sku never interleave.
 ```
 
-[`src/Storage/Repositories/ProductRepository.php#L7-L17`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Storage/Repositories/ProductRepository.php#L7-L17)
+[`src/Storage/Repositories/ProductRepository.php#L7-L17`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Storage/Repositories/ProductRepository.php#L7-L17)
 
 **Перевод комментариев:**
 - `ProductRepository` (PHPDoc): путь записи каталога и чтения, нужные поиску.
@@ -689,7 +689,7 @@ public function save(string $sku, string $title, string $description, string $pr
 }
 ```
 
-[`src/Storage/Repositories/ProductRepository.php#L36-L57`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Storage/Repositories/ProductRepository.php#L36-L57)
+[`src/Storage/Repositories/ProductRepository.php#L36-L57`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Storage/Repositories/ProductRepository.php#L36-L57)
 
 **Перевод комментариев:**
 - `save()` (PHPDoc): создать товар или заменить его — удалённый возвращается.
@@ -714,7 +714,7 @@ public function delete(string $sku): ?ProductRecord
 }
 ```
 
-[`src/Storage/Repositories/ProductRepository.php#L59-L74`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Storage/Repositories/ProductRepository.php#L59-L74)
+[`src/Storage/Repositories/ProductRepository.php#L59-L74`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Storage/Repositories/ProductRepository.php#L59-L74)
 
 **Перевод комментариев:**
 - `delete()` (PHPDoc): мягкое удаление. `null`, если sku никогда не записывался;
@@ -745,7 +745,7 @@ public function delete(string $sku): ?ProductRecord
  */
 ```
 
-[`src/Queue/Jobs/ProductIndexJob.php#L12-L26`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/Jobs/ProductIndexJob.php#L12-L26)
+[`src/Queue/Jobs/ProductIndexJob.php#L12-L26`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/Jobs/ProductIndexJob.php#L12-L26)
 
 **Перевод комментариев:**
 - `ProductIndexJob` (PHPDoc): «товар изменился» — сообщить `php-mini-search`,
@@ -778,7 +778,7 @@ use RuntimeException;
  *
 ```
 
-[`src/Queue/Jobs/ProductReindexJob.php#L9-L18`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/Jobs/ProductReindexJob.php#L9-L18)
+[`src/Queue/Jobs/ProductReindexJob.php#L9-L18`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/Jobs/ProductReindexJob.php#L9-L18)
 
 **Перевод комментариев:**
 - `ProductReindexJob` (PHPDoc): полная переиндексация: открыть поколение,
@@ -805,7 +805,7 @@ public static function run(ProductRepository $products, SearchClient $search): a
 }
 ```
 
-[`src/Queue/Jobs/ProductReindexJob.php#L37-L51`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/Jobs/ProductReindexJob.php#L37-L51)
+[`src/Queue/Jobs/ProductReindexJob.php#L37-L51`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/Jobs/ProductReindexJob.php#L37-L51)
 
 **Перевод комментариев:**
 - `run()` (PHPDoc): возвращает номер поколения, число отправленных товаров и
@@ -833,7 +833,7 @@ public static function run(ProductRepository $products, SearchClient $search): a
  */
 ```
 
-[`src/Search/SearchClient.php#L10-L21`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Search/SearchClient.php#L10-L21)
+[`src/Search/SearchClient.php#L10-L21`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Search/SearchClient.php#L10-L21)
 
 **Перевод комментариев:**
 - `SearchClient` (PHPDoc): сторона платформы в HTTP-контракте `php-mini-search`
@@ -867,7 +867,7 @@ public function delete(string $sku, int $version): bool
 }
 ```
 
-[`src/Search/SearchClient.php#L45-L62`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Search/SearchClient.php#L45-L62)
+[`src/Search/SearchClient.php#L45-L62`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Search/SearchClient.php#L45-L62)
 
 **Перевод комментариев:**
 - `put()` (PHPDoc): проиндексировать товар с версией источника. `false`, если
@@ -888,7 +888,7 @@ public function completeReindex(int $generation): int
 }
 ```
 
-[`src/Search/SearchClient.php#L121-L132`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Search/SearchClient.php#L121-L132)
+[`src/Search/SearchClient.php#L121-L132`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Search/SearchClient.php#L121-L132)
 
 **Перевод комментариев:**
 - `completeReindex()` (PHPDoc): сколько документов поколение не тронуло и они

@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
-> (коммит `9a6a916`). Нужно знать: процесс-модель (→ глава 22) и как
+> (коммит `2a28621`). Нужно знать: процесс-модель (→ глава 22) и как
 > распространяются отказы (→ глава 23). Это последняя глава про платформу;
 > дальше — инженерная практика: как измерять и как писать.
 >
@@ -205,7 +205,7 @@ JSONL-журнал.
  * set.
 ```
 
-[`src/Observability/MetricsRegistry.php#L9-L28`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsRegistry.php#L9-L28)
+[`src/Observability/MetricsRegistry.php#L9-L28`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsRegistry.php#L9-L28)
 
 **Перевод комментариев:**
 - `MetricsRegistry` (PHPDoc): общая модель метрик внутри процесса: компоненты
@@ -266,7 +266,7 @@ public const string WORKER_TASK_DURATION = 'worker.task_duration';
 public const string PROCESS_RSS = 'process.rss';
 ```
 
-[`src/Observability/MetricsRegistry.php#L32-L70`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsRegistry.php#L32-L70)
+[`src/Observability/MetricsRegistry.php#L32-L70`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsRegistry.php#L32-L70)
 
 Три метода записи отделяют монотонное от текущего и от выборки:
 
@@ -294,7 +294,7 @@ public function observe(string $name, float $seconds): void
 }
 ```
 
-[`src/Observability/MetricsRegistry.php#L83-L103`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsRegistry.php#L83-L103)
+[`src/Observability/MetricsRegistry.php#L83-L103`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsRegistry.php#L83-L103)
 
 А снимок сводит всё в один отсортированный словарь, превращая длительности в
 среднее (и округляя его, чтобы двоичные дроби не протекали):
@@ -336,7 +336,7 @@ private function average(string $name): float
 }
 ```
 
-[`src/Observability/MetricsRegistry.php#L122-L155`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsRegistry.php#L122-L155)
+[`src/Observability/MetricsRegistry.php#L122-L155`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsRegistry.php#L122-L155)
 
 **Перевод комментариев:**
 - `snapshot()` (PHPDoc): все метрики реестра в виде «имя → значение»,
@@ -376,7 +376,7 @@ private function average(string $name): float
  */
 ```
 
-[`src/Observability/MetricsReporter.php#L11-L32`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsReporter.php#L11-L32)
+[`src/Observability/MetricsReporter.php#L11-L32`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsReporter.php#L11-L32)
 
 **Перевод комментариев:**
 - `MetricsReporter` (PHPDoc): единственный читатель метрик платформы —
@@ -424,7 +424,7 @@ public function snapshot(): array
 }
 ```
 
-[`src/Observability/MetricsReporter.php#L61-L82`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsReporter.php#L61-L82)
+[`src/Observability/MetricsReporter.php#L61-L82`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsReporter.php#L61-L82)
 
 **Перевод комментариев:**
 - `snapshot()` (PHPDoc): полный стандартный снимок «имя → значение»,
@@ -451,7 +451,7 @@ public function toText(): string
 }
 ```
 
-[`src/Observability/MetricsReporter.php#L84-L98`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/MetricsReporter.php#L84-L98)
+[`src/Observability/MetricsReporter.php#L84-L98`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/MetricsReporter.php#L84-L98)
 
 **Перевод комментариев:**
 - `toText()` (PHPDoc): снимок в виде строк `name value` — тот текст, которым
@@ -483,7 +483,7 @@ public function toText(): string
  */
 ```
 
-[`src/Observability/Trace.php#L9-L28`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/Trace.php#L9-L28)
+[`src/Observability/Trace.php#L9-L28`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/Trace.php#L9-L28)
 
 **Перевод комментариев:**
 - `Trace` (PHPDoc): небольшой учебный трассировщик (намеренно не клон
@@ -526,7 +526,7 @@ public function finishRequest(): void
 }
 ```
 
-[`src/Observability/Trace.php#L57-L74`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/Trace.php#L57-L74)
+[`src/Observability/Trace.php#L57-L74`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/Trace.php#L57-L74)
 
 **Перевод комментариев:**
 - `beginRequest()` (PHPDoc): открывает область запроса. Корректный входящий
@@ -580,7 +580,7 @@ public function record(string $operation, float $duration, array $extra = []): v
 }
 ```
 
-[`src/Observability/Trace.php#L81-L117`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/Trace.php#L81-L117)
+[`src/Observability/Trace.php#L81-L117`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/Trace.php#L81-L117)
 
 **Перевод комментариев:**
 - `record()` (PHPDoc): записывает один спан для активного запроса. Вне запроса
@@ -633,7 +633,7 @@ public function readLog(string $requestId): array
 }
 ```
 
-[`src/Observability/Trace.php#L139-L170`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/Trace.php#L139-L170)
+[`src/Observability/Trace.php#L139-L170`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/Trace.php#L139-L170)
 
 **Перевод комментариев:**
 - `readLog()` (PHPDoc): читает из журнала всю цепочку одного запроса: спаны
@@ -660,7 +660,7 @@ public function readLog(string $requestId): array
 }
 ```
 
-[`src/Observability/Trace.php#L197-L205`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Observability/Trace.php#L197-L205)
+[`src/Observability/Trace.php#L197-L205`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Observability/Trace.php#L197-L205)
 
 ### Эндпоинты: форма важнее содержания
 
@@ -686,7 +686,7 @@ final class HealthHandler
     }
 ```
 
-[`src/Application/Handlers/HealthHandler.php#L10-L25`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Handlers/HealthHandler.php#L10-L25)
+[`src/Application/Handlers/HealthHandler.php#L10-L25`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Handlers/HealthHandler.php#L10-L25)
 
 **Перевод комментариев:**
 - `HealthHandler` (PHPDoc): `GET /health` — проверка живости и каноническая
@@ -720,7 +720,7 @@ final readonly class MetricsHandler
     }
 ```
 
-[`src/Application/Handlers/MetricsHandler.php#L11-L28`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Handlers/MetricsHandler.php#L11-L28)
+[`src/Application/Handlers/MetricsHandler.php#L11-L28`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Handlers/MetricsHandler.php#L11-L28)
 
 **Перевод комментариев:**
 - `MetricsHandler` (PHPDoc): `GET /metrics` — снимок `MetricsReporter` в виде
@@ -759,7 +759,7 @@ private function metricsCommand(): int
 }
 ```
 
-[`src/Cli/PlatformCli.php#L1865-L1885`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L1865-L1885)
+[`src/Cli/PlatformCli.php#L1865-L1885`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L1865-L1885)
 
 **Перевод комментариев:**
 - `metricsCommand()` (PHPDoc): CLI-зеркало `GET /metrics` поверх того же
@@ -840,7 +840,7 @@ private function traceCommand(array $args): int
 }
 ```
 
-[`src/Cli/PlatformCli.php#L1887-L1953`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cli/PlatformCli.php#L1887-L1953)
+[`src/Cli/PlatformCli.php#L1887-L1953`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cli/PlatformCli.php#L1887-L1953)
 
 **Перевод комментариев:**
 - `traceCommand()` (PHPDoc): все спаны, записанные для одного `request_id`, из
@@ -869,7 +869,7 @@ private function traceCommand(array $args): int
  */
 ```
 
-[`src/Workers/WorkerRegistry.php#L16-L27`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerRegistry.php#L16-L27)
+[`src/Workers/WorkerRegistry.php#L16-L27`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerRegistry.php#L16-L27)
 
 **Перевод комментариев:**
 - `WorkerRegistry` (PHPDoc): собственный жизненный цикл воркеров консьюмера
@@ -915,7 +915,7 @@ public function capture(): void
 }
 ```
 
-[`src/Workers/WorkerRegistry.php#L87-L112`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerRegistry.php#L87-L112)
+[`src/Workers/WorkerRegistry.php#L87-L112`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerRegistry.php#L87-L112)
 
 **Перевод комментариев:**
 - `capture()` (PHPDoc): записывает состояние воркеров и то, какое задание несёт

@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
-> (коммит `9a6a916`). Нужно знать: пул воркеров (→ главы 6–7), очередь и повторы
+> (коммит `2a28621`). Нужно знать: пул воркеров (→ главы 6–7), очередь и повторы
 > (→ главы 8–9), границы компонентов (→ глава 22). Продолжение — что видно
 > снаружи, когда всё это падает (→ глава 24).
 >
@@ -218,9 +218,11 @@ relay читает outbox, публикует задания и помечает
 - **Честность стоит доступности.** `503` при незавершённой переиндексации —
   правильный ответ и неудобный: система «работает», но отказывает.
 - **Границ стало больше, чем отказов.** Почти каждое поведение в этой главе —
-  контракт между двумя процессами, поэтому появились таймауты на каждый (2 с на
-  очередь, 5 с на задание, 30 с на выполнение), и их надо держать
-  согласованными.
+  контракт между двумя процессами, поэтому появились таймауты на каждый (5 с на
+  задание, 30 с на выполнение), и их надо держать согласованными. Таймаут
+  видимости в очереди поэтому не настраивается отдельно, а берётся из того же
+  `workers.task_timeout`: иначе очередь отдала бы второму воркеру задание,
+  которое ещё выполняется.
 
 ### Что гарантирует механизм
 
@@ -271,7 +273,7 @@ final readonly class BackpressurePolicy
     }
 ```
 
-[`src/Queue/BackpressurePolicy.php#L7-L35`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/BackpressurePolicy.php#L7-L35)
+[`src/Queue/BackpressurePolicy.php#L7-L35`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/BackpressurePolicy.php#L7-L35)
 
 **Перевод комментариев:**
 - `BackpressurePolicy` (PHPDoc): шаг 17 плана: настраиваемый `MAX_QUEUE_SIZE` и
@@ -303,7 +305,7 @@ final readonly class BackpressureDecision
     }
 ```
 
-[`src/Queue/BackpressureDecision.php#L7-L20`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/BackpressureDecision.php#L7-L20)
+[`src/Queue/BackpressureDecision.php#L7-L20`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/BackpressureDecision.php#L7-L20)
 
 **Перевод комментариев:**
 - `BackpressureDecision` (PHPDoc): один ответ на вопрос «может ли очередь сейчас
@@ -357,7 +359,7 @@ final readonly class OrderCreateHandler
         }
 ```
 
-[`src/Application/Handlers/OrderCreateHandler.php#L16-L53`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Handlers/OrderCreateHandler.php#L16-L53)
+[`src/Application/Handlers/OrderCreateHandler.php#L16-L53`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Handlers/OrderCreateHandler.php#L16-L53)
 
 **Перевод комментариев:**
 - `OrderCreateHandler` (PHPDoc): `POST /orders` — синхронный путь записи:
@@ -385,7 +387,7 @@ try {
 }
 ```
 
-[`src/Application/Handlers/OrderCreateHandler.php#L80-L84`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Handlers/OrderCreateHandler.php#L80-L84)
+[`src/Application/Handlers/OrderCreateHandler.php#L80-L84`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Handlers/OrderCreateHandler.php#L80-L84)
 
 ### Приговор заданию: повтор — не то же самое, что исход
 
@@ -407,7 +409,7 @@ public static function shouldRetry(): Closure
 }
 ```
 
-[`src/Queue/JobRegistry.php#L76-L86`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/JobRegistry.php#L76-L86)
+[`src/Queue/JobRegistry.php#L76-L86`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/JobRegistry.php#L76-L86)
 
 **Перевод комментариев:**
 - `shouldRetry()` (PHPDoc): хук проверки права на повтор, который
@@ -442,7 +444,7 @@ public static function shouldRetry(): Closure
  */
 ```
 
-[`src/Workers/WorkerFailureTasks.php#L10-L27`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerFailureTasks.php#L10-L27)
+[`src/Workers/WorkerFailureTasks.php#L10-L27`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerFailureTasks.php#L10-L27)
 
 **Перевод комментариев:**
 - `WorkerFailureTasks` (PHPDoc): инъекция отказов на стороне пула из шага 22
@@ -480,7 +482,7 @@ private function crash(): Response
 }
 ```
 
-[`src/Workers/WorkerFailureTasks.php#L46-L58`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerFailureTasks.php#L46-L58)
+[`src/Workers/WorkerFailureTasks.php#L46-L58`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerFailureTasks.php#L46-L58)
 
 **Перевод комментариев:**
 - `// Never returns: the process is gone before it could answer, so the` —
@@ -516,7 +518,7 @@ private function crash(): Response
  */
 ```
 
-[`src/Workers/WorkerFailureInjector.php#L14-L33`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerFailureInjector.php#L14-L33)
+[`src/Workers/WorkerFailureInjector.php#L14-L33`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerFailureInjector.php#L14-L33)
 
 **Перевод комментариев:**
 - `WorkerFailureInjector` (PHPDoc): клиентская сторона сценария краха воркера из
@@ -578,7 +580,7 @@ public function crashOneWorker(): array
     $deadline = microtime(true) + self::REPLACEMENT_DEADLINE_SECONDS;
 ```
 
-[`src/Workers/WorkerFailureInjector.php#L45-L83`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Workers/WorkerFailureInjector.php#L45-L83)
+[`src/Workers/WorkerFailureInjector.php#L45-L83`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Workers/WorkerFailureInjector.php#L45-L83)
 
 **Перевод комментариев:**
 - `crashOneWorker()` (PHPDoc): убить одного воркера и дождаться, пока пул
@@ -616,7 +618,7 @@ try {
 }
 ```
 
-[`src/Application/Application.php#L94-L107`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Application.php#L94-L107)
+[`src/Application/Application.php#L94-L107`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Application.php#L94-L107)
 
 И то, ради чего этот код написан именно так: наружу — голый статус, внутрь —
 throwable. Сообщение исключения регулярно содержит строку соединения или путь к
@@ -633,10 +635,11 @@ private function reportHandlerFailure(HttpRequest $request, Throwable $e): void
     $logger = $this->logger ?? new StderrLogger();
 
     $logger->log(sprintf(
-        'unhandled %s: %s: %s at %s:%d',
+        'unhandled %s: %s: %s: %s at %s:%d',
         $request->method->value,
         $request->path(),
         $e::class,
+        $e->getMessage(),
         $e->getFile(),
         $e->getLine(),
     ));
@@ -644,7 +647,7 @@ private function reportHandlerFailure(HttpRequest $request, Throwable $e): void
 }
 ```
 
-[`src/Application/Application.php#L110-L128`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Application/Application.php#L110-L128)
+[`src/Application/Application.php#L110-L129`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Application/Application.php#L110-L129)
 
 **Перевод комментариев:**
 - `reportHandlerFailure()` (PHPDoc): клиент получает голый `500`; оператор
@@ -673,7 +676,7 @@ private function reportHandlerFailure(HttpRequest $request, Throwable $e): void
  */
 ```
 
-[`src/Cache/CacheService.php#L14-L25`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cache/CacheService.php#L14-L25)
+[`src/Cache/CacheService.php#L14-L25`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cache/CacheService.php#L14-L25)
 
 **Перевод комментариев:**
 - `CacheService` (PHPDoc): фасад платформы над одним соединением php-mini-cache
@@ -719,7 +722,7 @@ public function getOrder(string $id): ?array
 }
 ```
 
-[`src/Cache/CacheService.php#L63-L90`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Cache/CacheService.php#L63-L90)
+[`src/Cache/CacheService.php#L63-L90`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Cache/CacheService.php#L63-L90)
 
 **Перевод комментариев:**
 - `getOrder()` (PHPDoc): закешированный payload заказа или `null` при промахе.
@@ -749,7 +752,7 @@ public function getOrder(string $id): ?array
  */
 ```
 
-[`src/Queue/JobExecutor.php#L22-L32`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/JobExecutor.php#L22-L32)
+[`src/Queue/JobExecutor.php#L22-L32`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/JobExecutor.php#L22-L32)
 
 **Перевод комментариев:**
 - `JobExecutor` (PHPDoc): обработчик, который выполняет воркер очереди, — вход
@@ -780,7 +783,7 @@ public function getOrder(string $id): ?array
 }
 ```
 
-[`src/Queue/JobExecutor.php#L89-L101`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/JobExecutor.php#L89-L101)
+[`src/Queue/JobExecutor.php#L89-L101`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/JobExecutor.php#L89-L101)
 
 ### Консьюмер: остановиться, не потеряв
 
@@ -816,7 +819,7 @@ public function runWhile(Closure $keepRunning): void
 }
 ```
 
-[`src/Queue/QueueConsumer.php#L88-L113`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/QueueConsumer.php#L88-L113)
+[`src/Queue/QueueConsumer.php#L88-L113`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/QueueConsumer.php#L88-L113)
 
 **Перевод комментариев:**
 - `runWhile()` (PHPDoc): крутить цикл, пока `$keepRunning` возвращает true и
@@ -857,7 +860,7 @@ private function resync(): void
 }
 ```
 
-[`src/Queue/QueueConsumer.php#L154-L178`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/QueueConsumer.php#L154-L178)
+[`src/Queue/QueueConsumer.php#L154-L178`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/QueueConsumer.php#L154-L178)
 
 **Перевод комментариев:**
 - `resync()` (PHPDoc): принять каждое задание, опубликованное другим процессом с
@@ -890,7 +893,7 @@ public function run(): void
 }
 ```
 
-[`src/Queue/QueueConsumer.php#L69-L86`](https://github.com/Researcher86/php-systems-platform/blob/9a6a9161cd55ca41b1b27dcab6546e6dab268696/src/Queue/QueueConsumer.php#L69-L86)
+[`src/Queue/QueueConsumer.php#L69-L86`](https://github.com/Researcher86/php-systems-platform/blob/2a286215c27ac4f59cd2cb4f827a6ee2df5f97c9/src/Queue/QueueConsumer.php#L69-L86)
 
 ## 4. Эксперимент
 
@@ -1755,7 +1758,7 @@ the pid file of the database daemon names a live process: no
 | Воркеров в пуле                                 | 2…16                                               |
 | Таймаут задачи у клиента пула                   | 5 с                                                |
 | Максимум удержания задачи воркером              | 30 с                                               |
-| Таймаут служебных операций очереди              | 2 с                                                |
+| Таймаут видимости задания в очереди             | 5 с (берётся из `workers.task_timeout`)            |
 | Таймаут старта службы поиска                    | 60 с                                               |
 | Интервал досинхронизации с журналом             | 100 мс                                             |
 
