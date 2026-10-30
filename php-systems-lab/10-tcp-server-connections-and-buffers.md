@@ -1,7 +1,7 @@
 # Глава 10. TCP-сервер на одном цикле: соединения и буферы
 
 > Проект: [`php-mini-cache`](https://github.com/Researcher86/php-mini-cache),
-> релиз `v1.1.0`, коммит `5838655`. Нужно знать: цикл событий и неблокирующий
+> релиз `v1.1.1`, коммит `9bccbcc`. Нужно знать: цикл событий и неблокирующий
 > ввод-вывод (→ глава 4). Пригодится дальше: протокол и pipelining (→ глава 11),
 > TTL, Pub/Sub и снапшоты (→ глава 12).
 
@@ -123,10 +123,11 @@ ClientConnection
 Идентификатор — отдельная ловушка, о которой стоит сказать сразу, потому что она
 относится ко всем реестрам сразу (подписки, открытые транзакции, пауза на
 чтение). Это `get_resource_id($socket)`. Номер читается и после закрытия сокета,
-а главное — **переиспользуется** следующим файлом, который откроет процесс.
-Реестр, который не удалил запись о закрытом соединении, не просто «течёт»: он
-отдаёт эту запись постороннему соединению. Поэтому закрытие — это всегда
-удаление из всех реестров сразу.
+а главное — **больше не выдаётся**: PHP нумерует ресурсы процесса по
+возрастанию и закрытый номер заново не раздаёт. Поэтому реестр, который не
+удалил запись о закрытом соединении, ни с кем её не перепутает — он будет
+держать её, а с ней и закрытое соединение, всё время жизни сервера. Поэтому
+закрытие — это всегда удаление из всех реестров сразу.
 
 ### Чтение: накопить, разобрать, съесть
 
@@ -207,8 +208,8 @@ WriteBuffer
 `disconnectClient()` — это не только `close()` сокета. Он снимает соединение с
 цикла (и от readable, и от writable), удаляет из `ConnectionManager`, отписывает
 от всех каналов, отменяет открытую транзакцию, убирает из набора пауз и только
-потом закрывает. Пропустить любой из этих шагов — и номер ресурса, который
-сейчас освободится, достанется следующему соединению вместе с чужой записью.
+потом закрывает. Пропустить любой из этих шагов — и запись о закрытом соединении
+останется в реестре навсегда: больше её никто не удалит.
 
 А сам цикл не полагается на то, что владельцы аккуратно отпишут закрытые стримы.
 Он делает две вещи: перед `stream_select()` выбрасывает уже закрытые стримы из
@@ -245,7 +246,7 @@ public function accept(?float $timeoutSeconds = null)
 }
 ```
 
-[`src/Server/ServerSocket.php#L69-L88`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/ServerSocket.php#L69-L88)
+[`src/Server/ServerSocket.php#L69-L88`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/ServerSocket.php#L69-L88)
 
 **Перевод комментариев:**
 - `accept()` (PHPDoc): блокируется, пока не подключится клиент или не истечёт
@@ -300,7 +301,7 @@ final class ReadBuffer
 }
 ```
 
-[`src/Connection/ReadBuffer.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Connection/ReadBuffer.php#L7-L41)
+[`src/Connection/ReadBuffer.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/ReadBuffer.php#L7-L41)
 
 **Перевод комментариев:**
 - `ReadBuffer` (PHPDoc): накапливает байты, прочитанные из сокета. Одно
@@ -370,7 +371,7 @@ final class WriteBuffer
     }
 ```
 
-[`src/Connection/WriteBuffer.php#L7-L56`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Connection/WriteBuffer.php#L7-L56)
+[`src/Connection/WriteBuffer.php#L7-L56`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/WriteBuffer.php#L7-L56)
 
 **Перевод комментариев:**
 - `WriteBuffer` (PHPDoc): ставит в очередь байты, ожидающие записи в сокет. Одна
@@ -431,7 +432,7 @@ public function consume(int $length): void
 }
 ```
 
-[`src/Connection/WriteBuffer.php#L68-L87`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Connection/WriteBuffer.php#L68-L87)
+[`src/Connection/WriteBuffer.php#L68-L87`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/WriteBuffer.php#L68-L87)
 
 **Перевод комментариев:**
 - `consume()` (PHPDoc): помечает первые `$length` байт очереди записанными,
@@ -484,7 +485,7 @@ private function watchForIncomingData(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L431-L466`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L431-L466)
+[`src/Server/CacheServer.php#L431-L466`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L431-L466)
 
 **Перевод комментариев:**
 - `// Empty means two different things on a non-blocking socket, and` — пустая
@@ -591,7 +592,7 @@ private function processBufferedCommands(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L468-L544`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L468-L544)
+[`src/Server/CacheServer.php#L468-L544`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L468-L544)
 
 **Перевод комментариев:**
 - `processBufferedCommands()` (PHPDoc): выполняет полные команды, лежащие в
@@ -691,7 +692,7 @@ private function flushWriteBuffer(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L622-L666`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L622-L666)
+[`src/Server/CacheServer.php#L622-L666`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L622-L666)
 
 **Перевод комментариев:**
 - `flushWriteBuffer()` (PHPDoc): записывает столько `WriteBuffer` соединения,
@@ -742,7 +743,7 @@ private function pauseReadingIfWriteBufferTooLarge(ClientConnection $connection)
 }
 ```
 
-[`src/Server/CacheServer.php#L668-L687`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L668-L687)
+[`src/Server/CacheServer.php#L668-L687`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L668-L687)
 
 **Перевод комментариев:**
 - `pauseReadingIfWriteBufferTooLarge()` (PHPDoc): обратное давление: соединение,
@@ -781,7 +782,7 @@ private function forgetClosedStreams(): void
 }
 ```
 
-[`src/EventLoop/SelectLoop.php#L132-L149`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/EventLoop/SelectLoop.php#L132-L149)
+[`src/EventLoop/SelectLoop.php#L132-L149`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/EventLoop/SelectLoop.php#L132-L149)
 
 **Перевод комментариев:**
 - `forgetClosedStreams()` (PHPDoc): выбрасывает стримы, закрытые их владельцами,
@@ -993,7 +994,7 @@ docker compose exec php php examples/slow-client.php
 | Абсурдно много аргументов               | `maxArgumentsPerCommand`                       | `ERR too many arguments`, соединение **остаётся**                     |
 | ReadBuffer перерос лимит                | `maxReadBufferBytes`                           | `ERR Protocol error: too big buffer` и разрыв                         |
 | Стрим закрыт посреди прохода            | `is_resource()`/`forgetClosedStreams()`      | обработчик не вызывается; закрытые стримы выбывают из `select`        |
-| Номер ресурса переиспользован           | `id()` = `get_resource_id`                     | реестр, забывший запись, отдаст её чужому соединению                  |
+| Запись о закрытом соединении забыта     | `id()` = `get_resource_id`                     | номер не выдаётся заново: запись течёт до конца жизни сервера         |
 | Клиент оборвал связь                    | `fread` вернул `''` и `feof()`                 | `disconnectClient()` чистит подписки, транзакции, паузу               |
 | Соединений больше `maxConnections`      | счётчик в `acceptClient()`                     | `ERR max number of clients reached`, сокет закрыт сразу               |
 
@@ -1002,8 +1003,8 @@ docker compose exec php php examples/slow-client.php
 обратное давление работает только против того, что соединение **запросило
 себе**, — и для производимого извне трафика нужен отдельный, жёсткий предел. А
 строка про `get_resource_id` объясняет, почему `disconnectClient()` чистит _все_
-реестры: номер освободится и будет выдан заново, и «забытая» запись превратится
-в чужую.
+реестры: номер закрытого сокета заново не выдаётся, поэтому «забытую» запись
+больше никто никогда не удалит.
 
 ## 6. Как это проверено
 

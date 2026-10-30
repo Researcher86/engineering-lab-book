@@ -1,7 +1,7 @@
 # Глава 12. TTL, Pub/Sub и снапшоты
 
 > Проект: [`php-mini-cache`](https://github.com/Researcher86/php-mini-cache),
-> релиз `v1.1.0`, коммит `5838655`. Нужно знать: соединения и буферы (→
+> релиз `v1.1.1`, коммит `9bccbcc`. Нужно знать: соединения и буферы (→
 > глава 10) и протокол (→ глава 11). Связанное, уже пройденное: разделяемая
 > память и семафоры (→ глава 3) и `fork`/copy-on-write (→ глава 2).
 
@@ -165,9 +165,10 @@ if entry !== null && entry->expiresAt === expiresAt: удалить
 по объекту. Тогда список подписчиков канала — обычный массив, а отписка «ото
 всех каналов» — один проход без поиска по идентичности объектов.
 
-Цена такого решения — целая страница в docblock: **идентификаторы
-переиспользуются**. Если вовремя не удалить запись, она не просто «утечёт» — она
-со временем будет указывать на **другое** соединение, занявшее тот же id.
+Цена такого решения — записи нужно удалять явно: **идентификаторы не
+переиспользуются**, поэтому запись, которую не удалили при отключении, не удалит
+уже никто. Она будет держать закрытое соединение, и каждый `PUBLISH` в канал
+будет его обходить, пока сервер жив.
 Поэтому отписка отовсюду — обязательный шаг при отключении, и
 `disconnectClient()` его делает.
 
@@ -273,7 +274,7 @@ final readonly class StoredValue
 }
 ```
 
-[`src/Storage/StoredValue.php#L7-L22`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Storage/StoredValue.php#L7-L22)
+[`src/Storage/StoredValue.php#L7-L22`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/StoredValue.php#L7-L22)
 
 **Перевод комментариев:**
 - `StoredValue` (PHPDoc): сохранённое значение плюс необязательные метаданные
@@ -321,7 +322,7 @@ public function sweepExpired(): int
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L78-L109`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Storage/InMemoryStore.php#L78-L109)
+[`src/Storage/InMemoryStore.php#L78-L109`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L78-L109)
 
 **Перевод комментариев:**
 - `// The top of the heap is the earliest due entry, so once it is` — вершина
@@ -374,7 +375,7 @@ private function entryOrNull(string $key): ?StoredValue
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L150-L179`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Storage/InMemoryStore.php#L150-L179)
+[`src/Storage/InMemoryStore.php#L150-L179`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L150-L179)
 
 **Перевод комментариев:**
 - `put()` (PHPDoc): сохраняет запись и, если у неё есть срок, ставит её в
@@ -431,7 +432,7 @@ public function restore(array $entries): void
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L111-L148`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Storage/InMemoryStore.php#L111-L148)
+[`src/Storage/InMemoryStore.php#L111-L148`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L111-L148)
 
 **Перевод комментариев:**
 - `snapshot()` (PHPDoc): сериализуемая копия каждой записи, включая TTL, для
@@ -458,9 +459,10 @@ public function restore(array $entries): void
  * than by the object, so a channel's subscribers are a plain array and a
  * connection can be removed from every channel without a scan for object
  * identity. The price is that entries must be dropped explicitly when a
- * connection goes (`CacheServer::disconnectClient()` does it): those ids
- * are reused by later connections, so a leftover entry does not merely
- * leak, it eventually points at someone else.
+ * connection goes (`CacheServer::disconnectClient()` does it): PHP never
+ * reuses those ids, so nothing else would ever remove a leftover entry -
+ * it would keep the closed connection, and every PUBLISH to its channel
+ * would keep visiting it, for as long as the server runs.
  */
 final class ChannelRegistry
 {
@@ -507,16 +509,17 @@ final class ChannelRegistry
 }
 ```
 
-[`src/PubSub/ChannelRegistry.php#L9-L62`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/PubSub/ChannelRegistry.php#L9-L62)
+[`src/PubSub/ChannelRegistry.php#L9-L63`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/PubSub/ChannelRegistry.php#L9-L63)
 
 **Перевод комментариев:**
 - `ChannelRegistry` (PHPDoc): отслеживает, какие соединения подписаны на какие
   каналы. Ключ — `ClientConnection::id()`, id ресурса сокета, а не объект,
   поэтому подписчики канала — обычный массив, а соединение можно убрать из всех
   каналов без поиска по идентичности объектов. Цена — записи нужно удалять явно,
-  когда соединение уходит (это делает `CacheServer::disconnectClient()`): эти id
-  переиспользуются следующими соединениями, поэтому оставшаяся запись не просто
-  течёт, а со временем указывает на кого-то другого.
+  когда соединение уходит (это делает `CacheServer::disconnectClient()`): PHP
+  никогда не переиспользует эти id, поэтому оставшуюся запись больше ничто не
+  удалит — она держала бы закрытое соединение, и каждый `PUBLISH` в его канал
+  продолжал бы его обходить, пока сервер работает.
 - `$channels` (`@var`): канал → id соединения → соединение.
 - `unsubscribeAll()` (PHPDoc): убирает `$connection` из всех каналов, например
   когда оно отключается.
@@ -524,8 +527,9 @@ final class ChannelRegistry
   канала (пустой список для неизвестного канала).
 
 Docblock здесь — не украшение, а предупреждение о реальном риске. Ключ — id
-сокета, а id переиспользуются операционной системой. Поэтому `unsubscribeAll()`
-обязателен при отключении, и он же подчищает пустые каналы, чтобы реестр не рос.
+сокета, и после закрытия он заново не выдаётся, так что забытую запись не
+удалит никто. Поэтому `unsubscribeAll()` обязателен при отключении, и он же
+подчищает пустые каналы, чтобы реестр не рос.
 
 ### Рассылка: закодировать один раз
 
@@ -553,7 +557,7 @@ public function handle(Command $command, Store $store, ClientConnection $connect
 }
 ```
 
-[`src/Command/Handler/PublishCommand.php#L27-L47`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Command/Handler/PublishCommand.php#L27-L47)
+[`src/Command/Handler/PublishCommand.php#L27-L47`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Command/Handler/PublishCommand.php#L27-L47)
 
 Сообщение кодируется **один раз** в `$payload` и рассылается как готовые байты.
 Полезная нагрузка — обычный RESP-массив `["message", channel, body]`, то есть
@@ -594,7 +598,7 @@ private function deliverToSubscriber(ClientConnection $subscriber, string $paylo
 }
 ```
 
-[`src/Server/CacheServer.php#L689-L715`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L689-L715)
+[`src/Server/CacheServer.php#L689-L715`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L689-L715)
 
 **Перевод комментариев:**
 - `deliverToSubscriber()` (PHPDoc): доставка Pub/Sub не похожа на ответ на
@@ -632,7 +636,7 @@ if ($this->snapshots !== null && $snapshotIntervalSeconds !== null) {
 }
 ```
 
-[`src/Server/CacheServer.php#L207-L219`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Server/CacheServer.php#L207-L219)
+[`src/Server/CacheServer.php#L207-L219`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L207-L219)
 
 **Перевод комментариев:**
 - `// Active expiration: expired keys are also removed on a timer,` — активное
@@ -666,7 +670,7 @@ public function save(InMemoryStore $store): void
 }
 ```
 
-[`src/Persistence/SnapshotStore.php#L39-L54`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Persistence/SnapshotStore.php#L39-L54)
+[`src/Persistence/SnapshotStore.php#L39-L54`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/SnapshotStore.php#L39-L54)
 
 Четыре строки, три гарантии. Временный путь уникален по pid, поэтому
 параллельные писатели не мешают друг другу. `rename()` атомарен, поэтому
@@ -709,7 +713,7 @@ public function load(InMemoryStore $store): void
 }
 ```
 
-[`src/Persistence/SnapshotStore.php#L56-L86`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Persistence/SnapshotStore.php#L56-L86)
+[`src/Persistence/SnapshotStore.php#L56-L86`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/SnapshotStore.php#L56-L86)
 
 **Перевод комментариев:**
 - `load()` (PHPDoc): загружает содержимое хранилища из ранее сохранённого
@@ -771,7 +775,7 @@ public function save(InMemoryStore $store): bool
 }
 ```
 
-[`src/Persistence/ForkingSnapshotWorker.php#L58-L94`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Persistence/ForkingSnapshotWorker.php#L58-L94)
+[`src/Persistence/ForkingSnapshotWorker.php#L58-L94`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/ForkingSnapshotWorker.php#L58-L94)
 
 **Перевод комментариев:**
 - `// Parent: the child writes the snapshot; it is reaped through the` —
@@ -1004,7 +1008,7 @@ GET shortlived  -> (nil)
 | `INCR` по отсутствующему ключу                       | `setKeepingTtl()` → `false`                             | пишется как новый, без TTL                                         |
 | Подписчик не читает и копит сообщения                | `hardSubscriberWriteBufferBytes`                        | при превышении (64 МиБ) подписчик **отключается**                  |
 | Публикация в уже закрытое соединение                 | `queueForWrite` видит `Closed`                          | no-op, а не падение на `fwrite()`                                  |
-| Подписчик отключился                                 | `disconnectClient` → `unsubscribeAll`                   | id не останется «смотрящим» на чужое соединение                    |
+| Подписчик отключился                                 | `disconnectClient` → `unsubscribeAll`                   | запись не останется висеть до конца жизни сервера                  |
 | Ноль подписчиков                                     | `count($subscribers) === 0`                             | `PUBLISH` → `0`; сообщение потеряно (нет истории)                  |
 | Процесс умер посреди записи снапшота                 | `tmp` + `rename`                                        | на месте остаётся прежний снапшот; полуфайла нет                   |
 | Два ребёнка делят временный путь                     | pid в имени `*.tmp`                                     | не мешают друг другу у `rename`                                    |

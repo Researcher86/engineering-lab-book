@@ -1,7 +1,7 @@
 # Глава 11. Протокол и pipelining на примере RESP
 
 > Проект: [`php-mini-cache`](https://github.com/Researcher86/php-mini-cache),
-> релиз `v1.1.0`, коммит `5838655`. Нужно знать: соединения и буферы (→ глава
+> релиз `v1.1.1`, коммит `9bccbcc`. Нужно знать: соединения и буферы (→ глава
 > 10). Пригодится дальше: TTL, Pub/Sub и снапшоты (→ глава 12).
 
 В главе 10 мы разобрали, как сервер принимает байты и как отдаёт их обратно, но
@@ -276,7 +276,7 @@ final readonly class RespValue
 }
 ```
 
-[`src/Protocol/RespValue.php#L7-L48`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespValue.php#L7-L48)
+[`src/Protocol/RespValue.php#L7-L48`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespValue.php#L7-L48)
 
 **Перевод комментариев:**
 - `RespValue` (PHPDoc): одно значение проводного протокола RESP: простая строка,
@@ -331,7 +331,7 @@ final readonly class RespParser
     }
 ```
 
-[`src/Protocol/RespParser.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespParser.php#L7-L41)
+[`src/Protocol/RespParser.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespParser.php#L7-L41)
 
 **Перевод комментариев:**
 - `RespParser` (PHPDoc): разбирает значения RESP из байтового буфера. Одно
@@ -407,7 +407,7 @@ private function readLine(string $buffer, int $pos): ?array
 }
 ```
 
-[`src/Protocol/RespParser.php#L51-L93`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespParser.php#L51-L93)
+[`src/Protocol/RespParser.php#L51-L93`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespParser.php#L51-L93)
 
 **Перевод комментариев:**
 - `parseValue()` (PHPDoc): возвращает разобранное значение и позицию после него
@@ -446,7 +446,7 @@ private function parseStrictInt(string $content, string $what): int
 }
 ```
 
-[`src/Protocol/RespParser.php#L112-L130`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespParser.php#L112-L130)
+[`src/Protocol/RespParser.php#L112-L130`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespParser.php#L112-L130)
 
 **Перевод комментариев:**
 - `parseStrictInt()` (PHPDoc): строгий разбор целого. Приведения типа
@@ -493,7 +493,7 @@ private function parseBulkString(string $buffer, int $pos, int $length): ?array
 }
 ```
 
-[`src/Protocol/RespParser.php#L132-L158`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespParser.php#L132-L158)
+[`src/Protocol/RespParser.php#L132-L158`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespParser.php#L132-L158)
 
 **Перевод комментариев:**
 - `parseBulkString()` (PHPDoc): возвращает разобранную bulk-строку и позицию
@@ -538,7 +538,7 @@ private function singleLine(mixed $text): string
 }
 ```
 
-[`src/Protocol/RespEncoder.php#L9-L30`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Protocol/RespEncoder.php#L9-L30)
+[`src/Protocol/RespEncoder.php#L9-L30`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Protocol/RespEncoder.php#L9-L30)
 
 **Перевод комментариев:**
 - `singleLine()` (PHPDoc): простая строка или ошибка заканчивается на первом
@@ -589,7 +589,7 @@ public static function fromRespValue(RespValue $value): self
 }
 ```
 
-[`src/Command/Command.php#L24-L51`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Command/Command.php#L24-L51)
+[`src/Command/Command.php#L24-L51`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Command/Command.php#L24-L51)
 
 **Перевод комментариев:**
 - `fromRespValue()` (PHPDoc): строит `Command` из разобранного RESP-массива
@@ -652,7 +652,7 @@ public function pipeline(array $commands): array
 }
 ```
 
-[`src/Sdk/CacheClient.php#L311-L346`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Sdk/CacheClient.php#L311-L346)
+[`src/Sdk/CacheClient.php#L311-L346`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Sdk/CacheClient.php#L311-L346)
 
 **Перевод комментариев:**
 - `pipeline()` (PHPDoc): отправляет все команды до чтения любого ответа — один
@@ -703,7 +703,7 @@ private function readReply(float $deadline): RespValue
 }
 ```
 
-[`src/Sdk/CacheClient.php#L420-L448`](https://github.com/Researcher86/php-mini-cache/blob/58386550902da7bf9d65c491b9886b37981b55a2/src/Sdk/CacheClient.php#L420-L448)
+[`src/Sdk/CacheClient.php#L420-L448`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Sdk/CacheClient.php#L420-L448)
 
 **Перевод комментариев:**
 - `readReply()` (PHPDoc): возвращает следующий полный ответ, читая
