@@ -648,7 +648,7 @@ cd ../php-systems-platform && make build install
 дважды и совпал байт-в-байт. Корпуса генерируются с одним и тем же `mt_srand`,
 поэтому «один и тот же корпус на любой машине» — не обещание, а свойство
 скрипта. Секунды в вывод не попадают: где нужна была скорость, напечатано
-**направление с запасом** («не хуже, чем в 5 раз быстрее»), а не число.
+**направление с запасом** («не хуже, чем в 2 раза быстрее»), а не число.
 
 ### 1. Базовая линия: из чего состоит работа
 
@@ -1003,13 +1003,13 @@ printf("  no cache at all (one stem per token): %d stems\n", $tokens);
 printf("  one analyzer for the corpus: %d stems (one per distinct token)\n", $distinctTokens);
 printf(
     "  the same corpus, a fresh analyzer per document: %d stems\n",
-    $documents * $tokensPerDocument,
+    array_sum(array_map(static fn (string $text): int => count(array_unique(explode(' ', $text))), $corpus)),
 );
 
 printf("\nand the direction of the timing, as a floor:\n");
 printf(
-    "  one analyzer for the corpus was at least 5x faster than one per document: %s\n",
-    $sharedSeconds * 5.0 <= $perDocumentSeconds ? 'yes' : 'no',
+    "  one analyzer for the corpus was at least 2x faster than one per document: %s\n",
+    $sharedSeconds * 2.0 <= $perDocumentSeconds ? 'yes' : 'no',
 );
 
 printf("\nwhat the cache is not allowed to do:\n");
@@ -1061,10 +1061,10 @@ what the cache is allowed to change:
 the stemming work each variant implies (counts, not timings):
   no cache at all (one stem per token): 160000 stems
   one analyzer for the corpus: 12967 stems (one per distinct token)
-  the same corpus, a fresh analyzer per document: 160000 stems
+  the same corpus, a fresh analyzer per document: 99737 stems
 
 and the direction of the timing, as a floor:
-  one analyzer for the corpus was at least 5x faster than one per document: yes
+  one analyzer for the corpus was at least 2x faster than one per document: yes
 
 what the cache is not allowed to do:
   distinct tokens: 12967
@@ -1081,14 +1081,18 @@ what the cache is not allowed to do:
 Строки «сколько работы подразумевает каждый вариант» — не секунды, а
 **счётчики**: без кеша стеммер вызывается 160 000 раз, с одним анализатором на
 корпус — 12 967 (число различных токенов), со свежим анализатором на каждый
-документ — снова 160 000. Из этих трёх чисел видно и предмет правки, и её
+документ — 99 737 (сумма различных токенов по документам: повтор внутри
+документа кеш ловит и так). Из этих трёх чисел видно и предмет правки, и её
 границу: свежий анализатор на документ **теряет** меж-документный повтор, и
 именно его находит кеш.
 
 Направление скорости заявлено с запасом: «один анализатор на корпус был по
-меньшей мере в 5 раз быстрее, чем по анализатору на документ — `yes`». Это
+меньшей мере в 2 раза быстрее, чем по анализатору на документ — `yes`». Это
 единственное место с временем, и оно намеренно грубое: точное отношение зависит
-от машины, а его **направление** — нет.
+от машины, а его **направление** — нет. На машине, где проверялся этот текст,
+отношение было около 4 (от 3.9 до 4.4 за семь прогонов), поэтому прежний порог
+«в 5 раз» печатал `no`: граница должна стоять ниже того, что машины реально
+дают, иначе она проверяет машину, а не направление.
 
 Наконец, граница памяти: 12 967 различных токенов против 200 000 записей, кеш ни
 разу не опустошался — и поэтому тёплый проход не стеммил ничего. Два свойства,
@@ -1708,7 +1712,7 @@ the serve it measured was stopped with code: 0
    «анализатора на документ» только потому, что корпус устроен определённым
    образом. Придумайте корпус, на котором разницы **не будет**, и объясните
    через отношения «токенов на различных», почему.
-3. **Найдите правило.** Почему в эксперименте 2 заявлено «не хуже, чем в 5 раз
+3. **Найдите правило.** Почему в эксперименте 2 заявлено «не хуже, чем в 2 раза
    быстрее», а не точное отношение? Сформулируйте, какие утверждения о скорости
    можно печатать в тексте, а какие — только в отчёте о конкретном прогоне.
 4. **Сравните.** `db.operations` (эксперимент 4) и `SearchResult::total`
