@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава: [consistent hashing](05-consistent-hashing.md). Дальше:
 > external sorting (глава 7).
 
@@ -97,7 +97,7 @@ map на `O(distinct)`, затем — ограниченные summaries, ко�
     }
 ```
 
-[`src/Stream/TopKHeap.php` L38-L76](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Stream/TopKHeap.php#L38-L76)
+[`src/Stream/TopKHeap.php` L38-L76](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Stream/TopKHeap.php#L38-L76)
 
 Сравнение при равенстве идёт по ключу: меньший ключ считается лучшим. Это делает
 результат детерминированным и объясняет, почему в отчёте порядок стабилен.
@@ -150,7 +150,7 @@ map на `O(distinct)`, затем — ограниченные summaries, ко�
     }
 ```
 
-[`src/Stream/CountMinSketch.php` L41-L72](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Stream/CountMinSketch.php#L41-L72)
+[`src/Stream/CountMinSketch.php` L41-L72](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Stream/CountMinSketch.php#L41-L72)
 
 Count-Min не хранит ключи и не умеет их перечислять. Его нельзя использовать как
 detector top-K: он может оценить частоту данного ключа, но не подскажет, какие
@@ -203,7 +203,7 @@ detector top-K: он может оценить частоту данного к�
     }
 ```
 
-[`src/Stream/SpaceSaving.php` L33-L68](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Stream/SpaceSaving.php#L33-L68)
+[`src/Stream/SpaceSaving.php` L33-L68](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Stream/SpaceSaving.php#L33-L68)
 
 `MisraGries` при переполнении уменьшает все счётчики на единицу и удаляет
 нулевые; новый ключ на этом шаге не добавляется. Это недооценка, зато счётчики

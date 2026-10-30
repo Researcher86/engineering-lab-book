@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Это первая глава. Дальше: LRU/LFU (глава 2).
 
 В PHP массив уже является хеш-таблицей. Поэтому «написать хеш-таблицу» в учебных
@@ -90,7 +90,7 @@ Bloom полезен как фильтр перед дорогим поиско�
     }
 ```
 
-[`src/HashTable/ChainingHashTable.php` L56-L80](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/HashTable/ChainingHashTable.php#L56-L80)
+[`src/HashTable/ChainingHashTable.php` L56-L80](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/HashTable/ChainingHashTable.php#L56-L80)
 
 Здесь важны две вещи. Во-первых, поиск существующего ключа в среднем
 просматривает `1 + α/2` элемента, а промах — примерно `α`: при `α = 0.5` это
@@ -144,7 +144,7 @@ Bloom полезен как фильтр перед дорогим поиско�
     }
 ```
 
-[`src/HashTable/OpenAddressingHashTable.php` L220-L255](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/HashTable/OpenAddressingHashTable.php#L220-L255)
+[`src/HashTable/OpenAddressingHashTable.php` L220-L255](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/HashTable/OpenAddressingHashTable.php#L220-L255)
 
 Стратегия проб задаётся в `slotFor()`:
 
@@ -194,7 +194,7 @@ k = (m / n) ln 2
     }
 ```
 
-[`src/BloomFilter/BloomFilter.php` L56-L74](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/BloomFilter/BloomFilter.php#L56-L74)
+[`src/BloomFilter/BloomFilter.php` L56-L74](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/BloomFilter/BloomFilter.php#L56-L74)
 
 `add()` ставит `k` битов, а `mightContain()` проверяет их. Позиции получаются
 двойным хешированием: два независимых хеша дают стартовую позицию и шаг, а
@@ -226,7 +226,7 @@ k = (m / n) ln 2
     }
 ```
 
-[`src/BloomFilter/BloomFilter.php` L76-L97](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/BloomFilter/BloomFilter.php#L76-L97)
+[`src/BloomFilter/BloomFilter.php` L76-L97](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/BloomFilter/BloomFilter.php#L76-L97)
 
 У Bloom нет операции `remove()`. Если сбросить бит, который поставил другой
 ключ, этот другой ключ станет ложноотрицательным. Для удаления нужен Counting
@@ -349,7 +349,7 @@ Bloom медленнее массива на запрос — и это ожид
 `make check` запускает PHPUnit, PHPStan и PHP-CS-Fixer. Важная деталь: бенчмарки
 не являются pass/fail-тестами. Они печатают числа и среду, но не сравнивают
 время с порогом, иначе CI зависел бы от загрузки хоста. Проверка книги отдельно
-сверяет каждый показанный код-блок с тегом `v1.0.0` и диапазоном строк.
+сверяет каждый показанный код-блок с тегом `v1.0.1` и диапазоном строк.
 
 ---
 

@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава: [графы](03-graph-algorithms.md). Дальше: consistent hashing
 > (глава 5).
 
@@ -91,7 +91,7 @@ B-дерево — это способ хранить упорядоченные
     }
 ```
 
-[`src/Tree/BTree.php` L49-L87](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Tree/BTree.php#L49-L87)
+[`src/Tree/BTree.php` L49-L87](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Tree/BTree.php#L49-L87)
 
 При поиске на каждом узле считается `lowerBound`, затем выбирается ребёнок.
 Счётчик `nodeReads` увеличивается на каждом узле, а `PageSimulator` может
@@ -150,7 +150,7 @@ B-дерево — это способ хранить упорядоченные
         return $result;
 ```
 
-[`src/Tree/BPlusTree.php` L164-L200](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Tree/BPlusTree.php#L164-L200)
+[`src/Tree/BPlusTree.php` L164-L200](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Tree/BPlusTree.php#L164-L200)
 
 B+ вставка сначала вызывает `search()`, чтобы не вставлять дубликат, а затем
 идёт к листу. Поэтому её счётчик `nodeReads` примерно вдвое больше, чем у
@@ -190,7 +190,7 @@ B-дерева: это цена поддержания разделителей 
     }
 ```
 
-[`src/Tree/PageSimulator.php` L47-L64](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Tree/PageSimulator.php#L47-L64)
+[`src/Tree/PageSimulator.php` L47-L64](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Tree/PageSimulator.php#L47-L64)
 
 Модель не знает о page cache, readahead и стоимости случайного доступа. Поэтому
 её вывод узкий: дерево может превратить логарифмическое число независимых проб в

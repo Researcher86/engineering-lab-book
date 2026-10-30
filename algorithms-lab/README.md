@@ -1,7 +1,7 @@
 # Книга Algorithms Lab
 
 > Статус: **7 глав готовы**. Код закреплён тегом
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 
 Учебник по алгоритмам и структурам данных, написанный по коду лаборатории
 [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab). Каждая глава
@@ -51,7 +51,7 @@
 7. **Упражнения** — задачи на понимание и измерение.
 
 Выдержки кода скопированы из файлов как есть и снабжены ссылкой на GitHub с
-диапазоном строк. Ссылки привязаны к тегу `v1.0.0`, а не к ветке `master`,
+диапазоном строк. Ссылки привязаны к тегу `v1.0.1`, а не к ветке `master`,
 поэтому номера строк не «уплывут» после следующих коммитов. Комментарии в коде
 лаборатории на английском; книга на русском.
 
@@ -85,7 +85,7 @@ make scenario           # интеграционный сценарий
 
 Полный список экспериментов и бенчмарков — в `make experiment` и
 `make benchmark`; измеренные таблицы с окружением лежат в
-[`docs/BENCHMARKS.md`](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/docs/BENCHMARKS.md).
+[`docs/BENCHMARKS.md`](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/docs/BENCHMARKS.md).
 Числа в главах — один прогон в Docker на виртуализированном Linux, а не
 универсальная константа. Сравнивайте форму кривых и счётчики, а не только
 миллисекунды.
@@ -126,6 +126,6 @@ checker запускается с `--expected-chapters=7` для Algorithms Lab 
 - Код:
   [`Researcher86/algorithms-lab`](https://github.com/Researcher86/algorithms-lab)
 - Релиз:
-  [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0)
+  [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1)
 - Проверки релиза: 361 тест / 34 314 assertions, PHPStan без ошибок на 202
   файлах, PHP-CS-Fixer чист на 202 файлах.

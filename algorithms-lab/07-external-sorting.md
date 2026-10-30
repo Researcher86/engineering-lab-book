@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава: [top-K и потоки](06-top-k-and-stream-processing.md). Это
 > последняя глава книги; дальше — интеграционный сценарий.
 
@@ -78,7 +78,7 @@ tie-break по номеру run, иначе равные записи из ра�
     }
 ```
 
-[`src/ExternalSort/ChunkReader.php` L32-L53](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ExternalSort/ChunkReader.php#L32-L53)
+[`src/ExternalSort/ChunkReader.php` L32-L53](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ExternalSort/ChunkReader.php#L32-L53)
 
 Этот класс — граница памяти. Он не знает, сколько всего записей; он держит
 только текущий chunk. Именно поэтому вход может быть больше памяти.
@@ -160,7 +160,7 @@ tie-break по номеру run, иначе равные записи из ра�
     }
 ```
 
-[`src/ExternalSort/ExternalSorter.php` L87-L151](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ExternalSort/ExternalSorter.php#L87-L151)
+[`src/ExternalSort/ExternalSorter.php` L87-L151](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ExternalSort/ExternalSorter.php#L87-L151)
 
 `SortStats` фиксирует число записей, начальных run, проходов, прочитанных и
 записанных байт, сравнений, chunk и fan-in. Байты логические: это длины записей,
@@ -232,7 +232,7 @@ tie-break по номеру run, иначе равные записи из ра�
             }
 ```
 
-[`src/ExternalSort/ExternalSorter.php` L219-L273](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ExternalSort/ExternalSorter.php#L219-L273)
+[`src/ExternalSort/ExternalSorter.php` L219-L273](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ExternalSort/ExternalSorter.php#L219-L273)
 
 Компаратор сначала сравнивает записи пользовательской функцией, затем — номер
 run. Это tie-break для равных ключей: запись из более раннего run выходит
@@ -406,4 +406,4 @@ PHPUnit. `make check` запускает тесты, PHPStan и форматте
 
 Это не бенчмарк и не медиана: один детерминированный прогон, который показывает,
 как структуры соединяются. Полные числа и окружение — в `docs/BENCHMARKS.md`
-проекта; код закреплён тегом `v1.0.0`, на который ссылаются все главы книги.
+проекта; код закреплён тегом `v1.0.1`, на который ссылаются все главы книги.

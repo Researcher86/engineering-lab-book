@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава: [LRU и LFU](02-lru-lfu-cache.md). Дальше: B-дерево (глава
 > 4).
 
@@ -82,7 +82,7 @@ union-find на плохой цепочке делает девять тысяч
     }
 ```
 
-[`src/Graph/AdjacencyList.php` L35-L60](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Graph/AdjacencyList.php#L35-L60)
+[`src/Graph/AdjacencyList.php` L35-L60](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Graph/AdjacencyList.php#L35-L60)
 
 Память — `O(V + E)`, перебор соседей — `O(deg(v))`, проверка ребра — в среднем
 `O(1)`. Внутренний map даёт больше, чем чистый список: он умеет быстро отвечать
@@ -145,7 +145,7 @@ BFS хранит очередь как PHP list и индекс `head`. Если
         return new BfsResult($order, $distances, $parents);
 ```
 
-[`src/Graph/Bfs.php` L19-L49](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Graph/Bfs.php#L19-L49)
+[`src/Graph/Bfs.php` L19-L49](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Graph/Bfs.php#L19-L49)
 
 Счётчик `nodeReads` увеличивается на каждой прочитанной дуге. Для
 неориентированного графа каждая дуга читается из обоих концов, поэтому ожидаемое
@@ -198,7 +198,7 @@ BFS хранит очередь как PHP list и индекс `head`. Если
         return new ShortestPaths($distances, $parents, $relaxations, $heapPops);
 ```
 
-[`src/Graph/Dijkstra.php` L50-L86](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Graph/Dijkstra.php#L50-L86)
+[`src/Graph/Dijkstra.php` L50-L86](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Graph/Dijkstra.php#L50-L86)
 
 Такая схема проще decrease-key: не нужен map позиций и операция уменьшения
 ключа. Цена — лишние извлечения. На 500 вершинах и 2 000 рёбрах ленивая куча

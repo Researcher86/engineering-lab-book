@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава:
 > [hash table и Bloom filter](01-hash-table-and-bloom-filter.md). Дальше: графы
 > (глава 3).
@@ -100,7 +100,7 @@ Linux; форма кривых и счётчики важнее абсолютн
     }
 ```
 
-[`src/Cache/LRUCache.php` L49-L85](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Cache/LRUCache.php#L49-L85)
+[`src/Cache/LRUCache.php` L49-L85](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Cache/LRUCache.php#L49-L85)
 
 Перемещение и удаление — это несколько операций с указателями. Счётчик `relinks`
 увеличивается при каждом изменении связей; именно он, а не секундомер,
@@ -121,7 +121,7 @@ Linux; форма кривых и счётчики важнее абсолютн
     }
 ```
 
-[`src/Cache/LRUCache.php` L193-L204](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Cache/LRUCache.php#L193-L204)
+[`src/Cache/LRUCache.php` L193-L204](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Cache/LRUCache.php#L193-L204)
 
 Важно: `isset($this->map[$key])` — это проверка наличия ключа, а не значения.
 Если значение может быть `null`, `isset()` вернёт `false`, и кэш будет считать
@@ -178,7 +178,7 @@ Linux; форма кривых и счётчики важнее абсолютн
     }
 ```
 
-[`src/Cache/LFUCache.php` L160-L198](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/Cache/LFUCache.php#L160-L198)
+[`src/Cache/LFUCache.php` L160-L198](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/Cache/LFUCache.php#L160-L198)
 
 Внутри минимального bucket вытесняется хвост, то есть самая старая запись с этой
 частотой. Это LRU-разрешение ничьей. Когда bucket опустел, а его частота была

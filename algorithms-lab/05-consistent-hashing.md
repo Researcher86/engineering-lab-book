@@ -2,7 +2,7 @@
 
 > Проект: [`algorithms-lab`](https://github.com/Researcher86/algorithms-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/algorithms-lab/releases/tag/v1.0.1).
 > Предыдущая глава: [B-дерево](04-b-tree-and-search.md). Дальше: top-K и потоки
 > (глава 6).
 
@@ -93,7 +93,7 @@ Modulo нужен в главе как честный baseline: он показ�
         return true;
 ```
 
-[`src/ConsistentHash/HashRing.php` L42-L69](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ConsistentHash/HashRing.php#L42-L69)
+[`src/ConsistentHash/HashRing.php` L42-L69](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ConsistentHash/HashRing.php#L42-L69)
 
 Поиск ключа — один хеш и бинарный поиск первой позиции не меньше хеша, с
 переходом в начало кольца. Узел, которому принадлежит эта позиция, — владелец
@@ -113,7 +113,7 @@ Modulo нужен в главе как честный baseline: он показ�
     }
 ```
 
-[`src/ConsistentHash/HashRing.php` L88-L98](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ConsistentHash/HashRing.php#L88-L98)
+[`src/ConsistentHash/HashRing.php` L88-L98](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ConsistentHash/HashRing.php#L88-L98)
 
 Бинарный поиск по отсортированным позициям:
 
@@ -138,7 +138,7 @@ Modulo нужен в главе как честный baseline: он показ�
     }
 ```
 
-[`src/ConsistentHash/HashRing.php` L166-L183](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ConsistentHash/HashRing.php#L166-L183)
+[`src/ConsistentHash/HashRing.php` L166-L183](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ConsistentHash/HashRing.php#L166-L183)
 
 При добавлении узла появляются только его токены; ключи, которые попадали в его
 интервалы, переходят к нему. Остальные интервалы не меняются. При удалении
@@ -180,7 +180,7 @@ Modulo нужен в главе как честный baseline: он показ�
     }
 ```
 
-[`src/ConsistentHash/RendezvousHash.php` L55-L72](https://github.com/Researcher86/algorithms-lab/blob/v1.0.0/src/ConsistentHash/RendezvousHash.php#L55-L72)
+[`src/ConsistentHash/RendezvousHash.php` L55-L72](https://github.com/Researcher86/algorithms-lab/blob/v1.0.1/src/ConsistentHash/RendezvousHash.php#L55-L72)
 
 У rendezvous нет кольца и виртуальных узлов, поэтому нет пересборки токенов;
 добавление и удаление в этой реализации всё равно стоят `O(N)` из-за проверки
@@ -259,8 +259,10 @@ Chi-square здесь — относительный score ошибки, не p-
 
 Modulo — самый быстрый lookup и худший по сохранению отображений. Rendezvous
 сохраняет отображения идеально, но каждый lookup хеширует все узлы; на 20 узлах
-он примерно в четыре раза медленнее кольца. Кольцо пересобирает 2 000 токенов
-при изменении, поэтому add/remove у него дороже; это измеренная цена реализации.
+он примерно в семь раз медленнее кольца (196 098 против 1 448 252 ops/sec;
+медианы сравнивать нельзя — у замеров разное число итераций). Кольцо
+пересобирает 2 000 токенов при изменении, поэтому add/remove у него дороже; это
+измеренная цена реализации.
 
 ---
 
