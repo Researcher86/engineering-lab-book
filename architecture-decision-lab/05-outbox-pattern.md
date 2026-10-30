@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
 > Предыдущая глава: database per service. Следующая: saga и 2PC (глава 6).
 
 Двойная запись выглядит безобидно: сначала сохранить бронь, потом опубликовать
@@ -105,7 +105,7 @@ outbox-режиме он передаёт событие в `save()`:
     }
 ```
 
-[`src/Services/BookingWorkflow.php` L469-L519](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Services/BookingWorkflow.php#L469-L519)
+[`src/Services/BookingWorkflow.php` L469-L519](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Services/BookingWorkflow.php#L469-L519)
 
 Обратите внимание на возвращаемое значение. В outbox-режиме метод возвращает
 `true` сразу после записи строки, ещё до публикации: событие **надёжно
@@ -139,7 +139,7 @@ outbox-режиме он передаёт событие в `save()`:
     }
 ```
 
-[`src/Consistency/Outbox.php` L25-L41](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Consistency/Outbox.php#L25-L41)
+[`src/Consistency/Outbox.php` L25-L41](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/Outbox.php#L25-L41)
 
 Строка содержит `event_id` с уникальным ограничением, тип, JSON-payload, статус,
 число попыток и время. Уникальность `event_id` не даёт вставить одно и то же
@@ -188,7 +188,7 @@ outbox-режиме он передаёт событие в `save()`:
     }
 ```
 
-[`src/Consistency/OutboxDispatcher.php` L25-L57](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Consistency/OutboxDispatcher.php#L25-L57)
+[`src/Consistency/OutboxDispatcher.php` L25-L57](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/OutboxDispatcher.php#L25-L57)
 
 Порядок операций — источник обоих сценариев:
 
@@ -225,7 +225,7 @@ Retry с backoff и dead-letter здесь нет; это ограничение
     }
 ```
 
-[`src/Consistency/IdempotentProjector.php` L26-L39](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Consistency/IdempotentProjector.php#L26-L39)
+[`src/Consistency/IdempotentProjector.php` L26-L39](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/IdempotentProjector.php#L26-L39)
 
 Ключ хранится отдельно от проекции:
 
@@ -245,7 +245,7 @@ Retry с backoff и dead-letter здесь нет; это ограничение
     }
 ```
 
-[`src/Consistency/ProcessedEventStore.php` L34-L46](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Consistency/ProcessedEventStore.php#L34-L46)
+[`src/Consistency/ProcessedEventStore.php` L34-L46](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/ProcessedEventStore.php#L34-L46)
 
 Применение проекции и запись ключа находятся в одной транзакции. Если процесс
 упадёт между ними, откатятся оба действия; повторная доставка снова применит
@@ -395,7 +395,7 @@ outbox-записи и на 30,0% дороже dual write. Если вам ну�
     }
 ```
 
-[`tests/Consistency/OutboxAndProjectionTest.php` L51-L70](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Consistency/OutboxAndProjectionTest.php#L51-L70)
+[`tests/Consistency/OutboxAndProjectionTest.php` L51-L70](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Consistency/OutboxAndProjectionTest.php#L51-L70)
 
 Тест на сбой после публикации проверяет дубликат и его поглощение:
 
@@ -424,7 +424,7 @@ outbox-записи и на 30,0% дороже dual write. Если вам ну�
     }
 ```
 
-[`tests/Consistency/OutboxAndProjectionTest.php` L72-L93](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Consistency/OutboxAndProjectionTest.php#L72-L93)
+[`tests/Consistency/OutboxAndProjectionTest.php` L72-L93](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Consistency/OutboxAndProjectionTest.php#L72-L93)
 
 Оба теста проверяют не только финальное состояние, но и промежуточное: `failed`,
 `pending`, `tripCount`, `duplicateEvents`. Без промежуточных утверждений тест

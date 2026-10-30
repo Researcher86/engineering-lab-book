@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
 > Следующая глава: sync vs async processing (глава 2).
 
 Первый архитектурный вопрос обычно звучит так: «нам уже пора на микросервисы?» В
@@ -56,7 +56,7 @@
     }
 ```
 
-[`src/Foundation/FaultInjector.php` L42-L50](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Foundation/FaultInjector.php#L42-L50)
+[`src/Foundation/FaultInjector.php` L42-L50](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Foundation/FaultInjector.php#L42-L50)
 
 В эксперименте по умолчанию используется `car.write` с `failure-after=1`: запись
 в машину уже произошла, но вызывающий получил исключение. Это и есть потерянный
@@ -85,7 +85,7 @@ enum DeploymentShape: string
 }
 ```
 
-[`src/Domain/DeploymentShape.php` L7-L17](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Domain/DeploymentShape.php#L7-L17)
+[`src/Domain/DeploymentShape.php` L7-L17](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Domain/DeploymentShape.php#L7-L17)
 
 `isSingleProcess()` — не косметический helper. Монолит и модульный монолит живут
 в одном процессе, поэтому их вызовы не проходят через сеть. Микросервисы
@@ -135,7 +135,7 @@ final readonly class LabConfig
     }
 ```
 
-[`src/Integration/LabConfig.php` L20-L53](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Integration/LabConfig.php#L20-L53)
+[`src/Integration/LabConfig.php` L20-L53](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabConfig.php#L20-L53)
 
 Последняя проверка — принципиальная. Нельзя поставить `transaction: local` и
 `database: per-service`, потому что одна SQLite-транзакция не может быть
@@ -180,7 +180,7 @@ final readonly class LabConfig
             : new SqlBookingStore($bookingDb, $counters, $outbox);
 ```
 
-[`src/Integration/LabFactory.php` L61-L88](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Integration/LabFactory.php#L61-L88)
+[`src/Integration/LabFactory.php` L61-L88](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabFactory.php#L61-L88)
 
 В shared-режиме `reportingDb` — тот же объект, что `bookingDb`. Это важно для
 главы 4: отчёт может быть одним join, потому что все таблицы физически лежат
@@ -211,7 +211,7 @@ final readonly class LabConfig
     }
 ```
 
-[`src/Integration/LabFactory.php` L189-L205](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Integration/LabFactory.php#L189-L205)
+[`src/Integration/LabFactory.php` L189-L205](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabFactory.php#L189-L205)
 
 `DirectTransport` и `ModuleTransport` отличаются счётчиком вызовов, но не
 добавляют ни задержки, ни байтов. `RemoteTransport` добавляет всё три:
@@ -254,7 +254,7 @@ final readonly class RemoteTransport implements Transport
 }
 ```
 
-[`src/Services/RemoteTransport.php` L17-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Services/RemoteTransport.php#L17-L51)
+[`src/Services/RemoteTransport.php` L17-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Services/RemoteTransport.php#L17-L51)
 
 Здесь нет `sleep()`. Логические 2 мс — это маркер стоимости вызова, а не прогноз
 сетевой задержки. `after($step)` вызывается после closure: если он бросает
@@ -329,7 +329,7 @@ final readonly class RemoteTransport implements Transport
     }
 ```
 
-[`src/Saga/SagaCoordinator.php` L28-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Saga/SagaCoordinator.php#L28-L85)
+[`src/Saga/SagaCoordinator.php` L28-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Saga/SagaCoordinator.php#L28-L85)
 
 Компенсация упавшего шага — не перестраховка. При потере ответа эффект мог
 сохраниться, поэтому «упавший» шаг тоже входит в список кандидатов. Все
@@ -374,8 +374,11 @@ microservices           29        1        3      122      963      8.13        
   логическое время, а не измеренная сеть: примерно четыре вызова по 2 мс на
   бронирование, включая неудачное и его компенсации.
 - `sql` — это все SQL-запросы прогона, включая создание схемы, seed и 30
-  бронирований. Число 963 у микросервисов ниже не потому, что путь стал дешевле,
-  а потому, что per-service схема создаёт меньше объектов в каждом файле.
+  бронирований. Схема в обоих случаях одна и та же. Число 963 у микросервисов
+  ниже из-за пути бронирования: local-путь перед резервированием перечитывает
+  бронь (`reserveAll()` → `store->get()`, два запроса), а сага — нет, поэтому
+  подтверждённая бронь стоит 33 запроса локально и 31 в саге. Компенсации
+  неудачной брони возвращают 9 из 58 сэкономленных: 1 012 − 963 = 49.
   Сравнивать эти числа как «запросы на бронирование» нельзя.
 
 Последняя колонка `avail` — доступность рейса после прогона. Она одинакова во
@@ -485,7 +488,7 @@ connection pool, backoff и dead-letter queue. Всё, что зависит о�
     }
 ```
 
-[`tests/Integration/BookingWorkflowTest.php` L35-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Integration/BookingWorkflowTest.php#L35-L51)
+[`tests/Integration/BookingWorkflowTest.php` L35-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/BookingWorkflowTest.php#L35-L51)
 
 Второй тест показывает, что сага действительно освобождает все три ресурса и
 удаляет платёж, а не только меняет статус брони:
@@ -513,7 +516,7 @@ connection pool, backoff и dead-letter queue. Всё, что зависит о�
     }
 ```
 
-[`tests/Integration/BookingWorkflowTest.php` L53-L72](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Integration/BookingWorkflowTest.php#L53-L72)
+[`tests/Integration/BookingWorkflowTest.php` L53-L72](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/BookingWorkflowTest.php#L53-L72)
 
 Полный прогон лаборатории на момент тега: 74 теста, 3 468 assertions, PHPStan
 level 8 без ошибок, PHP-CS-Fixer без изменений. Эти тесты не доказывают, что

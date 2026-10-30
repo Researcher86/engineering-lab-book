@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
 > Предыдущая глава: форма развёртывания. Следующая: SQL vs document storage
 > (глава 3).
 
@@ -79,7 +79,7 @@
     }
 ```
 
-[`src/Integration/Lab.php` L82-L99](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Integration/Lab.php#L82-L99)
+[`src/Integration/Lab.php` L82-L99](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/Lab.php#L82-L99)
 
 Домен и `BookingWorkflow` не знают о режиме. Это важно: асинхронность — не
 отдельная бизнес-логика, а другая точка входа в ту же логику. Worker позже
@@ -116,7 +116,7 @@
     }
 ```
 
-[`src/Processing/JobQueue.php` L27-L49](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Processing/JobQueue.php#L27-L49)
+[`src/Processing/JobQueue.php` L27-L49](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Processing/JobQueue.php#L27-L49)
 
 `array_shift()` — осознанно простой, но не бесплатный выбор. Он переиндексирует
 массив, поэтому извлечение из очереди стоит `O(n)`, а разбор `n` задач —
@@ -180,7 +180,7 @@
     }
 ```
 
-[`src/Processing/AsyncBookingProcessor.php` L36-L83](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Processing/AsyncBookingProcessor.php#L36-L83)
+[`src/Processing/AsyncBookingProcessor.php` L36-L83](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Processing/AsyncBookingProcessor.php#L36-L83)
 
 Первая ветка возвращает пустой `booking_id`: бронь не создавалась, значит, и
 показывать клиенту нечего. Это лучше, чем создать `pending`-строку, которую
@@ -256,7 +256,7 @@
     }
 ```
 
-[`src/Processing/AsyncBookingProcessor.php` L88-L142](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Processing/AsyncBookingProcessor.php#L88-L142)
+[`src/Processing/AsyncBookingProcessor.php` L88-L142](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Processing/AsyncBookingProcessor.php#L88-L142)
 
 Здесь есть важное различие между **исключением** и **бизнес-отказом**.
 `BookingWorkflow::execute()` обрабатывает отказ платежа и возвращает
@@ -415,7 +415,7 @@ roundtrip разбирает по одной задаче и не показыв
     }
 ```
 
-[`tests/Integration/AsyncProcessingTest.php` L14-L40](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Integration/AsyncProcessingTest.php#L14-L40)
+[`tests/Integration/AsyncProcessingTest.php` L14-L40](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/AsyncProcessingTest.php#L14-L40)
 
 Второй тест отделяет бизнес-отказ от инфраструктурного сбоя:
 
@@ -448,7 +448,7 @@ roundtrip разбирает по одной задаче и не показыв
     }
 ```
 
-[`tests/Integration/AsyncProcessingTest.php` L65-L90](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Integration/AsyncProcessingTest.php#L65-L90)
+[`tests/Integration/AsyncProcessingTest.php` L65-L90](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/AsyncProcessingTest.php#L65-L90)
 
 Тест утверждает три вещи одновременно: результат отменён, ретраев нет, счётчик
 инфраструктурных падений равен нулю. Если бы workflow начал бросать исключение

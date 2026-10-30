@@ -1,7 +1,7 @@
 # Книга Architecture Decision Lab
 
 > Статус: **7 глав готовы**. Код закреплён тегом
-> [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
 
 Учебник по архитектурным компромиссам backend-системы, написанный по коду
 лаборатории
@@ -55,7 +55,7 @@
 8. **Упражнения** — задачи на понимание и измерение.
 
 Выдержки кода скопированы из файлов как есть и снабжены ссылкой на GitHub с
-диапазоном строк. Ссылки привязаны к тегу `v1.0.0`, а не к ветке `master`,
+диапазоном строк. Ссылки привязаны к тегу `v1.0.1`, а не к ветке `master`,
 поэтому номера строк не «уплывут» после следующих коммитов. Комментарии в коде
 лаборатории на английском; книга на русском.
 
@@ -93,7 +93,7 @@ make benchmark          # список бенчмарков
 
 Полный список экспериментов и бенчмарков — в `make experiment` и
 `make benchmark`; измеренные таблицы с окружением лежат в
-[`docs/BENCHMARKS.md`](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/docs/BENCHMARKS.md).
+[`docs/BENCHMARKS.md`](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/docs/BENCHMARKS.md).
 Числа в главах — один прогон в Docker на виртуализированном Linux, а не
 универсальная константа. Сравнивайте форму кривых, счётчики и зависимости, а не
 только миллисекунды.
@@ -156,7 +156,7 @@ Lab.
 - Код:
   [`Researcher86/architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab)
 - Релиз:
-  [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0)
+  [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1)
 - Проверки релиза: 74 теста / 3 468 assertions, PHPStan level 8 без ошибок на
   124 файлах, PHP-CS-Fixer чист.
 - CI релиза:

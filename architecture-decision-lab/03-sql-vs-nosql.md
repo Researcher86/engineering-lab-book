@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
 > Предыдущая глава: sync и async. Следующая: database per service (глава 4).
 
 «SQL или NoSQL» — плохой первый вопрос. Он смешивает три независимых решения:
@@ -93,7 +93,7 @@ interface BookingStore
 }
 ```
 
-[`src/Storage/BookingStore.php` L10-L47](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/BookingStore.php#L10-L47)
+[`src/Storage/BookingStore.php` L10-L47](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/BookingStore.php#L10-L47)
 
 `kind()` возвращает `sql` или `document`. Эксперимент печатает это значение,
 чтобы таблица не осталась без подписи. `transaction()` позволяет workflow
@@ -141,7 +141,7 @@ interface BookingStore
     }
 ```
 
-[`src/Storage/SqlBookingStore.php` L35-L67](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/SqlBookingStore.php#L35-L67)
+[`src/Storage/SqlBookingStore.php` L35-L67](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/SqlBookingStore.php#L35-L67)
 
 Удаление и повторная вставка позиций — простой способ синхронизировать агрегат с
 таблицей. Он не самый эффективный для больших агрегатов, зато делает состояние
@@ -170,7 +170,7 @@ interface BookingStore
         );
 ```
 
-[`src/Storage/Schema.php` L88-L103](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/Schema.php#L88-L103)
+[`src/Storage/Schema.php` L88-L103](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/Schema.php#L88-L103)
 
 `bookings_traveler` позволяет найти брони путешественника, не сканируя всю
 таблицу. Дальше join к `booking_lines` собирает агрегат. Именно этот индекс
@@ -200,7 +200,7 @@ interface BookingStore
     }
 ```
 
-[`src/Storage/SqlBookingStore.php` L92-L107](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/SqlBookingStore.php#L92-L107)
+[`src/Storage/SqlBookingStore.php` L92-L107](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/SqlBookingStore.php#L92-L107)
 
 `hydrateJoined()` группирует строки по `id` и собирает `BookingLine`. Один
 SQL-запрос возвращает `1 + 3B` строк для `B` броней (заголовок и три позиции),
@@ -224,7 +224,7 @@ Document-адаптер хранит агрегат в `documents`:
         );
 ```
 
-[`src/Storage/Schema.php` L123-L132](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/Schema.php#L123-L132)
+[`src/Storage/Schema.php` L123-L132](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/Schema.php#L123-L132)
 
 Точечное чтение — один `SELECT` по первичному ключу и один `json_decode`:
 
@@ -246,7 +246,7 @@ Document-адаптер хранит агрегат в `documents`:
     }
 ```
 
-[`src/Storage/DocumentBookingStore.php` L48-L62](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/DocumentBookingStore.php#L48-L62)
+[`src/Storage/DocumentBookingStore.php` L48-L62](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/DocumentBookingStore.php#L48-L62)
 
 Запрос путешественника выглядит иначе. В таблице нет индексируемого столбца
 `traveler_id`, поэтому адаптер читает всю коллекцию и фильтрует результат после
@@ -277,7 +277,7 @@ decode:
     }
 ```
 
-[`src/Storage/DocumentBookingStore.php` L64-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/src/Storage/DocumentBookingStore.php#L64-L85)
+[`src/Storage/DocumentBookingStore.php` L64-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Storage/DocumentBookingStore.php#L64-L85)
 
 Именно `ORDER BY id` и последующий PHP-фильтр делают запрос `O(total documents)`
 по чтению и decode. В реальной документной базе можно было бы создать индекс по
@@ -433,7 +433,7 @@ SQL делает один запрос, document сканирует всю ко�
     }
 ```
 
-[`tests/Integration/StorageModesTest.php` L37-L60](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.0/tests/Integration/StorageModesTest.php#L37-L60)
+[`tests/Integration/StorageModesTest.php` L37-L60](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/StorageModesTest.php#L37-L60)
 
 Тест на точечное чтение проверяет другой компромисс: SQL делает два запроса,
 document — один.
