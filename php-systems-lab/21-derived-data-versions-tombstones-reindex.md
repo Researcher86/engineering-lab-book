@@ -1695,9 +1695,13 @@ a late PUT for the deleted product: applied=no
 
 Сторона платформы: `tests/Integration/ProductSearchIntegrationTest.php`
 проверяет сквозной путь — `PUT`/`DELETE` товара, задание, ответ поиска. Три
-теста подтверждают, что `testSearchShowsTheCatalogsRowNotTheIndexs` (поиск
-показывает строку каталога, а не индекс-снимок) и что повторный прогон
-переиндексации идемпотентен (`testRunIsIdempotentAfterATruncatedRun`). Прогон:
+теста: `testAProductIsFoundThroughEveryChangeToIt` (товар находится после
+каждого изменения), `testSearchShowsTheCatalogsRowNotTheIndexs` (поиск
+показывает строку каталога, а не индекс-снимок) и
+`testInvalidProductsAndQueriesAreRefused`. Переиндексацию на стороне платформы
+не проверяет ни один тест; её правила закреплены тестами `php-mini-search`
+(`testCompletingAReindexRemovesWhatItDidNotTouch`, `testANewReindexCancelsTheOpenOne`
+и соседи в `CorpusTest`). Прогон:
 `docker compose exec php php vendor/bin/phpunit tests/Integration/ProductSearchIntegrationTest.php`
 — **3 теста, 23 утверждения, OK**.
 
