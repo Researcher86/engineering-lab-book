@@ -1,7 +1,7 @@
 # Глава 21. Производные данные: версии, надгробия, переиндексация
 
 > Проекты: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
-> (релиз `v1.0.0`, коммит `7ecddc0`) и
+> (релиз `v1.0.1`, коммит `3014fa5`) и
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
 > (коммит `9a6a916`). Нужно знать: журнал как единственное надёжное состояние (→
 > глава 18), анализ текста (→ глава 19), инвертированный индекс (→ глава 20).
@@ -205,7 +205,7 @@ PUT  p1 v4   → 4 > 3 → applied: true    ← воссоздание треб�
  */
 ```
 
-[`src/Corpus/Corpus.php#L13-L35`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L13-L35)
+[`src/Corpus/Corpus.php#L13-L35`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L13-L35)
 
 **Перевод комментариев:**
 - `Corpus` (PHPDoc): искомый корпус — единственный модуль, который владеет
@@ -246,7 +246,7 @@ private ?int $openGeneration = null;
 private ?int $lastCompletedGeneration = null;
 ```
 
-[`src/Corpus/Corpus.php#L40-L53`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L40-L53)
+[`src/Corpus/Corpus.php#L40-L53`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L40-L53)
 
 **Перевод комментариев:**
 - `$documents` (`@var`): id → [ версия источника, поколение] каждого живого
@@ -294,7 +294,7 @@ public function put(string $id, int $sourceVersion, string $title, string $body,
 }
 ```
 
-[`src/Corpus/Corpus.php#L86-L114`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L86-L114)
+[`src/Corpus/Corpus.php#L86-L114`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L86-L114)
 
 **Перевод комментариев:**
 - `// An applied write during a reindex belongs to it, whoever sent it.` —
@@ -318,7 +318,7 @@ public function delete(string $id, int $sourceVersion): WriteResult
 }
 ```
 
-[`src/Corpus/Corpus.php#L116-L125`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L116-L125)
+[`src/Corpus/Corpus.php#L116-L125`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L116-L125)
 
 ### Поколение: открыть, завершить, отменить
 
@@ -358,7 +358,7 @@ public function completeReindex(int $generation): int
 }
 ```
 
-[`src/Corpus/Corpus.php#L127-L152`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L127-L152)
+[`src/Corpus/Corpus.php#L127-L152`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L127-L152)
 
 **Перевод комментариев:**
 - `beginReindex()` (PHPDoc): возвращает номер поколения и отменённое поколение
@@ -387,7 +387,7 @@ public function reindexRequired(): ?string
 }
 ```
 
-[`src/Corpus/Corpus.php#L178-L191`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L178-L191)
+[`src/Corpus/Corpus.php#L178-L191`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L178-L191)
 
 **Перевод комментариев:**
 - `reindexRequired()` (PHPDoc): почему поиск запрещён, или `null`, когда он не
@@ -408,7 +408,7 @@ private function isStale(string $id, int $sourceVersion): bool
 }
 ```
 
-[`src/Corpus/Corpus.php#L310-L314`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L310-L314)
+[`src/Corpus/Corpus.php#L310-L314`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L310-L314)
 
 Дальше — тот же порядок, что в главе 18: сначала журнал, потом состояние.
 Записать в журнал и упасть до применения — безопасно, потому что replay применит
@@ -428,7 +428,7 @@ private function write(array $record, ?array $terms = null): void
 }
 ```
 
-[`src/Corpus/Corpus.php#L325-L335`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L325-L335)
+[`src/Corpus/Corpus.php#L325-L335`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L325-L335)
 
 **Перевод комментариев:**
 - `write()` (PHPDoc): дописать, синхронизировать, затем применить — в этом
@@ -467,7 +467,7 @@ private function apply(array $record, ?array $terms = null): void
             break;
 ```
 
-[`src/Corpus/Corpus.php#L344-L366`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L344-L366)
+[`src/Corpus/Corpus.php#L344-L366`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L344-L366)
 
 Вторая половина — всё, что связано с поколениями и компактизацией. Здесь же
 лежит правило «пока поколение открыто, каждая применённая запись принадлежит
@@ -513,7 +513,7 @@ case 'checkpoint':
     break;
 ```
 
-[`src/Corpus/Corpus.php#L368-L402`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L368-L402)
+[`src/Corpus/Corpus.php#L368-L402`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L368-L402)
 
 ### Компактизация: настоящее плюс надгробия
 
@@ -555,7 +555,7 @@ public function compactedRecords(array $lastPuts): iterable
 }
 ```
 
-[`src/Corpus/Corpus.php#L267-L297`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L267-L297)
+[`src/Corpus/Corpus.php#L267-L297`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L267-L297)
 
 **Перевод комментариев:**
 - `compactedRecords()` (PHPDoc): записи, из которых состоит компактный журнал:
@@ -589,7 +589,7 @@ public function compactedRecords(array $lastPuts): iterable
  */
 ```
 
-[`src/Corpus/Compaction.php#L10-L26`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Compaction.php#L10-L26)
+[`src/Corpus/Compaction.php#L10-L26`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Compaction.php#L10-L26)
 
 **Перевод комментариев:**
 - `Compaction` (PHPDoc): офлайн-компактизация, `bin/mini-search compact`, при
@@ -632,7 +632,7 @@ public static function run(string $path): array
 }
 ```
 
-[`src/Corpus/Compaction.php#L32-L56`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Compaction.php#L32-L56)
+[`src/Corpus/Compaction.php#L32-L56`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Compaction.php#L32-L56)
 
 ### Сторона платформы: откуда берутся версии
 
@@ -1690,7 +1690,7 @@ a late PUT for the deleted product: applied=no
 `testCompactingTwiceChangesNothing` (идемпотентность).
 
 Прогон: `docker compose exec php php vendor/bin/phpunit tests/Corpus` — **26
-тестов, 57 утверждений, OK**. Полный набор `php-mini-search` — 180 тестов.
+тестов, 57 утверждений, OK**. Полный набор `php-mini-search` — 181 тест.
 
 Сторона платформы: `tests/Integration/ProductSearchIntegrationTest.php`
 проверяет сквозной путь — `PUT`/`DELETE` товара, задание, ответ поиска. Три

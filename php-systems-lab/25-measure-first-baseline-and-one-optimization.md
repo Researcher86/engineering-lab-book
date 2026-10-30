@@ -1,7 +1,7 @@
 # Глава 25. Сначала измерь: базовая линия и одна оптимизация
 
 > Проекты: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
-> (тег `v1.0.0`, `7ecddc0`) и
+> (тег `v1.0.1`, `3014fa5`) и
 > [`php-systems-platform`](https://github.com/Researcher86/php-systems-platform)
 > (коммит `9a6a916`). Нужно знать: анализатор, индекс и BM25 (→ главы 19–20),
 > кеш и его предел (→ глава 19), наблюдаемость (→ глава 24).
@@ -77,7 +77,7 @@ p50 24.4 ms                   db.operations  1 (а не 3)
 | ------------------------------- | ------------------------------------- | ---------------------------------------- |
 | стоимость анализа одного токена | 12 µs                                 | токенов много, и каждый стоит денег      |
 | доля стемминга в этой стоимости | 96%                                   | оптимизировать надо стеммер, а не разбор |
-| доля повторяющихся токенов      | 90% (5 млн токенов, 27 379 различных) | повтор — то, что можно не делать дважды  |
+| доля повторяющихся токенов      | 99.5% (5 млн токенов, 27 379 разных)  | повтор — то, что можно не делать дважды  |
 
 Отсюда — **одна правка**: результаты стемминга кешируются `token → term`.
 Разница (по тому же документу): анализ всего корпуса — с ~60 с до ~1.5 с;
@@ -198,7 +198,7 @@ CPU — разность `utime+stime` двух чтений `/proc/<pid>/stat` 
  * comes out of here.
  *
  * Stems are cached, token → term. Stemming was 96% of the cost of analysis
- * (12 µs a token), while 90% of tokens repeat, as words in text do. With the
+ * (12 µs a token), while 99.5% of tokens repeat, as words in text do. With the
  * cache, analysing 10,000 documents went from about 60 s to 1.5 s
  * (docs/BENCHMARKS.md). The cache is bounded: when it holds
  * CACHE_ENTRIES tokens it is emptied and starts over, which costs a few
@@ -206,7 +206,7 @@ CPU — разность `utime+stime` двух чтений `/proc/<pid>/stat` 
  */
 ```
 
-[`src/Analysis/Analyzer.php#L12-L40`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L12-L40)
+[`src/Analysis/Analyzer.php#L12-L40`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L12-L40)
 
 **Перевод комментариев:**
 - `Analyzer` (PHPDoc): превращает текст в термы — единицы, которые хранит индекс
@@ -223,7 +223,7 @@ CPU — разность `utime+stime` двух чтений `/proc/<pid>/stat` 
   письменности, латиница с диакритикой) остаётся как есть. Дубликаты
   сохраняются: частота терма в поле — это сколько раз он вышел отсюда. Стемы
   кешируются, `token → term`. Стемминг составлял 96% стоимости анализа (12 µs на
-  токен), а 90% токенов повторяются, как и слова в тексте. С кешем анализ 10 000
+  токен), а 99.5% токенов повторяются, как и слова в тексте. С кешем анализ 10 000
   документов упал примерно с 60 с до 1,5 с (`docs/BENCHMARKS.md`). Кеш
   ограничен: когда в нём `CACHE_ENTRIES` токенов, он опустошается и начинает
   заново — это стоит нескольких стемов и держит память плоской при любом
@@ -263,7 +263,7 @@ private function stemUncached(string $token): string
 }
 ```
 
-[`src/Analysis/Analyzer.php#L72-L95`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L72-L95)
+[`src/Analysis/Analyzer.php#L72-L95`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L72-L95)
 
 ### Счётчик, которым меряется поиск
 
@@ -292,7 +292,7 @@ public function search(array $terms, int $limit, int $offset = 0): SearchResult
     return new SearchResult(array_slice($top->best(), $offset), $total);
 ```
 
-[`src/Index/InvertedIndex.php#L183-L200`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L183-L200)
+[`src/Index/InvertedIndex.php#L183-L200`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L183-L200)
 
 А страница результатов не сортирует все совпадения: она держит кучу на
 `offset + limit` лучших, поэтому цена страницы — `O(n log k)`, и `total`
@@ -333,7 +333,7 @@ final class TopHits extends SplHeap
     }
 ```
 
-[`src/Index/TopHits.php#L9-L40`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/TopHits.php#L9-L40)
+[`src/Index/TopHits.php#L9-L40`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/TopHits.php#L9-L40)
 
 **Перевод комментариев:**
 - `TopHits` (PHPDoc): хранит лучшие `k` попаданий, увиденных к этому моменту,
@@ -670,7 +670,7 @@ declare(strict_types=1);
  * The baseline before anything is changed: where the work in a corpus
  * actually goes, counted rather than timed.
  *
- * docs/BENCHMARKS.md reports that analysis was 96% stemming and that 90% of
+ * docs/BENCHMARKS.md reports that analysis was 96% stemming and that 99.5% of
  * tokens repeat, and that repetition is what made a cache worth 40x. This
  * experiment re-measures the repetition on a corpus generated here, so the
  * claim is a property somebody can check rather than a sentence in a
@@ -784,7 +784,7 @@ printf("the whole vocabulary fits in the cache: %s\n", $distinctTokens < Analyze
 - `ch25-token-baseline.php` (PHPDoc): базовая линия до любых изменений — куда на
   самом деле уходит работа в корпусе, посчитанная, а не замеренная по времени.
   `docs/BENCHMARKS.md` сообщает, что анализ на 96% состоял из стемминга и что
-  90% токенов повторяются, а повтор — то, что делало кеш стоящим 40x. Этот
+  99.5% токенов повторяются, а повтор — то, что делало кеш стоящим 40x. Этот
   эксперимент заново измеряет повтор на сгенерированном здесь корпусе, чтобы
   утверждение было свойством, которое можно проверить, а не предложением в
   документе. Корпус синтетический и засеянный, поэтому каждое число ниже
@@ -1667,7 +1667,7 @@ the serve it measured was stopped with code: 0
 | -------------------------------------------------- | ------------------------------------- |
 | Стоимость анализа одного токена                    | 12 µs                                 |
 | Доля стемминга в стоимости анализа                 | 96%                                   |
-| Повторяющиеся токены в корпусе                     | 90% (5 млн токенов, 27 379 различных) |
+| Повторяющиеся токены в корпусе                     | 99.5% (5 млн токенов, 27 379 разных)  |
 | NFKC + нижний регистр + токенайзинг 300 документов | 22 мс вместе                          |
 | Анализ всего корпуса: до / после                   | ≈ 60 с / 1.5 с                        |
 | Загрузка (полная переиндексация через API)         | 339 → 985 док/с                       |

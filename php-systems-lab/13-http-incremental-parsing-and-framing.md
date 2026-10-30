@@ -4,7 +4,7 @@
 > [`php-mini-http-server`](https://github.com/Researcher86/php-mini-http-server)
 > (релиз `v1.1.0`, коммит `1f73404`) и
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search) (релиз
-> `v1.0.0`, коммит `7ecddc0`). Нужно знать: соединения и буферы (→ глава 10) и
+> `v1.0.1`, коммит `3014fa5`). Нужно знать: соединения и буферы (→ глава 10) и
 > протокол с pipelining (→ глава 11). Пригодится дальше: keep-alive, таймауты,
 > обратное давление и медленные клиенты (→ глава 14).
 
@@ -576,7 +576,7 @@ final class RequestParser
     }
 ```
 
-[`src/Http/RequestParser.php#L7-L50`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/RequestParser.php#L7-L50)
+[`src/Http/RequestParser.php#L7-L50`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/RequestParser.php#L7-L50)
 
 **Перевод комментариев:**
 - `RequestParser` (PHPDoc): превращает байты одного соединения в запросы, как бы
@@ -667,7 +667,7 @@ public function next(): Request|HttpError|null
 }
 ```
 
-[`src/Http/RequestParser.php#L57-L107`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/RequestParser.php#L57-L107)
+[`src/Http/RequestParser.php#L57-L107`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/RequestParser.php#L57-L107)
 
 **Перевод комментариев:**
 - `next()` (PHPDoc): `@phpstan-impure` — метод меняет состояние парсера, поэтому
@@ -766,7 +766,7 @@ private function parseHead(string $head): array|HttpError
 }
 ```
 
-[`src/Http/RequestParser.php#L149-L222`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/RequestParser.php#L149-L222)
+[`src/Http/RequestParser.php#L149-L222`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/RequestParser.php#L149-L222)
 
 **Перевод комментариев:**
 - `parseHead()` (PHPDoc): возвращает разобранную голову — `method`, `target`,
@@ -839,7 +839,7 @@ private function process(Connection $connection, float $now): void
 }
 ```
 
-[`src/Http/Server.php#L224-L263`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/Server.php#L224-L263)
+[`src/Http/Server.php#L224-L263`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/Server.php#L224-L263)
 
 **Перевод комментариев:**
 - `process()` (PHPDoc): запускает следующий буферизованный запрос, если он есть
@@ -978,7 +978,7 @@ public function serialize(bool $keepAlive, bool $withBody = true, bool $http10 =
 }
 ```
 
-[`src/Http/Response.php#L44-L65`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/Response.php#L44-L65)
+[`src/Http/Response.php#L44-L65`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/Response.php#L44-L65)
 
 **Перевод комментариев:**
 - `serialize()` (PHPDoc): `$keepAlive = false` добавляет `Connection: close`;
@@ -1847,7 +1847,7 @@ OK (180 tests, 47230 assertions)
 | Тесты протокола `php-mini-http-server`        | 104 теста, 142 утверждения                                            |
 | Весь набор `php-mini-http-server`             | 259 тестов, 598 утверждений                                           |
 | Тесты HTTP `php-mini-search`                  | 50 тестов, 324 утверждения                                            |
-| Весь набор `php-mini-search`                  | 180 тестов, 47 230 утверждений                                        |
+| Весь набор `php-mini-search`                  | 181 тест, 47 232 утверждения                                          |
 
 Лимиты, задающие границы разбора:
 

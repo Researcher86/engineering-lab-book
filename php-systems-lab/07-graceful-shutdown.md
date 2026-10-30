@@ -3,7 +3,7 @@
 > Проекты: [`php-worker-pool`](https://github.com/Researcher86/php-worker-pool),
 > релиз `v1.1.0`, коммит `b616246`;
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search), релиз
-> `v1.0.0`, коммит `7ecddc0`. Нужно знать: процессы и супервизию (→ глава 6),
+> `v1.0.1`, коммит `3014fa5`. Нужно знать: процессы и супервизию (→ глава 6),
 > цикл событий (→ глава 4). Пригодится дальше: очередь задач (→ глава 8),
 > надёжность хранилища (→ глава 18).
 
@@ -604,7 +604,7 @@ private function onSignal(int $signal): void
 }
 ```
 
-[`src/Runtime/Service.php#L94-L129`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Runtime/Service.php#L94-L129)
+[`src/Runtime/Service.php#L94-L129`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Runtime/Service.php#L94-L129)
 
 Другой вкус того же блюда: `drain()` возвращает **код выхода** — 0, если все
 соединения закрылись до дедлайна, и 1, если дедлайн прошёл, а соединения

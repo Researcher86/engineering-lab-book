@@ -1,7 +1,7 @@
 # Глава 20. Инвертированный индекс и BM25
 
 > Проект: [`php-mini-search`](https://github.com/Researcher86/php-mini-search),
-> релиз `v1.0.0`, коммит `7ecddc0`. Нужно знать: как текст превращается в термы
+> релиз `v1.0.1`, коммит `3014fa5`. Нужно знать: как текст превращается в термы
 > (→ глава 19). Пригодится дальше: как индекс переживает падения (→ глава 18) и
 > как он остаётся в согласии с базой данных (→ глава 21).
 
@@ -84,7 +84,7 @@ public function search(array $terms, int $limit, int $offset): array
 }
 ```
 
-[`tests/Support/NaiveSearch.php#L52-L105`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Support/NaiveSearch.php#L52-L105)
+[`tests/Support/NaiveSearch.php#L52-L105`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Support/NaiveSearch.php#L52-L105)
 
 Стоимость такого поиска растёт с размером корпуса, даже если слово встречается в
 одном документе из десяти тысяч. Хуже того, внутри цикла по документам есть ещё
@@ -137,7 +137,7 @@ private array $numbers = [];
 private array $ids = [];
 ```
 
-[`src/Index/InvertedIndex.php#L40-L56`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L40-L56)
+[`src/Index/InvertedIndex.php#L40-L56`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L40-L56)
 
 **Перевод комментариев:**
 - `$postings` (`@var`): поле → терм → номер документа → частота термина.
@@ -176,7 +176,7 @@ Postings можно хранить компактнее, например упа
 — показать, как работает поиск, поэтому корпус ограничили 10 000 документов. На
 таком размере массивы занимают около 300 МБ, читаются проще всего, а удаление
 документа — это один `unset()` на терм. Как принималось это решение, записано в
-[`docs/DECISIONS.md` → «Postings are plain PHP arrays»](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/docs/DECISIONS.md#postings-are-plain-php-arrays).
+[`docs/DECISIONS.md` → «Postings are plain PHP arrays»](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/docs/DECISIONS.md#postings-are-plain-php-arrays).
 
 > Урок, который повторится в главе 25: структуру данных выбирают по замеру на
 > целевом размере, а не «на всякий случай самую компактную».
@@ -212,7 +212,7 @@ public function put(string $id, array $fields): void
 }
 ```
 
-[`src/Index/InvertedIndex.php#L81-L106`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L81-L106)
+[`src/Index/InvertedIndex.php#L81-L106`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L81-L106)
 
 Обратите внимание:
 
@@ -256,7 +256,7 @@ public function delete(string $id): void
 }
 ```
 
-[`src/Index/InvertedIndex.php#L108-L129`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L108-L129)
+[`src/Index/InvertedIndex.php#L108-L129`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L108-L129)
 
 Чтобы удалить документ из postings, нужно знать, в каких списках он есть. Можно
 хранить полный **прямой индекс** «документ → терм → tf», но он почти удвоил бы
@@ -312,7 +312,7 @@ private function matches(array $terms): iterable
 }
 ```
 
-[`src/Index/InvertedIndex.php#L274-L305`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L274-L305)
+[`src/Index/InvertedIndex.php#L274-L305`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L274-L305)
 
 Почему с редкого? Представьте запрос `кабель usb` в корпусе из 10 000 товаров
 (числа для примера):
@@ -335,14 +335,14 @@ usb    → 4 000 документов
   без промежуточного списка.
 
 `contains()` проверяет терм во всех полях одним `isset` на поле:
-[`src/Index/InvertedIndex.php#L307-L316`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L307-L316).
+[`src/Index/InvertedIndex.php#L307-L316`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L307-L316).
 
 > **Цена AND.** Опечатка в одном слове даёт ноль результатов: в эксперименте
 > ниже `кабель hdmi` не находит ничего, потому что ни в одном товаре нет обоих
 > слов. Семантика OR вернула бы больше, но объединение списков частых термов
 > дорого, и оптимизации вроде WAND/MaxScore выходят за рамки проекта. Решение и
 > его цена:
-> [`DECISIONS.md` → «AND, not OR»](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/docs/DECISIONS.md#and-not-or).
+> [`DECISIONS.md` → «AND, not OR»](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/docs/DECISIONS.md#and-not-or).
 
 ## 4. Ранжирование: от «встречается ли» к «насколько подходит»
 
@@ -400,7 +400,7 @@ private function score(array $terms, int $number): float
 }
 ```
 
-[`src/Index/InvertedIndex.php#L321-L342`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L321-L342)
+[`src/Index/InvertedIndex.php#L321-L342`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L321-L342)
 
 Сравните с формулой — это она же, построчно:
 
@@ -420,7 +420,7 @@ private function score(array $terms, int $number): float
 найденных документах, и отрицательный вклад понизил бы их все сразу. Вариант с
 `1 +` под логарифмом (так считает Lucene) всегда положителен. Это закреплено
 тестом
-[`testATermInEveryDocumentStillScoresAboveZero`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Index/InvertedIndexTest.php#L95-L101).
+[`testATermInEveryDocumentStillScoresAboveZero`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Index/InvertedIndexTest.php#L95-L101).
 
 ### Поля и веса
 
@@ -431,7 +431,7 @@ private function score(array $terms, int $number): float
 двойной вклад. Правильная модель — **BM25F**, где частоты сначала складываются с
 весами, а насыщение применяется один раз. Её отложили: переход меняет только
 формулу, а не структуру индекса.
-[`DECISIONS.md` → «BM25 from the start»](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/docs/DECISIONS.md#bm25-from-the-start)
+[`DECISIONS.md` → «BM25 from the start»](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/docs/DECISIONS.md#bm25-from-the-start)
 
 ## 5. Детерминизм: одинаковый запрос — одинаковый порядок
 
@@ -465,7 +465,7 @@ public function search(array $terms, int $limit, int $offset = 0): SearchResult
 }
 ```
 
-[`src/Index/InvertedIndex.php#L183-L201`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L183-L201)
+[`src/Index/InvertedIndex.php#L183-L201`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L183-L201)
 
 **Равные score.** При равенстве нужен фиксированный порядок, иначе он зависит от
 порядка вставки в хеш-таблицу. Здесь при равном score выше оказывается меньший
@@ -482,7 +482,7 @@ private static function better(SearchHit $a, SearchHit $b): bool
 }
 ```
 
-[`src/Index/TopHits.php#L71-L78`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/TopHits.php#L71-L78)
+[`src/Index/TopHits.php#L71-L78`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/TopHits.php#L71-L78)
 
 ### Top-k вместо сортировки всего
 
@@ -507,7 +507,7 @@ public function offer(SearchHit $hit): void
 }
 ```
 
-[`src/Index/TopHits.php#L28-L40`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/TopHits.php#L28-L40)
+[`src/Index/TopHits.php#L28-L40`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/TopHits.php#L28-L40)
 
 Стоимость — `O(n log k)`, а память — `k` элементов вместо `n`. Отсюда и лимит
 глубины в API: `offset + limit ≤ 1000`. Страница на глубине `offset` требует
@@ -610,7 +610,7 @@ SKU-3, body:   idf = ln(1 + 2.5/1.5) = 0.981   норм. по длине 7/5.33 
 
 На трёх документах эффект преувеличен. На реальном корпусе статистика поля
 устойчивее, и вес заголовка работает как ожидается: это проверяет тест
-[`testATitleMatchOutranksTheSameMatchInTheBody`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Index/InvertedIndexTest.php#L70-L76).
+[`testATitleMatchOutranksTheSameMatchInTheBody`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Index/InvertedIndexTest.php#L70-L76).
 Но урок общий: **ранжирование зависит от статистики корпуса**, и один и тот же
 документ на одном и том же запросе может получить разное место в разных
 корпусах.
@@ -641,12 +641,12 @@ SKU-3, body:   idf = ln(1 + 2.5/1.5) = 0.981   норм. по длине 7/5.33 
 ошибкам индекса: нет postings, нет кэшей длин, нет кучи.
 
 Тест
-[`InvertedIndexAgainstOracleTest`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Index/InvertedIndexAgainstOracleTest.php)
+[`InvertedIndexAgainstOracleTest`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Index/InvertedIndexAgainstOracleTest.php)
 делает 5 × 2 500 случайных операций (добавить, заменить, удалить, найти) и
 выполняет каждую параллельно на индексе и на оракуле. Результаты должны
 совпадать: те же id, в том же порядке, score с точностью до `1e-9`. После
 **каждой** операции индекс проверяет свои инварианты
-([`invariantViolations()`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Index/InvertedIndex.php#L203-L265)).
+([`invariantViolations()`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Index/InvertedIndex.php#L203-L265)).
 
 ### А тест вообще способен упасть?
 
@@ -670,7 +670,7 @@ SKU-3, body:   idf = ln(1 + 2.5/1.5) = 0.981   норм. по длине 7/5.33 
 ## 9. Цифры
 
 Замеры на этом коде
-([`docs/BENCHMARKS.md`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/docs/BENCHMARKS.md)):
+([`docs/BENCHMARKS.md`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/docs/BENCHMARKS.md)):
 
 |                                | Синтетика, 10 000 док. | Википедия, 10 000 статей |
 | ------------------------------ | ---------------------- | ------------------------ |

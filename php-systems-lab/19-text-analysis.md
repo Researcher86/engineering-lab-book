@@ -1,7 +1,7 @@
 # Глава 19. Анализ текста: Unicode, токены, стемминг
 
 > Проект: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
-> (релиз `v1.0.0`, коммит `7ecddc0`). Нужно знать: журнал как единственное
+> (релиз `v1.0.1`, коммит `3014fa5`). Нужно знать: журнал как единственное
 > надёжное состояние и то, что индекс строится из него при каждом старте (→
 > глава 18). Пригодится дальше: инвертированный индекс и BM25 (→ глава 20),
 > версии, надгробия и переиндексация (→ глава 21).
@@ -67,7 +67,7 @@
 
 И ещё одна цена, самая практичная: стемминг дорог. По замерам проекта
 (`docs/BENCHMARKS.md`) анализ стоил 12 µs на токен, из которых **96% приходилось
-на стемминг**, а 90% токенов в корпусе повторяются. Это наблюдение породило
+на стемминг**, а 99.5% токенов в корпусе повторяются. Это наблюдение породило
 последнее решение главы — кеш основ.
 
 ## 2. Устройство
@@ -202,7 +202,7 @@ NFKC меняет и то, что человек, возможно, хотел �
 
 Замеры проекта: анализ 10 000 документов занимал 29.9 s при цели 10 s, один
 `PUT` — 24.4 ms. При этом 5 миллионов токенов корпуса давали всего 27 379
-различных слов: 90% токенов — повторы. Стемминг — чистая функция от токена,
+различных слов: 99.5% токенов — повторы. Стемминг — чистая функция от токена,
 поэтому её результат можно запомнить.
 
 Кеш — это `array<string, string>` на 200 000 записей. При переполнении он **не**
@@ -244,7 +244,7 @@ NFKC меняет и то, что человек, возможно, хотел �
 $terms = ['title' => $this->analyzer->terms($title), 'body' => $this->analyzer->terms($body)];
 ```
 
-[`src/Corpus/Corpus.php#L98-L101`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L98-L101)
+[`src/Corpus/Corpus.php#L98-L101`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L98-L101)
 
 ```php
 $terms = array_values(array_unique($this->analyzer->terms($query)));
@@ -253,7 +253,7 @@ if ($terms === []) {
 }
 ```
 
-[`src/Corpus/Corpus.php#L161-L164`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Corpus/Corpus.php#L161-L164)
+[`src/Corpus/Corpus.php#L161-L164`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Corpus/Corpus.php#L161-L164)
 
 Каждый терм запроса обязан найтись в документе — это и есть AND, о котором будет
 глава 20. Пока важно другое: и документ, и запрос прошли через **один** вызов
@@ -289,7 +289,7 @@ if ($terms === []) {
  * comes out of here.
  *
  * Stems are cached, token → term. Stemming was 96% of the cost of analysis
- * (12 µs a token), while 90% of tokens repeat, as words in text do. With the
+ * (12 µs a token), while 99.5% of tokens repeat, as words in text do. With the
  * cache, analysing 10,000 documents went from about 60 s to 1.5 s
  * (docs/BENCHMARKS.md). The cache is bounded: when it holds
  * CACHE_ENTRIES tokens it is emptied and starts over, which costs a few
@@ -297,7 +297,7 @@ if ($terms === []) {
  */
 ```
 
-[`src/Analysis/Analyzer.php#L12-L40`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L12-L40)
+[`src/Analysis/Analyzer.php#L12-L40`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L12-L40)
 
 **Перевод комментариев:**
 - `Analyzer` (PHPDoc): превращает текст в термы — единицы, которые хранит индекс
@@ -314,7 +314,7 @@ if ($terms === []) {
   (цифры, смешанные письменности, латиница с диакритикой) остаётся как есть.
   Повторы сохраняются: частота терма в поле — это сколько раз он вышел отсюда.
   Основы кешируются: токен → терм. Стемминг составлял 96% стоимости анализа (12
-  µs на токен), а 90% токенов повторяются, как и слова в тексте. С кешем анализ
+  µs на токен), а 99.5% токенов повторяются, как и слова в тексте. С кешем анализ
   10 000 документов занял ~1.5 s вместо ~60 s (`docs/BENCHMARKS.md`). Кеш
   ограничен: когда в нём `CACHE_ENTRIES` токенов, он очищается и начинает
   заново, что стоит нескольких основ и держит память ровной при любом словаре.
@@ -340,7 +340,7 @@ final class Analyzer
     }
 ```
 
-[`src/Analysis/Analyzer.php#L41-L52`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L41-L52)
+[`src/Analysis/Analyzer.php#L41-L52`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L41-L52)
 
 **Перевод комментариев:**
 - `$cache` (`@var`): кеш токен → терм.
@@ -370,7 +370,7 @@ public function terms(string $text): array
 }
 ```
 
-[`src/Analysis/Analyzer.php#L54-L70`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L54-L70)
+[`src/Analysis/Analyzer.php#L54-L70`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L54-L70)
 
 Третий — кеш и маршрутизация. Кеш проверяется и обновляется в одном месте,
 поэтому все три пути (русский, английский, «как есть») кешируются одинаково.
@@ -389,7 +389,7 @@ private function stem(string $token): string
 }
 ```
 
-[`src/Analysis/Analyzer.php#L72-L82`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L72-L82)
+[`src/Analysis/Analyzer.php#L72-L82`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L72-L82)
 
 ```php
 private function stemUncached(string $token): string
@@ -406,7 +406,7 @@ private function stemUncached(string $token): string
 }
 ```
 
-[`src/Analysis/Analyzer.php#L84-L95`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Analyzer.php#L84-L95)
+[`src/Analysis/Analyzer.php#L84-L95`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Analyzer.php#L84-L95)
 
 `stemUncached()` заодно объясняет, почему токен `café` не стеммится: он не
 проходит ни `^\p{Cyrillic}+$`, ни `^[a-z]+$`. Обратите внимание, что `usb3` не
@@ -448,7 +448,7 @@ private function stemUncached(string $token): string
  */
 ```
 
-[`src/Analysis/Snowball/RussianStemmer.php#L7-L32`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/RussianStemmer.php#L7-L32)
+[`src/Analysis/Snowball/RussianStemmer.php#L7-L32`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/RussianStemmer.php#L7-L32)
 
 **Перевод комментариев:**
 - `RussianStemmer` (PHPDoc): стеммер Snowball для русского, перенесённый вручную
@@ -517,7 +517,7 @@ private const array DERIVATIONAL = ['ост', 'ость'];
 private const array SUPERLATIVE = ['ейш', 'ейше'];
 ```
 
-[`src/Analysis/Snowball/RussianStemmer.php#L35-L73`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/RussianStemmer.php#L35-L73)
+[`src/Analysis/Snowball/RussianStemmer.php#L35-L73`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/RussianStemmer.php#L35-L73)
 
 **Перевод комментариев:**
 - `GERUND_AFTER_A` (PHPDoc): окончания, которые удаляются только после `а` или
@@ -561,7 +561,7 @@ public function stem(string $word): string
 }
 ```
 
-[`src/Analysis/Snowball/RussianStemmer.php#L75-L105`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/RussianStemmer.php#L75-L105)
+[`src/Analysis/Snowball/RussianStemmer.php#L75-L105`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/RussianStemmer.php#L75-L105)
 
 **Перевод комментариев:**
 - `// Step 1: a perfective gerund, or else an optional reflexive...` — шаг 1:
@@ -621,7 +621,7 @@ private function regions(string $word): array
 }
 ```
 
-[`src/Analysis/Snowball/RussianStemmer.php#L107-L142`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/RussianStemmer.php#L107-L142)
+[`src/Analysis/Snowball/RussianStemmer.php#L107-L142`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/RussianStemmer.php#L107-L142)
 
 **Перевод комментариев:**
 - `regions()` (PHPDoc): RV начинается после первой гласной. R1 начинается после
@@ -665,7 +665,7 @@ private function removeEnding(string &$word, int $rv, array $afterA, array $plai
 }
 ```
 
-[`src/Analysis/Snowball/RussianStemmer.php#L144-L169`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/RussianStemmer.php#L144-L169)
+[`src/Analysis/Snowball/RussianStemmer.php#L144-L169`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/RussianStemmer.php#L144-L169)
 
 **Перевод комментариев:**
 - `removeEnding()` (PHPDoc): удаляет самое длинное совпадающее окончание внутри
@@ -705,7 +705,7 @@ private function removeEnding(string &$word, int $rv, array $afterA, array $plai
  */
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L7-L29`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L7-L29)
+[`src/Analysis/Snowball/EnglishStemmer.php#L7-L29`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L7-L29)
 
 **Перевод комментариев:**
 - `EnglishStemmer` (PHPDoc): стеммер Snowball для английского (Porter2),
@@ -743,7 +743,7 @@ private const array EXCEPTIONS = [
 private const array R1_PREFIXES = ['gener', 'commun', 'arsen', 'past', 'univers', 'later', 'emerg', 'organ', 'inter'];
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L34-L44`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L34-L44)
+[`src/Analysis/Snowball/EnglishStemmer.php#L34-L44`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L34-L44)
 
 **Перевод комментариев:**
 - `EXCEPTIONS` (PHPDoc): слова, которые стеммятся или сохраняются целиком.
@@ -781,7 +781,7 @@ private const string VALID_LI = 'cdeghkmnrt';
 private const array DOUBLES = ['bb', 'dd', 'ff', 'gg', 'mm', 'nn', 'pp', 'rr', 'tt'];
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L46-L69`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L46-L69)
+[`src/Analysis/Snowball/EnglishStemmer.php#L46-L69`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L46-L69)
 
 **Перевод комментариев:**
 - `VALID_LI` (PHPDoc): буквы, которые могут стоять перед удаляемым `-li`.
@@ -816,7 +816,7 @@ public function stem(string $word): string
 }
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L71-L93`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L71-L93)
+[`src/Analysis/Snowball/EnglishStemmer.php#L71-L93`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L71-L93)
 
 Прелюдия помечает согласную `y` заглавной `Y` — в начале слова и после гласной.
 Именно поэтому дальнейшим шагам достаточно простого набора `aeiouy`: `Y` в него
@@ -847,7 +847,7 @@ private function prelude(string $word): array
 }
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L95-L116`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L95-L116)
+[`src/Analysis/Snowball/EnglishStemmer.php#L95-L116`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L95-L116)
 
 **Перевод комментариев:**
 - `prelude()` (PHPDoc): отбрасывает ведущий апостроф и помечает каждую согласную
@@ -899,7 +899,7 @@ private function afterVowelThenConsonant(string $word, int $from): ?int
 }
 ```
 
-[`src/Analysis/Snowball/EnglishStemmer.php#L118-L154`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Analysis/Snowball/EnglishStemmer.php#L118-L154)
+[`src/Analysis/Snowball/EnglishStemmer.php#L118-L154`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Analysis/Snowball/EnglishStemmer.php#L118-L154)
 
 **Перевод комментариев:**
 - `regions()` (PHPDoc): `@return`: `[R1, R2]` как байтовые смещения;
@@ -1652,8 +1652,8 @@ Snowball» и «взять свежие словари» — две разные
 их нельзя.
 
 Прогоны при написании главы: `tests/Analysis` — OK, **20 тестов, 23
-утверждения**; весь набор `php-mini-search` — OK, **180 тестов, 47 230
-утверждений** (Docker, PHP 8.5.11). Отдельно `docs/BENCHMARKS.md` фиксирует, что
+утверждения**; весь набор `php-mini-search` — OK, **181 тест, 47 232
+утверждения** (Docker, PHP 8.5.11). Отдельно `docs/BENCHMARKS.md` фиксирует, что
 92 434 пары и сравнение с наивным оракулом проходят неизменными и после
 включения кеша — то есть кеш не поменял ни одного терма.
 
@@ -1676,7 +1676,7 @@ Snowball» и «взять свежие словари» — две разные
 | Объём фикстур                 | 2.1 MB                                |
 | Стоимость анализа             | 12 µs на токен                        |
 | Доля стемминга в анализе      | 96%                                   |
-| Доля повторяющихся токенов    | 90% (5 млн токенов, 27 379 различных) |
+| Доля повторяющихся токенов    | 99.5% (5 млн токенов, 27 379 разных)  |
 | Предел кеша                   | 200 000 записей                       |
 | Память кеша                   | около 4 MB на синтетическом корпусе   |
 | Анализ корпуса, до/после кеша | ~60 s → 1.5 s                         |

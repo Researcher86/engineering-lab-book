@@ -4,7 +4,7 @@
 > [`php-mini-database`](https://github.com/Researcher86/php-mini-database)
 > (релиз `v1.1.0`, коммит `9adde5d`) и
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search) (релиз
-> `v1.0.0`, коммит `7ecddc0`). Нужно знать: страницы и кучу (→ глава 15),
+> `v1.0.1`, коммит `3014fa5`). Нужно знать: страницы и кучу (→ глава 15),
 > порядок «сначала мутация, потом журнал» (→ глава 16) и откат с блокировками (→
 > глава 17). Пригодятся дальше: версии, надгробия и переиндексация (→ глава 21)
 > и как проверять сами тесты `kill -9` (→ глава 26).
@@ -157,7 +157,13 @@ startup
 Отдельная деталь — защита от подделки под обрыв: у записи с испорченным полем
 длины `length` может указывать за конец файла, и такая запись выглядела бы
 «обрезанной». Поэтому длина больше 256 КБ (максимум документа — 1 КБ заголовка
-плюс 64 КБ тела) считается порчей **всегда**, где бы она ни лежала.
+плюс 64 КБ тела) считается порчей **всегда**, где бы она ни лежала. Испорченный
+младший байт оставляет длину правдоподобной, и для него есть вторая проверка:
+тело записи — вывод `json_encode()`, в нём не бывает байта `\0`, а в заголовке
+каждой следующей записи он есть всегда (старший байт длины не больше 256 КБ —
+ноль). Если в байтах, которые «захватила» длина, нашёлся `\0`, за ней лежат
+другие записи, и это порча. Неразличимым остаётся один случай: испорченная
+длина у самой последней записи — после неё нет ничего, что выдало бы подделку.
 
 Доступ к журналу — ровно у одного процесса: `flock()` на отдельном файле
 `<log>.lock`, потому что компактизация переименовывает новый файл поверх
@@ -960,7 +966,7 @@ private function undoInsert(WalRecord $record): void
  */
 ```
 
-[`src/Storage/Log.php#L9-L27`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L9-L27)
+[`src/Storage/Log.php#L9-L27`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L9-L27)
 
 **Перевод комментариев:**
 - `Log` (PHPDoc): журнал только для дописывания — единственное устойчивое к
@@ -1016,7 +1022,7 @@ public static function open(string $path, Closure $onRecord): self
 }
 ```
 
-[`src/Storage/Log.php#L43-L74`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L43-L74)
+[`src/Storage/Log.php#L43-L74`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L43-L74)
 
 **Перевод комментариев:**
 - `$onRecord` (`@param`): переигрывает каждую валидную запись по порядку.
@@ -1059,7 +1065,7 @@ public static function rewrite(string $path, iterable $records): void
 }
 ```
 
-[`src/Storage/Log.php#L97-L127`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L97-L127)
+[`src/Storage/Log.php#L97-L127`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L97-L127)
 
 **Перевод комментариев:**
 - `rewrite()` (PHPDoc): заменяет журнал ровно этими записями: они пишутся во
@@ -1082,7 +1088,7 @@ public function append(array $record): void
 }
 ```
 
-[`src/Storage/Log.php#L129-L136`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L129-L136)
+[`src/Storage/Log.php#L129-L136`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L129-L136)
 
 ### Байты, которым можно верить
 
@@ -1108,7 +1114,7 @@ public function append(array $record): void
  */
 ```
 
-[`src/Storage/Durable.php#L7-L22`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Durable.php#L7-L22)
+[`src/Storage/Durable.php#L7-L22`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Durable.php#L7-L22)
 
 **Перевод комментариев:**
 - `Durable` (PHPDoc): несколько файловых операций, от долговечности которых
@@ -1156,7 +1162,7 @@ public static function syncDirectory(string $directory): void
 }
 ```
 
-[`src/Storage/Durable.php#L25-L49`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Durable.php#L25-L49)
+[`src/Storage/Durable.php#L25-L49`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Durable.php#L25-L49)
 
 ### Формат записи
 
@@ -1179,7 +1185,7 @@ public static function syncDirectory(string $directory): void
  */
 ```
 
-[`src/Storage/LogFormat.php#L9-L19`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogFormat.php#L9-L19)
+[`src/Storage/LogFormat.php#L9-L19`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogFormat.php#L9-L19)
 
 **Перевод комментариев:**
 - `LogFormat` (PHPDoc): байты журнала и ничего больше.
@@ -1223,7 +1229,7 @@ public static function frame(array $record): string
 }
 ```
 
-[`src/Storage/LogFormat.php#L26-L52`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogFormat.php#L26-L52)
+[`src/Storage/LogFormat.php#L26-L52`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogFormat.php#L26-L52)
 
 **Перевод комментариев:**
 - `MAX_BODY` (PHPDoc): ни одна валидная запись не подходит близко: документ — не
@@ -1234,9 +1240,10 @@ public static function frame(array $record): string
 
 Докблок сканера — лучшая формулировка правила: обрыв может быть только у
 последней записи, потому что каждая подтверждённая запись до неё уже
-синхронизирована. Отсюда три ветки: короткая последняя запись — хвост; длина
-больше максимума — порча, где бы она ни была; неверная контрольная сумма не у
-последней записи — порча.
+синхронизирована. Отсюда четыре ветки: короткая последняя запись — хвост; длина
+больше максимума — порча, где бы она ни была; длина в пределах максимума,
+захватившая заголовки следующих записей, — тоже порча; неверная контрольная
+сумма не у последней записи — порча.
 
 ```php
 /**
@@ -1253,6 +1260,9 @@ public static function frame(array $record): string
  *    length field in the middle could otherwise point past the end of the
  *    file and pass for a torn tail, and cutting there would silently drop
  *    every acknowledged record after it;
+ *  - a length within MAX_BODY that claims the headers of later records →
+ *    damage too (see holdsAFrame()). Only a damaged length in the last
+ *    record still reads as a torn tail: nothing after it tells them apart;
  *  - a checksum failure before the last record, or a valid checksum around a
  *    body that is not a JSON object → damage.
  *
@@ -1262,7 +1272,7 @@ public static function frame(array $record): string
  */
 ```
 
-[`src/Storage/LogScanner.php#L9-L29`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogScanner.php#L9-L29)
+[`src/Storage/LogScanner.php#L9-L32`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogScanner.php#L9-L32)
 
 **Перевод комментариев:**
 - `LogScanner::scan()` (PHPDoc): читает журнал от начала к концу, отдаёт каждую
@@ -1274,7 +1284,10 @@ public static function frame(array $record): string
   никогда не подтверждали, и её безопасно отрезать; длина больше
   `LogFormat::MAX_BODY` → порча, где бы она ни была: испорченное поле длины в
   середине иначе могло бы указывать за конец файла и сойти за оборванный хвост,
-  а обрезка там молча выбросила бы все подтверждённые записи после неё; ошибка
+  а обрезка там молча выбросила бы все подтверждённые записи после неё; длина в
+  пределах `MAX_BODY`, захватившая заголовки следующих записей, → тоже порча
+  (см. `holdsAFrame()`), и только испорченная длина последней записи всё ещё
+  читается как оборванный хвост: после неё нечем их различить; ошибка
   контрольной суммы до последней записи или валидная сумма вокруг тела, не
   являющегося JSON-объектом → порча. Файл короче заголовка, являющийся его
   префиксом, был обрезан при создании, до того, как в него что-либо записали: он
@@ -1299,12 +1312,14 @@ public static function frame(array $record): string
 
         $end = $offset + LogFormat::FRAME_HEADER + $length;
         if ($end > $size) {
-            return new LogScan(LogScan::TORN_TAIL, $records, $offset, $size, "record at byte {$offset} is cut short");
+            return self::holdsAFrame(self::bytes($handle, $size - $offset - LogFormat::FRAME_HEADER))
+                ? new LogScan(LogScan::DAMAGED, $records, $offset, $size, "record at byte {$offset} claims {$length} bytes, past the records after it")
+                : new LogScan(LogScan::TORN_TAIL, $records, $offset, $size, "record at byte {$offset} is cut short");
         }
 
         $body = self::bytes($handle, $length);
         if (crc32($body) !== $checksum) {
-            return $end === $size
+            return $end === $size && !self::holdsAFrame($body)
                 ? new LogScan(LogScan::TORN_TAIL, $records, $offset, $size, "last record at byte {$offset} fails its checksum")
                 : new LogScan(LogScan::DAMAGED, $records, $offset, $size, "record at byte {$offset} fails its checksum");
         }
@@ -1323,10 +1338,15 @@ public static function frame(array $record): string
 }
 ```
 
-[`src/Storage/LogScanner.php#L75-L112`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogScanner.php#L75-L112)
+[`src/Storage/LogScanner.php#L78-L117`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogScanner.php#L78-L117)
 
 **Перевод комментариев:**
 - `$frame` (`@var`): распакованные из кадра длина тела и контрольная сумма.
+
+`holdsAFrame()` — одна строка, `str_contains($bytes, "\0")`: байт `\0` в теле
+невозможен, а в заголовке записи неизбежен. Поэтому и длина, указавшая за конец
+файла, и сумма, не сошедшаяся ровно на конце файла, считаются хвостом, только
+если захваченные байты чисты.
 
 Наружу сканер отдаёт не «да/нет», а четыре состояния с причиной: что именно
 нашлось решает, что с файлом делать.
@@ -1365,7 +1385,7 @@ final readonly class LogScan
 }
 ```
 
-[`src/Storage/LogScan.php#L7-L37`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogScan.php#L7-L37)
+[`src/Storage/LogScan.php#L7-L37`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogScan.php#L7-L37)
 
 **Перевод комментариев:**
 - `LogScan` (PHPDoc): что нашло чтение журнала. Чтение никогда не меняет файл;
@@ -2213,6 +2233,7 @@ inspect again after the repair: status=clean records=0
 | Обрыв последней записи журнала (`search`)            | `torn_tail`, причина в `LogScan`                                            | хвост отрезается, подтверждённые записи переигрываются (эксперимент 4: 2 из 3)                                                               |
 | Порча в середине журнала (`search`)                  | `damaged`, причина с байтовым смещением                                     | файл откладывается в `<log>.damaged-<дата>`, сервис стартует пустым и требует переиндексации (эксперимент 4: 1 из 3)                         |
 | Длина записи больше 256 КБ                           | `damaged`, где бы запись ни лежала                                          | испорченное поле длины не может выдать себя за обрыв и унести подтверждённые записи                                                          |
+| Длина в пределах 256 КБ за концом файла              | `damaged`, если байты за ней содержат `\0`                                  | захваченные заголовки следующих записей выдают порчу; неразличима только испорченная длина последней записи                                  |
 | Заголовок, обрезанный при создании                   | `missing`, а не `damaged`                                                   | файл, который является префиксом заголовка, считается отсутствующим                                                                          |
 | `fsync()` вернул `false`                             | `StorageFailure: Could not sync …`                                          | клиент получает `503`, процесс завершается; после перезапуска переигрывается то, что действительно на диске                                  |
 | Два процесса на одном журнале (`search`)             | `flock(LOCK_EX\|LOCK_NB)` на `<log>.lock`                                   | `The log … is in use by another process (the service, compact or check).`                                                                    |
@@ -2276,12 +2297,13 @@ test cannot prove that `fsync()` is called at all».
 
 ### `php-mini-search`
 
-`tests/Storage/LogTest.php` — 11 тестов на 131 утверждение, и это эксперимент 4
+`tests/Storage/LogTest.php` — 12 тестов на 133 утверждения, и это эксперимент 4
 в виде тестов: `testATornLastRecordIsCutOffAtEveryPossibleByte` (обрезает файл
 по **каждому** возможному смещению внутри последней записи),
 `testALastRecordWithABadChecksumIsATornTail`,
 `testADamagedBodyInTheMiddleIsKeptAsideAndTheLogStartsOver`,
 `testADamagedLengthFieldIsDamageNotATornTail`,
+`testADamagedLengthWithinTheLimitIsDamageNotATornTail`,
 `testAHeaderCutOffWhileBeingCreatedCountsAsNoLog`,
 `testAFileThatIsNotALogIsDamage`, `testScanningNeverChangesTheFile`,
 `testRewriteReplacesTheWholeLog`,
@@ -2303,8 +2325,8 @@ Docker, PHP 8.5.11. `WalTest` — OK, 16/29; `TransactionManagerTest` — OK, 34
 `ExecutorTransactionTest` — OK, 21/41; `tests/Integration/TransactionTest.php` —
 OK, 4/8; набор модульных тестов `php-mini-database` (`make test`) — OK, **1082
 теста, 3338 утверждений** (полный `phpunit` — 1093/3354). В `php-mini-search`:
-`tests/Storage/LogTest.php` — OK, 11/131; `tests/Reliability` — OK, 6/809;
-полный набор — OK, **180 тестов, 47 230 утверждений**.
+`tests/Storage/LogTest.php` — OK, 12/133; `tests/Reliability` — OK, 6/809;
+полный набор — OK, **181 тест, 47 232 утверждения**.
 
 ## 7. Цифры
 
@@ -2334,10 +2356,10 @@ OK, 4/8; набор модульных тестов `php-mini-database` (`make t
 | `ch18-log-bytes`                       | 12 строк; заголовок 9 байт; файл 58 байт после первой записи и 106 после второй; `crc32` обеих записей совпадает                    |
 | `ch18-log-recovery`                    | 24 строки; `clean` 3/156, `torn tail` 2/107 из 150, `damaged middle` 1/58 из 156, обрезанный заголовок 5 байт → `missing`           |
 | `WalTest`                              | 16 тестов, 29 утверждений                                                                                                           |
-| `LogTest`                              | 11 тестов, 131 утверждение                                                                                                          |
+| `LogTest`                              | 12 тестов, 133 утверждения                                                                                                          |
 | `Reliability` (`kill -9`, полный диск) | 6 тестов, 809 утверждений                                                                                                           |
 | Все тесты `php-mini-database`          | 1082 / 3338 (модульные), 1093 / 3354 (полный прогон)                                                                                |
-| Все тесты `php-mini-search`            | 180 / 47 230                                                                                                                        |
+| Все тесты `php-mini-search`            | 181 / 47 232                                                                                                                        |
 
 ## 8. Упражнения
 

@@ -4,7 +4,7 @@
 > [`php-mini-http-server`](https://github.com/Researcher86/php-mini-http-server)
 > (релиз `v1.1.0`, коммит `1f73404`) и
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search) (релиз
-> `v1.0.0`, коммит `7ecddc0`). Нужно знать: соединения и буферы (→ глава 10),
+> `v1.0.1`, коммит `3014fa5`). Нужно знать: соединения и буферы (→ глава 10),
 > протокол и pipelining (→ глава 11), инкрементальный разбор и фрейминг (→ глава
 > 13). Пригодится дальше: страницы, записи и B-деревья (→ глава 15) и базовая
 > линия с одной оптимизацией (→ глава 25). Связанное уже пройденное: корректное
@@ -594,7 +594,7 @@ public function __construct(
 }
 ```
 
-[`src/Http/ServerConfig.php#L15-L34`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/ServerConfig.php#L15-L34)
+[`src/Http/ServerConfig.php#L15-L34`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/ServerConfig.php#L15-L34)
 
 **Перевод комментариев:**
 - `$maxConnections` (PHPDoc): за этим пределом `accept()` не вызывается, и новые
@@ -634,7 +634,7 @@ public function isIdle(): bool
 }
 ```
 
-[`src/Http/Connection.php#L33-L46`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/Connection.php#L33-L46)
+[`src/Http/Connection.php#L33-L46`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/Connection.php#L33-L46)
 
 **Перевод комментариев:**
 - `wantsRead()` (PHPDoc): читать, только когда байтам есть куда деться: не пока
@@ -704,7 +704,7 @@ public function tick(float $maxWait = 1.0): void
 }
 ```
 
-[`src/Http/Server.php#L80-L126`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/Server.php#L80-L126)
+[`src/Http/Server.php#L80-L126`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/Server.php#L80-L126)
 
 **Перевод комментариев:**
 - `// A signal interrupts select() and makes it return false; that is not` —
@@ -757,7 +757,7 @@ private function untilNextDeadline(float $now): float
 }
 ```
 
-[`src/Http/Server.php#L304-L333`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Http/Server.php#L304-L333)
+[`src/Http/Server.php#L304-L333`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Http/Server.php#L304-L333)
 
 Порядок ветвей — приоритет, а не случайность: запись важнее тела, тело важнее
 заголовков, заголовки важнее простоя. Сортировка нужна именно потому, что поля
@@ -1316,7 +1316,7 @@ OK (180 tests, 47230 assertions)
 | Тесты сервера/цикла/соединений `php-mini-http-server`   | 91 тест, 333 утверждения                                                        |
 | Весь набор `php-mini-http-server`                       | 259 тестов, 598 утверждений                                                     |
 | Тесты HTTP `php-mini-search`                            | 50 тестов, 324 утверждения                                                      |
-| Весь набор `php-mini-search`                            | 180 тестов, 47 230 утверждений                                                  |
+| Весь набор `php-mini-search`                            | 181 тест, 47 232 утверждения                                                    |
 
 Отдельно — **документированные** числа `php-mini-search` из
 `docs/BENCHMARKS.md`: двести медленных клиентов, каждый из которых шлёт байт раз

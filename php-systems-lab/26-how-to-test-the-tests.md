@@ -1,7 +1,7 @@
 # Глава 26. Как проверить сами тесты: оракулы, мутации, `kill -9`
 
 > Проект: [`php-mini-search`](https://github.com/Researcher86/php-mini-search)
-> (тег `v1.0.0`, `7ecddc0`), с выходом на остальную лабораторию
+> (тег `v1.0.1`, `3014fa5`), с выходом на остальную лабораторию
 > (`php-job-queue`, `php-systems-platform`). Нужно знать: индекс и его
 > инварианты (→ главы 19–20), журнал и восстановление (→ главы 8, 18, 21),
 > измерение (→ глава 25).
@@ -212,7 +212,7 @@ final class NaiveSearch
      * @return array{hits: list<array{string, float}>, total: int}
 ```
 
-[`tests/Support/NaiveSearch.php#L20-L50`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Support/NaiveSearch.php#L20-L50)
+[`tests/Support/NaiveSearch.php#L20-L50`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Support/NaiveSearch.php#L20-L50)
 
 **Перевод комментариев:**
 - `$documents` (`@var`): `id → field → terms` — документы, хранимые как есть.
@@ -247,7 +247,7 @@ final class InvertedIndexAgainstOracleTest extends TestCase
 {
 ```
 
-[`tests/Index/InvertedIndexAgainstOracleTest.php#L10-L27`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Index/InvertedIndexAgainstOracleTest.php#L10-L27)
+[`tests/Index/InvertedIndexAgainstOracleTest.php#L10-L27`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Index/InvertedIndexAgainstOracleTest.php#L10-L27)
 
 **Перевод комментариев:**
 - `InvertedIndexAgainstOracleTest` (PHPDoc): случайные `put`, замены, удаления и
@@ -272,7 +272,7 @@ final class InvertedIndexAgainstOracleTest extends TestCase
 }
 ```
 
-[`tests/Index/InvertedIndexAgainstOracleTest.php#L94-L97`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Index/InvertedIndexAgainstOracleTest.php#L94-L97)
+[`tests/Index/InvertedIndexAgainstOracleTest.php#L94-L97`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Index/InvertedIndexAgainstOracleTest.php#L94-L97)
 
 **Перевод комментариев:**
 - `// The comparison is only as strong as what it compared.` — сравнение так же
@@ -301,7 +301,7 @@ final class KillDuringWritesTest extends TestCase
     private const int CONNECTIONS = 4;
 ```
 
-[`tests/Reliability/KillDuringWritesTest.php#L12-L29`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/tests/Reliability/KillDuringWritesTest.php#L12-L29)
+[`tests/Reliability/KillDuringWritesTest.php#L12-L29`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/tests/Reliability/KillDuringWritesTest.php#L12-L29)
 
 **Перевод комментариев:**
 - `KillDuringWritesTest` (PHPDoc): обещание `docs/FAILURE-MODEL.md` на реальном
@@ -344,7 +344,7 @@ final readonly class LogScan
      * @param int $validBytes where the last valid record ends; everything after it is the tail or the damage
 ```
 
-[`src/Storage/LogScan.php#L5-L27`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogScan.php#L5-L27)
+[`src/Storage/LogScan.php#L5-L27`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogScan.php#L5-L27)
 
 **Перевод комментариев:**
 - `LogScan` (PHPDoc): что нашло чтение журнала. Чтение никогда не меняет файл;
@@ -404,7 +404,7 @@ public static function open(string $path, Closure $onRecord): self
  * tail. This is `bin/mini-search check`.
 ```
 
-[`src/Storage/Log.php#L43-L79`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L43-L79)
+[`src/Storage/Log.php#L43-L79`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L43-L79)
 
 **Перевод комментариев:**
 - `open()` (PHPDoc): `@param Closure(array<string, mixed>): void $onRecord` —
@@ -454,7 +454,7 @@ final class LogFormat
      * @return array<string, mixed>|null null when the body is not a JSON object
 ```
 
-[`src/Storage/LogFormat.php#L20-L55`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogFormat.php#L20-L55)
+[`src/Storage/LogFormat.php#L20-L55`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogFormat.php#L20-L55)
 
 **Перевод комментариев:**
 - `MAX_BODY` (PHPDoc): ни одна корректная запись не приближается к этому:
@@ -480,6 +480,9 @@ final class LogFormat
  *    length field in the middle could otherwise point past the end of the
  *    file and pass for a torn tail, and cutting there would silently drop
  *    every acknowledged record after it;
+ *  - a length within MAX_BODY that claims the headers of later records →
+ *    damage too (see holdsAFrame()). Only a damaged length in the last
+ *    record still reads as a torn tail: nothing after it tells them apart;
  *  - a checksum failure before the last record, or a valid checksum around a
  *    body that is not a JSON object → damage.
  *
@@ -515,7 +518,7 @@ final class LogScanner
      * @param Closure(array<string, mixed>): void $onRecord
 ```
 
-[`src/Storage/LogScanner.php#L9-L55`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/LogScanner.php#L9-L55)
+[`src/Storage/LogScanner.php#L9-L58`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/LogScanner.php#L9-L58)
 
 **Перевод комментариев:**
 - `LogScanner` (PHPDoc): читает журнал спереди назад, передаёт каждую корректную
@@ -527,7 +530,10 @@ final class LogScanner
   никогда не подтверждалась и её безопасно отрезать; длина больше
   `LogFormat::MAX_BODY` → порча, где бы она ни была: испорченное поле длины в
   середине иначе могло бы указать за конец файла и сойти за оборванный хвост, а
-  отрезание там молча потеряло бы все подтверждённые записи после него; сбой
+  отрезание там молча потеряло бы все подтверждённые записи после него; длина в
+  пределах `MAX_BODY`, захватившая заголовки следующих записей, → тоже порча
+  (см. `holdsAFrame()`), и только испорченная длина последней записи всё ещё
+  читается как оборванный хвост: после неё нечем их различить; сбой
   контрольной суммы до последней записи или корректная сумма вокруг тела, не
   являющегося JSON-объектом → порча. Файл короче заголовка, но являющийся его
   префиксом, был обрезан при создании, до первой записи: он считается
@@ -567,7 +573,7 @@ final class Durable
     }
 ```
 
-[`src/Storage/Durable.php#L7-L33`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Durable.php#L7-L33)
+[`src/Storage/Durable.php#L7-L33`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Durable.php#L7-L33)
 
 **Перевод комментариев:**
 - `Durable` (PHPDoc): несколько файловых операций, от долговечности которых
@@ -612,7 +618,7 @@ public static function rewrite(string $path, iterable $records): void
         fclose($handle);
 ```
 
-[`src/Storage/Log.php#L97-L120`](https://github.com/Researcher86/php-mini-search/blob/7ecddc0278acc5e4ac22098c7d9aa5ebebe86ef3/src/Storage/Log.php#L97-L120)
+[`src/Storage/Log.php#L97-L120`](https://github.com/Researcher86/php-mini-search/blob/3014fa562484c8d4fa295338c9b9e84d8b217392/src/Storage/Log.php#L97-L120)
 
 **Перевод комментариев:**
 - `rewrite()` (PHPDoc): заменяет журнал ровно этими записями: пишет во временный
@@ -1263,9 +1269,13 @@ and it is a whole log again: yes
 
 Вторая половина даёт то, что первая дать не может, — точные числа: `47 из 59`
 байт, `torn_tail`, одна читаемая запись, недописанная в неё не попала. В
-`LogScanner` эта разница держится на порядке разбора: длина с испорченным полем
-могла бы указать за конец файла и сойти за недописанный кадр — и тогда
-отрезалось бы всё, что после, включая подтверждённое.
+`LogScanner` эта разница держится на двух проверках: длина больше `MAX_BODY` —
+порча всегда, а длина в пределах, указавшая за конец файла, — порча, если в
+захваченных байтах есть `\0`. Тело JSON его не содержит, заголовок следующей
+записи содержит всегда. Без второй проверки испорченный младший байт длины
+сошёл бы за недописанный кадр — и отрезалось бы всё, что после, включая
+подтверждённое. Неразличимым остаётся только испорченная длина у самой
+последней записи.
 
 И главное: после того как хвост отрезан, лог принимает новую запись и снова
 становится `clean`. Восстановление здесь не «починило файл как получилось», а
@@ -1392,7 +1402,7 @@ the counts are stable: yes
 | Процесс убит посреди записи              | `kill -9` в момент `append()`                | недописанный хвост: отрезается, подтверждённое остаётся                   |
 | Недописанное приняли за порчу            | унесённый файл `.damaged-*`                  | без нужды потерян весь лог                                                |
 | Порчу приняли за недописанное            | отрезание по ложной длине                    | молча потеряны подтверждённые записи после места порчи                    |
-| Длина кадра указывает за конец файла     | разбор идёт по порядку, а не по полям        | иначе оборванный кадр сойдёт за порчу, и наоборот                         |
+| Длина кадра указывает за конец файла     | `\0` в захваченных байтах                    | за длиной лежат другие записи: это порча, а не оборванный кадр            |
 | Запись подтверждена, но не на диске      | `fsync` (через `fflush`)                     | подтверждение обязано быть после синхронизации, а не до                   |
 | Кадр больше допустимого                  | `MAX_BODY`                                   | это порча поля длины, а не недописанная запись                            |
 | Питание пропало, а тест ставил `kill -9` | ограничение записано в тесте                 | страничный кеш дойдёт до диска и после убийства — тест этого не проверяет |
