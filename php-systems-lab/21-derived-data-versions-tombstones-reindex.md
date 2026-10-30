@@ -1727,8 +1727,8 @@ a late PUT for the deleted product: applied=no
 
 | Что               | Значение                                                                                                          |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `ch21-versions`   | 22 строки; 11 записей, 6 из них `applied=no`; `documents=1 tombstones=1`                                          |
-| `ch21-reindex`    | 24 строки; `removed 1` при первой переиндексации, `removed 4` при второй, `removed 0` при третьей; `tombstones=5` |
+| `ch21-versions`   | 20 строк; 10 записей, 4 из них `applied=no`; `documents=1 tombstones=1`                                           |
+| `ch21-reindex`    | 25 строк; `removed 1` при первой переиндексации, `removed 4` при второй, `removed 0` при третьей; `tombstones=5`  |
 | `ch21-restart`    | 18 строк; `state identical … yes`; повреждённый журнал → `log_corrupted`, копия отложена                          |
 | `ch21-compaction` | 5 строк; 1301 → 413 байт; `state identical … yes`; опоздавший PUT отвергнут                                       |
 
