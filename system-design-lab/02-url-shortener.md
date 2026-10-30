@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: rate limiter (глава 1). Следующая глава: notification
 > service (глава 3).
 
@@ -92,7 +92,7 @@ Sequential-генератор обходит проблему координац
     }
 ```
 
-[`src/Shortener/Base62.php` L22-L52](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/Base62.php#L22-L52)
+[`src/Shortener/Base62.php` L22-L52](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/Base62.php#L22-L52)
 
 `capacity()` — это не отдельная таблица, а арифметика с проверкой переполнения.
 Именно она не даёт объявить код длиной, которую PHP не сможет представить целым.
@@ -118,7 +118,7 @@ Sequential-генератор обходит проблему координац
     }
 ```
 
-[`src/Shortener/Base62.php` L79-L96](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/Base62.php#L79-L96)
+[`src/Shortener/Base62.php` L79-L96](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/Base62.php#L79-L96)
 
 Семь символов — это не «магическое число» из статьи. Это компромисс между длиной
 URL и запасом ёмкости. В лаборатории длина по умолчанию равна семи, но
@@ -158,7 +158,7 @@ final class RandomIdGenerator implements IdGenerator
 }
 ```
 
-[`src/Shortener/RandomIdGenerator.php` L10-L33](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/RandomIdGenerator.php#L10-L33)
+[`src/Shortener/RandomIdGenerator.php` L10-L33](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/RandomIdGenerator.php#L10-L33)
 
 Обратите внимание: `$attempt` принимается, но не используется. Случайному
 генератору не нужно менять вход — следующая попытка и так даёт новое число.
@@ -191,7 +191,7 @@ final class HashIdGenerator implements IdGenerator
 }
 ```
 
-[`src/Shortener/HashIdGenerator.php` L10-L33](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/HashIdGenerator.php#L10-L33)
+[`src/Shortener/HashIdGenerator.php` L10-L33](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/HashIdGenerator.php#L10-L33)
 
 Разделитель `"\0"` не даёт склеиться разным парам в одну строку: `("a", "bc")` и
 `("ab", "c")` должны давать разные входы. Номер попытки входит в хеш, поэтому
@@ -251,7 +251,7 @@ hash-генератор двадцать раз возвращал бы один
         }
 ```
 
-[`src/Shortener/UrlShortener.php` L48-L90](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/UrlShortener.php#L48-L90)
+[`src/Shortener/UrlShortener.php` L48-L90](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/UrlShortener.php#L48-L90)
 
 Пользовательский alias проверяется отдельно: он должен быть 4–32 символа base62
 и не совпадать с существующим кодом. Это не «красивая строка» без ограничений —
@@ -295,7 +295,7 @@ hash-генератор двадцать раз возвращал бы один
     }
 ```
 
-[`src/Shortener/UrlShortener.php` L133-L161](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/UrlShortener.php#L133-L161)
+[`src/Shortener/UrlShortener.php` L133-L161](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/UrlShortener.php#L133-L161)
 
 Бюджет — часть контракта. При заполнении 90% пространства вероятность случайно
 попасть в свободный код падает, и фиксированные двадцать попыток могут не найти
@@ -329,7 +329,7 @@ hash-генератор двадцать раз возвращал бы один
     }
 ```
 
-[`src/Shortener/InMemoryLinkRepository.php` L46-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Shortener/InMemoryLinkRepository.php#L46-L62)
+[`src/Shortener/InMemoryLinkRepository.php` L46-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Shortener/InMemoryLinkRepository.php#L46-L62)
 
 `save()` проверяет только `byCode`. Если два потока одновременно прошли
 `findByUrl()` и оба дошли до `save()`, второй перезапишет `byUrl` и создаст

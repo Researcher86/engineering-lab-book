@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: webhook delivery platform (глава 6). Это последняя глава
 > книги; дальше — интеграционный сценарий `make scenario`.
 
@@ -77,7 +77,7 @@ stop words и без позиций термов.
     }
 ```
 
-[`src/Search/Tokenizer.php` L21-L31](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/Tokenizer.php#L21-L31)
+[`src/Search/Tokenizer.php` L21-L31](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/Tokenizer.php#L21-L31)
 
 `link`, `Link` и `LINK` дадут один терм, а `link-42` — два: `link` и `42`.
 Стемминга нет, поэтому `links` и `link` — разные термы. Это ограничение
@@ -117,7 +117,7 @@ stop words и без позиций термов.
     }
 ```
 
-[`src/Search/InvertedIndex.php` L41-L65](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/InvertedIndex.php#L41-L65)
+[`src/Search/InvertedIndex.php` L41-L65](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/InvertedIndex.php#L41-L65)
 
 Posting — это пара «терм → документ» с частотой термина в документе. Один
 документ может добавить много postings, но каждый терм учитывается один раз.
@@ -187,7 +187,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/Bm25Ranker.php` L35-L88](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/Bm25Ranker.php#L35-L88)
+[`src/Search/Bm25Ranker.php` L35-L88](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/Bm25Ranker.php#L35-L88)
 
 `postingsScanned` считает документы, просмотренные в posting-листах, а
 `candidatesScored` — число различных документов, получивших score. Для одного
@@ -226,7 +226,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/PrefixIndex.php` L46-L68](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/PrefixIndex.php#L46-L68)
+[`src/Search/PrefixIndex.php` L46-L68](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/PrefixIndex.php#L46-L68)
 
 Сортировка происходит только при первой необходимости. Любая новая запись
 сбрасывает `sorted` в `null`, поэтому следующий запрос снова платит за
@@ -249,7 +249,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/PrefixIndex.php` L105-L118](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/PrefixIndex.php#L105-L118)
+[`src/Search/PrefixIndex.php` L105-L118](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/PrefixIndex.php#L105-L118)
 
 `countWithPrefix()` устроен иначе: он вытягивает весь диапазон совпадений, а не
 только `limit`. Это `O(matches)`, а не путь autocomplete. В книге это важно не
@@ -268,7 +268,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/SearchCluster.php` L56-L60](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/SearchCluster.php#L56-L60)
+[`src/Search/SearchCluster.php` L56-L60](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/SearchCluster.php#L56-L60)
 
 Хэш id, а не терма, означает, что все термы одного документа лежат на одном
 шарде. Это упрощает запись, но не даёт локальности по термам: запрос всё равно
@@ -331,7 +331,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/SearchCluster.php` L70-L117](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/SearchCluster.php#L70-L117)
+[`src/Search/SearchCluster.php` L70-L117](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/SearchCluster.php#L70-L117)
 
 Взятие top-k с каждого шарда достаточно для глобального top-k только при
 сравнимых score. Если score локальные, документ, не попавший в локальный top-k,
@@ -361,7 +361,7 @@ Posting — это пара «терм → документ» с частото�
     }
 ```
 
-[`src/Search/SearchCluster.php` L223-L237](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Search/SearchCluster.php#L223-L237)
+[`src/Search/SearchCluster.php` L223-L237](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Search/SearchCluster.php#L223-L237)
 
 Для обычного completion каждый шард получает тот же `limit`, поэтому глобальные
 первые `limit` термов не теряются. Для точного подсчёта кластер передаёт
@@ -519,9 +519,10 @@ make benchmark ARGS="search-engine --repetitions=3"
 | cluster search 4 common |    1 000 |   1 607.033 |       622 |
 | cluster index document  |    2 000 |       4.796 |   416 996 |
 
-Common-term запрос примерно в 20 раз медленнее rare-term: он просматривает почти
-весь индекс, а не около двадцати postings. Mixed-запрос близок к common, потому
-что частый терм доминирует в стоимости.
+На одну операцию common-term запрос примерно в 200 раз дороже rare-term (506
+против 103 152 ops/sec): он просматривает почти весь индекс, а не около двадцати
+postings. Mixed-запрос близок к common, потому что частый терм доминирует в
+стоимости.
 
 Сравнивать cluster и single-index нужно на одну операцию, а не на размер батча.
 В этом прогоне cluster rare стоит около 14.4 мкс против 9.7 мкс у single-index

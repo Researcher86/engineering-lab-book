@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: job queue (глава 4). Следующая глава: webhook delivery
 > platform (глава 6).
 
@@ -75,7 +75,7 @@ interface HashStrategy
 }
 ```
 
-[`src/DistributedCache/HashStrategy.php` L14-L29](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/HashStrategy.php#L14-L29)
+[`src/DistributedCache/HashStrategy.php` L14-L29](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/HashStrategy.php#L14-L29)
 
 ### 2.2. Modulo как базовая линия
 
@@ -107,7 +107,7 @@ Modulo-стратегия — это `hash64(key) % count(nodes)`. Она деш
     }
 ```
 
-[`src/DistributedCache/ModuloHash.php` L48-L68](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/ModuloHash.php#L48-L68)
+[`src/DistributedCache/ModuloHash.php` L48-L68](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/ModuloHash.php#L48-L68)
 
 Реплики здесь — следующие узлы по кругу. Это простое соглашение, но оно не
 делает modulo устойчивым к изменению состава: при переходе от восьми узлов к
@@ -153,7 +153,7 @@ Modulo-стратегия — это `hash64(key) % count(nodes)`. Она деш
     }
 ```
 
-[`src/DistributedCache/HashRing.php` L43-L71](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/HashRing.php#L43-L71)
+[`src/DistributedCache/HashRing.php` L43-L71](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/HashRing.php#L43-L71)
 
 Поиск идёт бинарным поиском по отсортированным позициям: находится первый токен
 не меньше хэша ключа, затем обход продолжается по часовой стрелке. Обход
@@ -206,7 +206,7 @@ Modulo-стратегия — это `hash64(key) % count(nodes)`. Она деш
     }
 ```
 
-[`src/DistributedCache/HashRing.php` L90-L133](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/HashRing.php#L90-L133)
+[`src/DistributedCache/HashRing.php` L90-L133](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/HashRing.php#L90-L133)
 
 Кольцо двигает только ключи, чей ближайший токен сменился. Это и есть обещанная
 граница `1/(N+1)` для одного нового узла. Важно, что здесь двигается только
@@ -253,7 +253,7 @@ Rendezvous hashing не строит кольцо. Каждый узел пол�
     }
 ```
 
-[`src/DistributedCache/RendezvousHash.php` L49-L78](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/RendezvousHash.php#L49-L78)
+[`src/DistributedCache/RendezvousHash.php` L49-L78](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/RendezvousHash.php#L49-L78)
 
 Цена — `O(nodes)` на каждый поиск вместо `O(log V)` у кольца. В маленьком
 кластере это незаметно, в большом — становится доминирующей стоимостью
@@ -283,7 +283,7 @@ Rendezvous hashing не строит кольцо. Каждый узел пол�
     }
 ```
 
-[`src/DistributedCache/LruStore.php` L39-L53](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/LruStore.php#L39-L53)
+[`src/DistributedCache/LruStore.php` L39-L53](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/LruStore.php#L39-L53)
 
 При попадании ключ переставляется в конец массива. Первый ключ массива — least
 recently used; именно он удаляется при переполнении.
@@ -314,7 +314,7 @@ recently used; именно он удаляется при переполнен�
     }
 ```
 
-[`src/DistributedCache/LruStore.php` L55-L77](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/LruStore.php#L55-L77)
+[`src/DistributedCache/LruStore.php` L55-L77](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/LruStore.php#L55-L77)
 
 Операции с массивом дают ожидаемое `O(1)` на попадание и вставку. Null не
 считается кэшируемым значением, поэтому `get()` может использовать null как
@@ -370,7 +370,7 @@ recently used; именно он удаляется при переполнен�
     }
 ```
 
-[`src/DistributedCache/CacheCluster.php` L67-L107](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/CacheCluster.php#L67-L107)
+[`src/DistributedCache/CacheCluster.php` L67-L107](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/CacheCluster.php#L67-L107)
 
 Запись идёт во все доступные целевые узлы. Если primary недоступен, но записана
 реплика, кластер считает запись degraded: копий меньше, чем replication factor.
@@ -421,7 +421,7 @@ recently used; именно он удаляется при переполнен�
     }
 ```
 
-[`src/DistributedCache/CacheCluster.php` L149-L183](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/DistributedCache/CacheCluster.php#L149-L183)
+[`src/DistributedCache/CacheCluster.php` L149-L183](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/DistributedCache/CacheCluster.php#L149-L183)
 
 При RF=1 ключи с упавшего узла становятся промахами до тех пор, пока их снова не
 положат в кэш. При RF=2 их может отдать реплика. Но это работает только для

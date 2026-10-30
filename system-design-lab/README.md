@@ -1,7 +1,7 @@
 # Книга System Design Lab
 
 > Статус: **7 глав готовы**. Код закреплён тегом
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 
 Учебник по проектированию backend-систем, написанный по коду лаборатории
 [`system-design-lab`](https://github.com/Researcher86/system-design-lab). Каждая
@@ -54,7 +54,7 @@
 8. **Упражнения** — задачи на понимание и измерение.
 
 Выдержки кода скопированы из файлов как есть и снабжены ссылкой на GitHub с
-диапазоном строк. Ссылки привязаны к тегу `v1.0.0`, а не к ветке `master`,
+диапазоном строк. Ссылки привязаны к тегу `v1.0.1`, а не к ветке `master`,
 поэтому номера строк не «уплывут» после следующих коммитов. Комментарии в коде
 лаборатории на английском; книга на русском.
 
@@ -99,7 +99,7 @@ make benchmark          # список бенчмарков
 
 Полный список экспериментов и бенчмарков — в `make experiment` и
 `make benchmark`; измеренные таблицы с окружением лежат в
-[`docs/BENCHMARKS.md`](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/docs/BENCHMARKS.md).
+[`docs/BENCHMARKS.md`](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/docs/BENCHMARKS.md).
 Числа в главах — один прогон в Docker на виртуализированном Linux, а не
 универсальная константа. Сравнивайте счётчики, форму зависимостей и порядок
 величин, а не только миллисекунды.
@@ -119,7 +119,7 @@ python3 ../php-systems-lab/tools/check_book.py \
 `--source-root ../..` читает локальные репозитории без сети и ожидает структуру
 `<repo>/<path>`, то есть `engineering-lab/system-design-lab/...`. В CI тот же
 checker запускается с `--expected-chapters=7` для System Design Lab и читает
-исходники из GitHub по тегу `v1.0.0`.
+исходники из GitHub по тегу `v1.0.1`.
 
 ## Что не обещается
 
@@ -142,6 +142,6 @@ checker запускается с `--expected-chapters=7` для System Design L
 - Код:
   [`Researcher86/system-design-lab`](https://github.com/Researcher86/system-design-lab)
 - Релиз:
-  [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0)
+  [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1)
 - Проверки релиза: 396 тестов / 19 064 assertions, PHPStan level 8 без ошибок,
   PHP-CS-Fixer чист.

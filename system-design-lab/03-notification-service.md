@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: URL shortener (глава 2). Следующая глава: job queue (глава
 > 4).
 
@@ -79,7 +79,7 @@ enum Channel: string
 }
 ```
 
-[`src/Notification/Channel.php` L9-L34](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/Channel.php#L9-L34)
+[`src/Notification/Channel.php` L9-L34](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/Channel.php#L9-L34)
 
 `UserPreferences` хранит список каналов, а не битмаску. Список можно проверить
 на дубликаты при создании и напечатать в отчёте. Битмаска была бы компактнее, но
@@ -131,7 +131,7 @@ final readonly class UserPreferences
 }
 ```
 
-[`src/Notification/UserPreferences.php` L9-L51](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/UserPreferences.php#L9-L51)
+[`src/Notification/UserPreferences.php` L9-L51](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/UserPreferences.php#L9-L51)
 
 ### 2.2. Порядок решений
 
@@ -200,7 +200,7 @@ final readonly class UserPreferences
             }
 ```
 
-[`src/Notification/NotificationService.php` L33-L88](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/NotificationService.php#L33-L88)
+[`src/Notification/NotificationService.php` L33-L88](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/NotificationService.php#L33-L88)
 
 Ключ дедупликации включает tenant, пользователя, канал и `eventKey`. Если убрать
 канал, повторная отправка в email подавит push. Если убрать tenant, два
@@ -248,7 +248,7 @@ TTL не продлевается повторной попыткой — ина
     }
 ```
 
-[`src/Notification/InMemoryDedupStore.php` L42-L72](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/InMemoryDedupStore.php#L42-L72)
+[`src/Notification/InMemoryDedupStore.php` L42-L72](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/InMemoryDedupStore.php#L42-L72)
 
 TTL, равный нулю, отключает дедупликацию, а не включает «вечную» память. Это
 явное состояние полезно в тестах и в экспериментах: можно сравнить поток с
@@ -328,7 +328,7 @@ final readonly class QuietHours
     }
 ```
 
-[`src/Notification/QuietHours.php` L9-L73](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/QuietHours.php#L9-L73)
+[`src/Notification/QuietHours.php` L9-L73](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/QuietHours.php#L9-L73)
 
 `while ($candidate <= $nowMs)` нужен для окна, которое уже началось вчера и
 заканчивается сегодня: конец может быть раньше текущего момента, и тогда
@@ -361,7 +361,7 @@ Digest buffer группирует события по tenant, пользова�
     }
 ```
 
-[`src/Notification/DigestBuffer.php` L44-L61](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Notification/DigestBuffer.php#L44-L61)
+[`src/Notification/DigestBuffer.php` L44-L61](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Notification/DigestBuffer.php#L44-L61)
 
 `due()` отделяет пакеты прошлых дней от текущего. Если вызвать `flushAll()`,
 уйдут и текущие — это путь завершения симуляции, а не штатное расписание.

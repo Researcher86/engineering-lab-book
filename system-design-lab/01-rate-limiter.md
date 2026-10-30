@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Следующая глава: URL Shortener (глава 2).
 
 Первое место, где система встречает нагрузку, — это решение о допуске. Пока
@@ -78,7 +78,7 @@ interface RateLimiter
 }
 ```
 
-[`src/RateLimiter/RateLimiter.php` L9-L27](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/RateLimiter.php#L9-L27)
+[`src/RateLimiter/RateLimiter.php` L9-L27](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/RateLimiter.php#L9-L27)
 
 `Decision` отделяет разрешение от полезной нагрузки. `remaining` — это сколько
 целых запросов ещё помещается в текущий бюджет, `retryAfterMs` — подсказка, а не
@@ -104,7 +104,7 @@ final readonly class Decision
     }
 ```
 
-[`src/RateLimiter/Decision.php` L7-L23](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/Decision.php#L7-L23)
+[`src/RateLimiter/Decision.php` L7-L23](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/Decision.php#L7-L23)
 
 ### 2.2. Token bucket
 
@@ -149,7 +149,7 @@ Bucket хранит остаток в целых «нанотокенах», ч�
         }
 ```
 
-[`src/RateLimiter/TokenBucket.php` L53-L86](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/TokenBucket.php#L53-L86)
+[`src/RateLimiter/TokenBucket.php` L53-L86](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/TokenBucket.php#L53-L86)
 
 `elapsed = max(0, ...)` — не косметика. Если время идемпотентно откатилось
 назад, лимитер не должен начислять отрицательное пополнение. `lastRefillMs`
@@ -191,7 +191,7 @@ Fixed window — самый дешёвый вариант: одно число �
         }
 ```
 
-[`src/RateLimiter/FixedWindowCounter.php` L46-L72](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/FixedWindowCounter.php#L46-L72)
+[`src/RateLimiter/FixedWindowCounter.php` L46-L72](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/FixedWindowCounter.php#L46-L72)
 
 Окно дискретно: `intdiv(nowMs, windowMs)`. В момент 1000 начинается новое окно,
 и счётчик обнуляется, даже если девятьсот девяносто девять миллисекунд назад уже
@@ -242,7 +242,7 @@ Sliding log хранит кольцевой буфер принятых отме
     }
 ```
 
-[`src/RateLimiter/SlidingWindowLog.php` L46-L81](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/SlidingWindowLog.php#L46-L81)
+[`src/RateLimiter/SlidingWindowLog.php` L46-L81](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/SlidingWindowLog.php#L46-L81)
 
 Кольцевой буфер имеет фиксированный размер `limit`, поэтому вставка и удаление —
 O(1), а память — O(limit) на ключ. Это важно: «точный» не значит «безграничный».
@@ -260,7 +260,7 @@ O(1), а память — O(limit) на ключ. Это важно: «точн�
     }
 ```
 
-[`src/RateLimiter/SlidingWindowLog.php` L98-L105](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/SlidingWindowLog.php#L98-L105)
+[`src/RateLimiter/SlidingWindowLog.php` L98-L105](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/SlidingWindowLog.php#L98-L105)
 
 Условие `<=` задаёт полуоткрытое окно: запрос ровно на границе уже не считается
 принятым. Это осознанный выбор; главное, чтобы он был одинаковым в тестах,
@@ -290,7 +290,7 @@ Sliding counter заменяет список двумя числами. Он о
         }
 ```
 
-[`src/RateLimiter/SlidingWindowCounter.php` L65-L79](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/RateLimiter/SlidingWindowCounter.php#L65-L79)
+[`src/RateLimiter/SlidingWindowCounter.php` L65-L79](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/RateLimiter/SlidingWindowCounter.php#L65-L79)
 
 Оценка предполагает, что запросы в предыдущем окне распределены равномерно. Это
 не факт о потоке, а допущение модели. Если десять запросов пришли в последнюю

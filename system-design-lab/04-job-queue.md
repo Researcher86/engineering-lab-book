@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: notification service (глава 3). Следующая глава: distributed
 > cache (глава 5).
 
@@ -112,7 +112,7 @@ final class Job
     }
 ```
 
-[`src/Queue/Job.php` L10-L65](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/Job.php#L10-L65)
+[`src/Queue/Job.php` L10-L65](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/Job.php#L10-L65)
 
 `lease()` увеличивает `attempts` и записывает владельца. Проверки не дают взять
 задачу дважды или взять её раньше `availableAtMs`.
@@ -150,7 +150,7 @@ final class Job
     }
 ```
 
-[`src/Queue/Job.php` L119-L148](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/Job.php#L119-L148)
+[`src/Queue/Job.php` L119-L148](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/Job.php#L119-L148)
 
 ### 2.2. Три heap-а и карта lease
 
@@ -199,7 +199,7 @@ final class JobQueue
     private int $sequence = 0;
 ```
 
-[`src/Queue/JobQueue.php` L12-L49](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L12-L49)
+[`src/Queue/JobQueue.php` L12-L49](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L12-L49)
 
 ### 2.3. Постановка и выдача
 
@@ -237,7 +237,7 @@ final class JobQueue
     }
 ```
 
-[`src/Queue/JobQueue.php` L66-L91](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L66-L91)
+[`src/Queue/JobQueue.php` L66-L91](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L66-L91)
 
 Приоритет хранится как первый элемент пары `[priority, -sequence]`. `sequence`
 растёт при каждой вставке, поэтому при равном приоритете первым выходит тот, кто
@@ -282,7 +282,7 @@ final class JobQueue
     }
 ```
 
-[`src/Queue/JobQueue.php` L93-L128](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L93-L128)
+[`src/Queue/JobQueue.php` L93-L128](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L93-L128)
 
 ### 2.4. Завершение и провал
 
@@ -350,7 +350,7 @@ worker-а, который вернулся после истечения visibil
     }
 ```
 
-[`src/Queue/JobQueue.php` L130-L185](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L130-L185)
+[`src/Queue/JobQueue.php` L130-L185](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L130-L185)
 
 Провал на последней попытке уходит в dead-letter list, а не в бесконечный retry.
 В этой лаборатории dead letter — это список в памяти; replay из него не
@@ -397,7 +397,7 @@ worker-а, который вернулся после истечения visibil
     }
 ```
 
-[`src/Queue/JobQueue.php` L194-L225](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L194-L225)
+[`src/Queue/JobQueue.php` L194-L225](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L194-L225)
 
 ### 2.6. Продвижение delayed
 
@@ -435,7 +435,7 @@ ready heap сам выберет приоритет.
     }
 ```
 
-[`src/Queue/JobQueue.php` L227-L253](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/JobQueue.php#L227-L253)
+[`src/Queue/JobQueue.php` L227-L253](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/JobQueue.php#L227-L253)
 
 ### 2.7. Backoff и processed ids
 
@@ -461,7 +461,7 @@ ready heap сам выберет приоритет.
     }
 ```
 
-[`src/Queue/ExponentialBackoff.php` L48-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Queue/ExponentialBackoff.php#L48-L62)
+[`src/Queue/ExponentialBackoff.php` L48-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Queue/ExponentialBackoff.php#L48-L62)
 
 `ProcessedJobStore` хранит завершённые id в TTL. Повторный enqueue того же id
 отклоняется, пока запись жива. Это защита от replay, а не от повторного side

@@ -2,7 +2,7 @@
 
 > Проект:
 > [`system-design-lab`](https://github.com/Researcher86/system-design-lab), тег
-> [`v1.0.0`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/system-design-lab/releases/tag/v1.0.1).
 > Предыдущая глава: distributed cache (глава 5). Следующая глава: search engine
 > (глава 7).
 
@@ -85,7 +85,7 @@ budget.
     }
 ```
 
-[`src/Webhook/WebhookDispatcher.php` L41-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/WebhookDispatcher.php#L41-L62)
+[`src/Webhook/WebhookDispatcher.php` L41-L62](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/WebhookDispatcher.php#L41-L62)
 
 Fan-out — это не «число событий × число подписок», а «число событий × число
 заинтересованных подписок». Фильтр по типу сокращает объём, но широкая подписка
@@ -145,7 +145,7 @@ Fan-out — это не «число событий × число подписо
     }
 ```
 
-[`src/Webhook/Signer.php` L18-L61](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/Signer.php#L18-L61)
+[`src/Webhook/Signer.php` L18-L61](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/Signer.php#L18-L61)
 
 Окно по умолчанию — 300 000 мс, то есть пять минут. Чем шире окно, тем больше
 времени есть у повторной отправки перехваченного запроса; чем уже, тем чаще
@@ -187,7 +187,7 @@ Worker помнит завершённые delivery id в TTL. Повторны�
     }
 ```
 
-[`src/Webhook/WebhookWorker.php` L69-L89](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/WebhookWorker.php#L69-L89)
+[`src/Webhook/WebhookWorker.php` L69-L89](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/WebhookWorker.php#L69-L89)
 
 Это защита от повторного планирования, а не от повторного side effect. Если
 получатель уже выполнил работу, а ответ потерялся, worker всё равно повторит
@@ -233,7 +233,7 @@ Worker помнит завершённые delivery id в TTL. Повторны�
         );
 ```
 
-[`src/Webhook/WebhookWorker.php` L168-L196](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/WebhookWorker.php#L168-L196)
+[`src/Webhook/WebhookWorker.php` L168-L196](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/WebhookWorker.php#L168-L196)
 
 Breaker привязан к URL endpoint-а, а не к подписке или tenant-у. Две подписки на
 один URL делят одно состояние: если endpoint лежит, нет смысла проверять его
@@ -276,7 +276,7 @@ delivered, id попадает в processed store. Любой другой от�
     }
 ```
 
-[`src/Webhook/WebhookWorker.php` L205-L231](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/WebhookWorker.php#L205-L231)
+[`src/Webhook/WebhookWorker.php` L205-L231](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/WebhookWorker.php#L205-L231)
 
 Исключение транспорта превращается в ответ с кодом 0 и обрабатывается как
 обычный retryable failure. Dead-letter list — это массив в памяти; replay из
@@ -330,7 +330,7 @@ cooldown.
     }
 ```
 
-[`src/Webhook/CircuitBreaker.php` L46-L82](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/CircuitBreaker.php#L46-L82)
+[`src/Webhook/CircuitBreaker.php` L46-L82](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/CircuitBreaker.php#L46-L82)
 
 Провал во время открытого состояния не просто увеличивает счётчик: он
 перезапускает cooldown. Поэтому один неудачный probe не закрывает breaker
@@ -359,7 +359,7 @@ cooldown.
     }
 ```
 
-[`src/Webhook/CircuitBreaker.php` L98-L117](https://github.com/Researcher86/system-design-lab/blob/v1.0.0/src/Webhook/CircuitBreaker.php#L98-L117)
+[`src/Webhook/CircuitBreaker.php` L98-L117](https://github.com/Researcher86/system-design-lab/blob/v1.0.1/src/Webhook/CircuitBreaker.php#L98-L117)
 
 Пока breaker открыт, доставка не тратит попытку: `attempt()` вызывает
 `scheduleRetry()` и возвращается. Это принципиально для эксперимента с
