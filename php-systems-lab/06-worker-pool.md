@@ -1,7 +1,7 @@
 # Глава 6. Пул воркеров: master, воркеры, супервизия
 
 > Проект: [`php-worker-pool`](https://github.com/Researcher86/php-worker-pool),
-> релиз `v1.1.0`, коммит `b616246`. Нужно знать: память и `fork` (→ главы 1–2),
+> релиз `v1.1.1`, коммит `49f6dc6`. Нужно знать: память и `fork` (→ главы 1–2),
 > IPC и сокеты (→ глава 3), цикл событий (→ глава 4), Fibers (→ глава 5).
 > Пригодится дальше: плавное завершение и сигналы (→ глава 7), очередь задач (→
 > глава 8).
@@ -207,7 +207,7 @@ enum WorkerState
 }
 ```
 
-[`src/Worker/WorkerState.php#L7-L21`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerState.php#L7-L21)
+[`src/Worker/WorkerState.php#L7-L21`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerState.php#L7-L21)
 
 **Перевод комментариев:**
 - `STARTING` (PHPDoc): форкнут, но всё ещё выполняет то, что приложение делает
@@ -248,7 +248,7 @@ Enum, а не набор булевых флагов, — потому что с
 *   any state ──markDead()──> DEAD (terminal, no way out)
 ```
 
-[`src/Worker/WorkerProcess.php#L15-L35`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerProcess.php#L15-L35)
+[`src/Worker/WorkerProcess.php#L15-L35`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerProcess.php#L15-L35)
 
 Три вещи, которые стоит прочитать с диаграммы:
 
@@ -276,7 +276,7 @@ Enum, а не набор булевых флагов, — потому что с
 public function launch(): WorkerProcess
 ```
 
-[`src/Worker/ForkedWorkerLauncher.php#L46-L56`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/ForkedWorkerLauncher.php#L46-L56)
+[`src/Worker/ForkedWorkerLauncher.php#L46-L56`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/ForkedWorkerLauncher.php#L46-L56)
 
 **Перевод комментариев:**
 - `launch()` (PHPDoc): `pcntl_fork()` выполняет одно и то же тело функции в двух
@@ -320,7 +320,7 @@ if ($pid === 0) {
     pcntl_sigprocmask(SIG_SETMASK, []);
 ```
 
-[`src/Worker/ForkedWorkerLauncher.php#L79-L99`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/ForkedWorkerLauncher.php#L79-L99)
+[`src/Worker/ForkedWorkerLauncher.php#L79-L99`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/ForkedWorkerLauncher.php#L79-L99)
 
 **Перевод комментариев:**
 - `// fork() copies the parent's pcntl signal handlers, and a worker` — `fork()`
@@ -393,7 +393,7 @@ public function reapDeadWorkers(): array
                 // What matters here is that this loop keeps going: a
 ```
 
-[`src/Worker/WorkerPool.php#L279-L320`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerPool.php#L279-L320)
+[`src/Worker/WorkerPool.php#L279-L320`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerPool.php#L279-L320)
 
 **Перевод комментариев:**
 - `// not a worker we're tracking (already handled elsewhere)` — не тот воркер,
@@ -451,7 +451,7 @@ if (!$this->queue->isEmpty() && $idle === 0 && $starting === 0 && $total < $this
     $this->pool->scaleUp(min($this->step, $this->maxWorkers - $total));
 ```
 
-[`src/Worker/Autoscaler.php#L58-L79`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/Autoscaler.php#L58-L79)
+[`src/Worker/Autoscaler.php#L58-L79`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/Autoscaler.php#L58-L79)
 
 **Перевод комментариев:**
 - `// countIdle(), not count() - countBusy(): a retiring (STOPPING)` —
@@ -683,7 +683,7 @@ Requests:
 |        4 |             2 531 rq/s |      3.7× |  2.96 ms |
 |        8 |             4 206 rq/s |      6.1× |  1.73 ms |
 
-[`docs/BENCHMARKS.md#L39-L44`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/docs/BENCHMARKS.md#L39-L44)
+[`docs/BENCHMARKS.md#L39-L44`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/docs/BENCHMARKS.md#L39-L44)
 
 Почти линейно: удвоил пул — удвоил пропускную способность, вдвое снизил
 латентность. Разрыв между 6.1× и теоретическими 8× — это однопоточный master и
@@ -698,7 +698,7 @@ Requests:
 |        4 |            19 658 rq/s | 0.32 ms |
 |        8 |            21 627 rq/s | 0.30 ms |
 
-[`docs/BENCHMARKS.md#L58-L63`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/docs/BENCHMARKS.md#L58-L63)
+[`docs/BENCHMARKS.md#L58-L63`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/docs/BENCHMARKS.md#L58-L63)
 
 После двух воркеров рост прекращается: узкое место — не воркеры, а единственный
 master, через который проходит каждый запрос. Вывод проекта записан прямо:
@@ -706,7 +706,7 @@ master, через который проходит каждый запрос. В
 > **more workers only buy throughput while the handler costs more than the
 > plumbing.**
 
-[`docs/BENCHMARKS.md#L70-L72`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/docs/BENCHMARKS.md#L70-L72)
+[`docs/BENCHMARKS.md#L70-L72`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/docs/BENCHMARKS.md#L70-L72)
 
 И, наконец, перегрузка и обратное давление (медленный воркер 20 мс, 128
 конкурентных запросов против пула на ~50 rq/s):
@@ -716,7 +716,7 @@ master, через который проходит каждый запрос. В
 |        10 000 |       256 |         0 | все ответы, каждый ждёт ~5 с                 |
 |            16 |        34 |       222 | 34 ответа, 222 × `server_overloaded`, быстро |
 
-[`docs/BENCHMARKS.md#L110-L113`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/docs/BENCHMARKS.md#L110-L113)
+[`docs/BENCHMARKS.md#L110-L113`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/docs/BENCHMARKS.md#L110-L113)
 
 Это и есть компромисс ограниченной очереди: не копить до исчерпания памяти, а
 ответить «сейчас не могу» сразу — чтобы клиент мог осмысленно повторить,

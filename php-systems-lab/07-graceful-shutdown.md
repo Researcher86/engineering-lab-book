@@ -1,7 +1,7 @@
 # Глава 7. Корректное завершение: draining, таймауты, сигналы
 
 > Проекты: [`php-worker-pool`](https://github.com/Researcher86/php-worker-pool),
-> релиз `v1.1.0`, коммит `b616246`;
+> релиз `v1.1.1`, коммит `49f6dc6`;
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search), релиз
 > `v1.0.1`, коммит `3014fa5`. Нужно знать: процессы и супервизию (→ глава 6),
 > цикл событий (→ глава 4). Пригодится дальше: очередь задач (→ глава 8),
@@ -204,7 +204,7 @@ public function run(): void
     pcntl_sigprocmask(SIG_BLOCK, self::HANDLED_SIGNALS, $previousMask);
 ```
 
-[`src/Master/Master.php#L173-L195`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Master/Master.php#L173-L195)
+[`src/Master/Master.php#L173-L195`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Master/Master.php#L173-L195)
 
 **Перевод комментариев:**
 - `// Every signal registerSignalHandling() is about to catch is blocked` —
@@ -252,7 +252,7 @@ if ($this->signalsDuringWait !== []) {
 }
 ```
 
-[`src/EventLoop/EventLoop.php#L178-L192`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/EventLoop/EventLoop.php#L178-L192)
+[`src/EventLoop/EventLoop.php#L178-L192`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/EventLoop/EventLoop.php#L178-L192)
 
 **Перевод комментариев:**
 - `// The window, and nothing but the select inside it: a signal pending` —
@@ -301,7 +301,7 @@ private function drainSignalPipe(): void
 }
 ```
 
-[`src/Master/Master.php#L421-L447`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Master/Master.php#L421-L447)
+[`src/Master/Master.php#L421-L447`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Master/Master.php#L421-L447)
 
 **Перевод комментариев:**
 - `drainSignalPipe()` (PHPDoc): сторона главного цикла self-pipe: прочитать
@@ -334,7 +334,7 @@ private function withSigchldDeferred(callable $operation): mixed
 }
 ```
 
-[`src/Worker/WorkerPool.php#L877-L886`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerPool.php#L877-L886)
+[`src/Worker/WorkerPool.php#L877-L886`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerPool.php#L877-L886)
 
 `SIG_BLOCK`, а не `SIG_IGN`: заблокированный сигнал **доставится** сразу после
 восстановления маски. Операция просто перестаёт бояться, что реапер вклинится
@@ -388,7 +388,7 @@ private function shutdown(UnixSocketServer $server): float
     }
 ```
 
-[`src/Master/Master.php#L653-L694`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Master/Master.php#L653-L694)
+[`src/Master/Master.php#L653-L694`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Master/Master.php#L653-L694)
 
 **Перевод комментариев:**
 - `// Absorb what clients have already sent but we haven't read yet.` —
@@ -466,7 +466,7 @@ public function terminateStuckWorkers(
     });
 ```
 
-[`src/Worker/WorkerPool.php#L522-L563`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerPool.php#L522-L563)
+[`src/Worker/WorkerPool.php#L522-L563`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerPool.php#L522-L563)
 
 **Перевод комментариев:**
 - `// A worker that was already leaving goes to STOPPING before` — воркер,
@@ -534,7 +534,7 @@ foreach ($this->workers as $worker) {
 }
 ```
 
-[`src/Worker/WorkerPool.php#L810-L856`](https://github.com/Researcher86/php-worker-pool/blob/b616246957c0fac9bbb71100c14663b86f74c2a3/src/Worker/WorkerPool.php#L810-L856)
+[`src/Worker/WorkerPool.php#L810-L856`](https://github.com/Researcher86/php-worker-pool/blob/49f6dc626046301fe7d81d335775b4c36b54b467/src/Worker/WorkerPool.php#L810-L856)
 
 **Перевод комментариев:**
 - `// pcntl_waitpid(-1, ...) reaps whichever child exits next, not a` —
@@ -692,11 +692,11 @@ $ kill -HUP $SRV                                    # на ходу
 не делись, а замена подхватила новый трафик. Это `reload()` из главы 6 в
 действии: новое поколение запускается первым, старое — осушается.
 
-### Живая находка: `SIGHUP` при простое роняет master
+### Живая находка: `SIGHUP` сразу после старта ронял master
 
-А теперь честный результат, который я не ожидал. Если послать `SIGHUP`, когда
-воркеры **простаивают** (нет трафика), master падает. Воспроизведение — три раза
-из трёх:
+А теперь честный результат, которого я не ожидал. В `v1.1.0` master падал, если
+`SIGHUP` приходил вскоре после старта, сразу после того, как воркеры написали
+«reporting ready». Воспроизведение — три раза из трёх:
 
 ```text
 $ for i in 1 2 3; do
@@ -721,29 +721,52 @@ Stack trace:
 Next ValueError: No stream arrays were passed in /app/src/IPC/Socket.php:92
 ```
 
-Что происходит: `reload()` при простое сразу переводит старых воркеров в
-`DRAINING` и вызывает `retireIdleWorkers()`, а тот **закрывает** их сокеты
-(`$worker->close()`) прямо во время обработки сигнала — то есть внутри
-`foreach ($read as $resource)` в `EventLoop::tick()`. Закрытый ресурс уже не
-валиден, но его обработчик всё ещё в `$readHandlers`, и вызов доходит до
-`Socket::readAvailable()`, где `stream_select()` на пустом (после отсева
-невалидных ресурсов) массиве в PHP 8 бросает `ValueError`, а не возвращает
-`false`. `forgetClosedResources()` чистит закрытые ресурсы только **в начале**
-следующего тика — этого окна достаточно, чтобы кликнуло.
+Условие — не «простой», а **момент сразу после старта**. Замер на `v1.1.0`, по
+три прогона на каждую задержку между двумя строками «reporting ready» и
+`SIGHUP`:
 
-Почему тесты это не ловят:
+| Задержка до `SIGHUP` | 0 с     | 0.1 с   | 0.5 с   | 1 с   | 1.5 с | 5 с   |
+| -------------------- | ------- | ------- | ------- | ----- | ----- | ----- |
+| `v1.1.0`             | падение | падение | падение | живой | живой | живой |
+
+Что происходит. Обработчик `SIGHUP` только пишет байт `H` в self-pipe, а сам
+`reload()` выполняется в обработчике чтения этого пайпа — то есть **внутри**
+`foreach ($read as $resource)` в `EventLoop::tick()`. `reload()` переводит
+старых воркеров в `DRAINING` и вызывает `retireIdleWorkers()`, а тот
+**закрывает** их сокеты (`$worker->close()`). Если сокет такого воркера оказался
+готов к чтению в том же `stream_select()`, что и пайп, — а сразу после старта в
+нём ещё лежит его `READY`, — следующая итерация `foreach` вызывает обработчик
+уже закрытого ресурса. Тот доходит до `Socket::readAvailable()`, и
+`stream_select()` на закрытом ресурсе бросает `TypeError`.
+`forgetClosedResources()` чистит закрытые ресурсы только **в начале** следующего
+тика, а падение случается раньше. У воркера, который действительно простаивает,
+сокет не готов — его нет в `$read`, поэтому через секунду после старта
+`SIGHUP` проходил без последствий.
+
+Почему тесты это не ловили:
 `ChaosTest::testReloadReplacesEveryWorkerWithoutLosingRequests` шлёт запросы
-**до** `SIGHUP`, поэтому воркеры заняты и `reload()` их не трогает — путь
-«закрыть сокет простаивающего воркера посреди тика» просто не исполняется. Под
-нагрузкой reload корректен (эксперимент выше), при простое — нет.
+**до** `SIGHUP` и ждёт их ответов, поэтому к моменту reload в сокетах воркеров
+уже нечего читать — путь «закрыть сокет, готовый в этом же тике» не
+исполняется.
 
-Я оставляю это здесь как есть, потому что это ровно то, о чём глава: обработка
-сигнала сходится с циклом событий, и **редкий путь** (закрытие дескриптора в
-середине тика) оказывается незакрытым. Проверенное лекарство напрашивается само:
-снимать регистрацию читаемости вместе с `close()`, либо не вызывать обработчик
-для ресурса, который перестал быть `is_resource()`, прямо в `EventLoop::tick()`.
-Это баг проекта `v1.1.0`, а не свойство дизайна; строка `Socket.php:92` и номер
-версии зафиксированы, чтобы находка была проверяемой.
+Исправление вошло в `v1.1.1`, и оно — второе из двух очевидных: не вызывать
+обработчик для ресурса, который перестал быть открытым, прямо в
+`EventLoop::tick()`. Ресурс, закрытый более ранним обработчиком того же тика,
+пропускается, а со следующего тика его забывает `forgetClosedResources()`.
+Тест `testAHandlerIsSkippedWhenAnEarlierHandlerInTheSameTickClosedItsResource`
+воспроизводит ровно эту гонку: обработчик `A` закрывает готовый ресурс `B`. На
+`v1.1.0` он падает с `TypeError`, на `v1.1.1` проходит. Тот же цикл из
+`SIGHUP`, на `v1.1.1`:
+
+| Задержка до `SIGHUP` | 0 с   | 0.1 с | 0.5 с |
+| -------------------- | ----- | ----- | ----- |
+| `v1.1.0`             | 0 / 3 | 0 / 3 | 0 / 3 |
+| `v1.1.1`             | 3 / 3 | 3 / 3 | 3 / 3 |
+
+(число прогонов, после которых master жив). Я оставляю находку в главе, потому
+что это ровно то, о чём она: обработка сигнала сходится с циклом событий, и
+**редкий путь** — закрытие дескриптора в середине тика — оказывается
+незакрытым, пока его не попросили пройти.
 
 ## 5. Отказы
 
@@ -758,7 +781,7 @@ Next ValueError: No stream arrays were passed in /app/src/IPC/Socket.php:92
 | Воркер игнорирует команду выхода                    | слот занят вечно                      | `SIGTERM` → `SIGKILL` по `workerDepartureTimeout`                |
 | Воркер завис в `STARTING`                           | ёмкость исчезает незаметно            | `workerBootstrapTimeoutSeconds`                                  |
 | Воркер дорабатывает долгий запрос                   | его снимают раньше времени            | `DRAINING` сохраняет весь execution-бюджет                       |
-| Стрим-закрытие в середине тика (reload при простое) | fatal `ValueError` в `stream_select`  | **не закрыто** — см. живую находку выше                          |
+| Сокет закрыт в середине тика (reload)               | fatal `TypeError` в `stream_select`   | `is_resource()` перед обработчиком (`v1.1.1`)                    |
 | Клиент отключился во время draining                 | висящая запись держит shutdown        | `clients->removeBroken()` в цикле                                |
 | Пул не уложился в дедлайн                           | —                                     | `SIGKILL` каждому живому воркеру, выход ограничен                |
 
@@ -794,10 +817,10 @@ Next ValueError: No stream arrays were passed in /app/src/IPC/Socket.php:92
 выхода, а `onSignal()` — чистая функция от числа сигналов, что делает оба легко
 тестируемыми в изоляции.
 
-И честная оговорка: набор тестов **не** покрывал reload при простое — ровно
-поэтому находка выше и дожила до чтения кода. Тест, который бы её поймал, шлёт
-`SIGHUP` на **простаивающий** пул и проверяет, что процесс жив, — я упоминаю это
-как недостающий тест, а не как существующий.
+И честная оговорка: до `v1.1.1` набор тестов **не** покрывал reload, при котором
+закрываемый сокет готов в том же тике, — ровно поэтому находка выше и дожила до
+чтения кода. Теперь его покрывает
+`EventLoopTest::testAHandlerIsSkippedWhenAnEarlierHandlerInTheSameTickClosedItsResource`.
 
 ## 7. Цифры
 
@@ -808,7 +831,7 @@ Next ValueError: No stream arrays were passed in /app/src/IPC/Socket.php:92
 | `php-mini-search` `SIGTERM` | `signal 15` → `draining` (`deadline_s 10`) → `stopped`, `exit_code 0`    |
 | `php-worker-pool` `SIGTERM` | `exit=0`, файл сокета удалён                                             |
 | Reload под нагрузкой        | 6 000 запросов, **0 failed**, p99 0.27 ms                                |
-| Reload при простое          | падение, **3 из 3** прогонов                                             |
+| Reload сразу после старта   | `v1.1.0`: падение 3 из 3; `v1.1.1`: живой 3 из 3                         |
 | Эскалация                   | `testAStuckWorkerIsSignalledOnceThenEscalated` — OK (1 тест, 4 проверки) |
 
 Цифры, задающие таймауты по умолчанию (`php-worker-pool`, `Master`):
@@ -841,10 +864,10 @@ execution-лимит, запрос не «опоздал», а **никогда 
 4. **Посчитайте.** Воркеров 4, execution-лимит 60 с, request-лимит 30 с. Клиент
    шлёт запрос, который виснет. В какой момент клиент получит ошибку, в какой —
    воркер получит `SIGTERM`, а в какой, если не отреагирует, — `SIGKILL`?
-5. **Спроектируйте.** `reload()` при простое падает, потому что сокет воркера
-   закрывается посреди тика. Предложите два независимых исправления (одно — в
-   момент закрытия, другое — в момент вызова обработчика) и объясните, какое из
-   них надёжнее.
+5. **Спроектируйте.** В `v1.1.0` `reload()` сразу после старта ронял master,
+   потому что сокет воркера закрывался посреди тика. `v1.1.1` чинит это в
+   момент вызова обработчика. Предложите второе исправление — в момент
+   закрытия — и объясните, какое из двух надёжнее и почему.
 6. **Сравните.** `php-worker-pool` при `SIGTERM` ждёт до
    `gracefulShutdownTimeoutSeconds`, а `php-mini-search` — до `drainSeconds` и
    возвращает код 1, если не успел. Почему это **разные** вопросы («сколько
