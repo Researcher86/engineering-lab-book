@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
+> [`v1.0.2`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.2).
 > Предыдущая глава: outbox. Следующая: eventual consistency (глава 7).
 
 Когда у сервисов нет общей транзакции, остаются два честных способа не оставить
@@ -71,7 +71,7 @@
         $saga = $this->saga()->run($steps);
 ```
 
-[`src/Services/BookingWorkflow.php` L180-L191](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Services/BookingWorkflow.php#L180-L191)
+[`src/Services/BookingWorkflow.php` L180-L191](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Services/BookingWorkflow.php#L180-L191)
 
 Первые три шага устроены так же: `reserve()` и компенсация `release()`. Важно,
 что `reserve()` не ждёт остальных шагов. После первого шага рейс уже занят, и
@@ -118,7 +118,7 @@
     }
 ```
 
-[`src/Saga/SagaCoordinator.php` L52-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Saga/SagaCoordinator.php#L52-L85)
+[`src/Saga/SagaCoordinator.php` L52-L85](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Saga/SagaCoordinator.php#L52-L85)
 
 Упавший шаг входит в список не из вежливости. Если ответ потерялся после записи,
 эффект упавшего шага уже существует. Компенсация должна его снять. Именно
@@ -177,7 +177,7 @@
         }
 ```
 
-[`src/Saga/TwoPhaseCommitCoordinator.php` L36-L73](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Saga/TwoPhaseCommitCoordinator.php#L36-L73)
+[`src/Saga/TwoPhaseCommitCoordinator.php` L36-L73](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Saga/TwoPhaseCommitCoordinator.php#L36-L73)
 
 Здесь два разных отказа. Если prepare упал, координатор отменяет всех
 попробованных участников и возвращает `aborted`. Если prepare прошёл у всех, но
@@ -240,7 +240,7 @@ Prepare — не запись в локальный лог. Это реальн�
         return $result;
 ```
 
-[`src/Services/InventoryService.php` L259-L306](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Services/InventoryService.php#L259-L306)
+[`src/Services/InventoryService.php` L259-L306](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Services/InventoryService.php#L259-L306)
 
 Для 2PC `$wanted` равен `Prepared`. Для саги — `Committed`. Разница только в
 статусе и в том, что 2PC позже отдельно вызывает `commit()`. Но `available`
@@ -289,7 +289,7 @@ Prepare — не запись в локальный лог. Это реальн�
     }
 ```
 
-[`src/Saga/TwoPhaseCommitCoordinator.php` L108-L140](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Saga/TwoPhaseCommitCoordinator.php#L108-L140)
+[`src/Saga/TwoPhaseCommitCoordinator.php` L108-L140](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Saga/TwoPhaseCommitCoordinator.php#L108-L140)
 
 `recover()` — не автоматическое восстановление. Это явная команда: кто-то решает
 commit или abort. В лаборатории решение передаётся аргументом, в реальной
@@ -353,7 +353,7 @@ commit или abort. В лаборатории решение передаётс
         );
 ```
 
-[`src/Services/BookingWorkflow.php` L268-L316](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Services/BookingWorkflow.php#L268-L316)
+[`src/Services/BookingWorkflow.php` L268-L316](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Services/BookingWorkflow.php#L268-L316)
 
 В состоянии `pending` нет ничего постыдного. Это честное признание, что решение
 ещё не принято. Плохо, если `pending` считается успехом или теряется из виду. В
@@ -572,7 +572,7 @@ commit для уже зафиксированных участников и яв
     }
 ```
 
-[`tests/Integration/BookingWorkflowTest.php` L53-L72](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/BookingWorkflowTest.php#L53-L72)
+[`tests/Integration/BookingWorkflowTest.php` L53-L72](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/tests/Integration/BookingWorkflowTest.php#L53-L72)
 
 `compensations = 4`, но `reservationsReleased = 3`: четвёртая попытка — no-op
 void платежа, который не был авторизован. Тест специально проверяет оба числа,
@@ -608,7 +608,7 @@ void платежа, который не был авторизован. Тест
     }
 ```
 
-[`tests/Integration/BookingWorkflowTest.php` L138-L162](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/BookingWorkflowTest.php#L138-L162)
+[`tests/Integration/BookingWorkflowTest.php` L138-L162](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/tests/Integration/BookingWorkflowTest.php#L138-L162)
 
 Тест утверждает промежуточное состояние (`pending`, четыре удержания,
 `prepared`) и финальное (`confirmed`, `committed`, `captured`). Без
@@ -620,7 +620,7 @@ void платежа, который не был авторизован. Тест
 `testTwoPhaseCommitAbortsAllHoldsWhenACarPrepareFails` проверяет чистый откат
 без удержаний.
 
-Полный прогон на момент тега: 74 теста, 3 468 assertions, PHPStan level 8 без
+Полный прогон на момент тега: 75 тестов, 3 469 assertions, PHPStan level 8 без
 ошибок, PHP-CS-Fixer без изменений.
 
 ---

@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
+> [`v1.0.2`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.2).
 > Предыдущая глава: SQL и document. Следующая: outbox (глава 5).
 
 Разделить базу по сервисам легко на схеме. Труднее принять, что вместе с базой
@@ -77,7 +77,7 @@ SQL-запрос и 60 удалённых вызовов вместо одног
         $transport = self::transport($config, $counters, $faults, $clock);
 ```
 
-[`src/Integration/LabFactory.php` L61-L84](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabFactory.php#L61-L84)
+[`src/Integration/LabFactory.php` L61-L84](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Integration/LabFactory.php#L61-L84)
 
 В shared-режиме `reportingDb` — тот же объект. В per-service это отдельный файл:
 projection не является view над базой бронирований, у неё своя схема и своя
@@ -126,7 +126,7 @@ projection не является view над базой бронирований
     }
 ```
 
-[`src/Reporting/SqlTripReport.php` L21-L50](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Reporting/SqlTripReport.php#L21-L50)
+[`src/Reporting/SqlTripReport.php` L21-L50](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Reporting/SqlTripReport.php#L21-L50)
 
 `JOIN` — не только синтаксис. Он означает, что база может использовать индексы,
 планировщик и один снимок данных. Здесь нет сети, сериализации и частичных
@@ -156,7 +156,7 @@ projection не является view над базой бронирований
     }
 ```
 
-[`src/Reporting/ServiceTripReport.php` L25-L40](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Reporting/ServiceTripReport.php#L25-L40)
+[`src/Reporting/ServiceTripReport.php` L25-L40](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Reporting/ServiceTripReport.php#L25-L40)
 
 Для `N` броней это `1` запрос за списком и `3N` вызовов `available()`. Каждый
 вызов проходит через транспорт, а в per-service конфигурации — через
@@ -183,7 +183,7 @@ projection не является view над базой бронирований
     }
 ```
 
-[`src/Integration/LabFactory.php` L174-L187](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabFactory.php#L174-L187)
+[`src/Integration/LabFactory.php` L174-L187](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Integration/LabFactory.php#L174-L187)
 
 Условие включает не только `database`, но и `storage`. Если база общая, но брони
 хранятся документом, SQL-join к `booking_lines` невозможен. Тогда используется
@@ -354,7 +354,7 @@ connection pool, TLS, retries и нагрузки, которых здесь н�
     }
 ```
 
-[`tests/Integration/TripReportTest.php` L14-L49](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Integration/TripReportTest.php#L14-L49)
+[`tests/Integration/TripReportTest.php` L14-L49](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/tests/Integration/TripReportTest.php#L14-L49)
 
 Оба теста проверяют не только число строк, но и `kind()` и счётчики. Если
 `LabFactory` выберет не ту реализацию, тест упадёт. Если service-отчёт

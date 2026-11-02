@@ -3,7 +3,7 @@
 > Проект:
 > [`architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab),
 > тег
-> [`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
+> [`v1.0.2`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.2).
 > Предыдущая глава: сага и двухфазный коммит.
 
 Eventual consistency часто описывают как «данные когда-нибудь сойдутся». Это
@@ -73,7 +73,7 @@ runner. Затем выбирает слушателя по режиму consist
         $bus->subscribe('booking.cancelled', $listener);
 ```
 
-[`src/Integration/LabFactory.php` L116-L126](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Integration/LabFactory.php#L116-L126)
+[`src/Integration/LabFactory.php` L116-L126](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Integration/LabFactory.php#L116-L126)
 
 Различие только в слушателе. Домен, outbox, диспетчер и проекция одинаковы. Это
 важно для сравнения: меняется момент применения события, а не логика
@@ -99,7 +99,7 @@ final readonly class ImmediateProjectionListener implements EventListener
 }
 ```
 
-[`src/Consistency/ImmediateProjectionListener.php` L7-L18](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/ImmediateProjectionListener.php#L7-L18)
+[`src/Consistency/ImmediateProjectionListener.php` L7-L18](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/ImmediateProjectionListener.php#L7-L18)
 
 «Strong» здесь означает не распределённую линеаризуемость, а синхронное
 применение в том же вызове. Если проектор бросит исключение, `publish()` тоже
@@ -127,7 +127,7 @@ final readonly class QueuedProjectionListener implements EventListener
 }
 ```
 
-[`src/Consistency/QueuedProjectionListener.php` L9-L22](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/QueuedProjectionListener.php#L9-L22)
+[`src/Consistency/QueuedProjectionListener.php` L9-L22](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/QueuedProjectionListener.php#L9-L22)
 
 Очередь сортирует события по `due_at` и отдаёт только те, чей срок наступил:
 
@@ -163,7 +163,7 @@ final readonly class QueuedProjectionListener implements EventListener
     }
 ```
 
-[`src/Consistency/ProjectionQueue.php` L23-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/ProjectionQueue.php#L23-L51)
+[`src/Consistency/ProjectionQueue.php` L23-L51](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/ProjectionQueue.php#L23-L51)
 
 `due_at` — логическое время, а не wall-clock. В лаборатории `projectionLagMs` по
 умолчанию 50, и событие становится видимым через 50 логических миллисекунд после
@@ -204,7 +204,7 @@ outbox гарантирует, что событие не потеряется �
     }
 ```
 
-[`src/Consistency/ProjectionRunner.php` L40-L61](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/ProjectionRunner.php#L40-L61)
+[`src/Consistency/ProjectionRunner.php` L40-L61](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/ProjectionRunner.php#L40-L61)
 
 Слово «drain» здесь означает «сделать проекцию догнанной в модели», а не
 «дождаться реального consumer lag». В production очередь была бы внешней, а
@@ -268,7 +268,7 @@ upsert статуса поездки:
         $this->counters->increment('projectionApplied');
 ```
 
-[`src/Consistency/Projection.php` L60-L108](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/Projection.php#L60-L108)
+[`src/Consistency/Projection.php` L60-L108](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/Projection.php#L60-L108)
 
 Смысл delta задаётся отдельно:
 
@@ -283,7 +283,7 @@ upsert статуса поездки:
     }
 ```
 
-[`src/Consistency/Projection.php` L140-L147](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/src/Consistency/Projection.php#L140-L147)
+[`src/Consistency/Projection.php` L140-L147](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/src/Consistency/Projection.php#L140-L147)
 
 Только `committed`-строки меняют доступность. Подтверждённая бронь вычитает
 единицы, отмена возвращает их. Если бронь отменена до подтверждения, её строки
@@ -475,7 +475,7 @@ rebalancing. Всё, что зависит от этих механизмов, �
     }
 ```
 
-[`tests/Consistency/OutboxAndProjectionTest.php` L95-L117](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.1/tests/Consistency/OutboxAndProjectionTest.php#L95-L117)
+[`tests/Consistency/OutboxAndProjectionTest.php` L95-L117](https://github.com/Researcher86/architecture-decision-lab/blob/v1.0.2/tests/Consistency/OutboxAndProjectionTest.php#L95-L117)
 
 До drain: событие в очереди (1), статуса нет (`null`), доступность ещё 4. После
 drain: применено 1 событие, статус `confirmed`, доступность 3. Тест проверяет
@@ -487,7 +487,7 @@ drain: применено 1 событие, статус `confirmed`, досту
 применяет событие дважды. Вместе эти тесты задают контракт: событие может прийти
 позже и может прийти дважды, но проекция обязана сойтись к одному результату.
 
-Полный прогон на момент тега: 74 теста, 3 468 assertions, PHPStan level 8 без
+Полный прогон на момент тега: 75 тестов, 3 469 assertions, PHPStan level 8 без
 ошибок, PHP-CS-Fixer без изменений.
 
 ---
@@ -556,6 +556,6 @@ drain: применено 1 событие, статус `confirmed`, досту
 тесты и измерения находятся в
 [`Researcher86/architecture-decision-lab`](https://github.com/Researcher86/architecture-decision-lab)
 на теге
-[`v1.0.1`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.1).
+[`v1.0.2`](https://github.com/Researcher86/architecture-decision-lab/releases/tag/v1.0.2).
 Сценарий запускается одной командой `make scenario`, главы проверяются
 `check_book.py`, а все числа в книге взяты из реальных прогонов, а не из оценок.
