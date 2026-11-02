@@ -5,7 +5,7 @@
 > [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: событийная доставка. Это последняя глава книги.
 
-Domain-Driven Design начинается не с папки `Domain` и не с слова «агрегат».
+Domain-Driven Design начинается не с папки `Domain` и не со слова «агрегат».
 Он начинается с признания, что у разных частей системы разные модели и разные
 языки. В интернет-магазине «товар» для каталога — это описание и цена, для
 склада — количество на полке, для доставки — габариты и адрес. Если свести всё
@@ -45,9 +45,9 @@ CQRS и outbox. Здесь видно, зачем они были нужны —
 инварианты другого.
 
 Bounded context — это граница, внутри которой язык имеет одно значение. Внутри
-`Billing` слово `invoice` означает конкретный агрегат с статусами `open`,
+`Billing` слово `invoice` означает конкретный агрегат со статусами `open`,
 `paid`, `failed`. Внутри `Enrollment` слово `enrollment` означает попытку
-записаться с статусами `pending_payment`, `confirmed`, `cancelled`. На границе
+записаться со статусами `pending_payment`, `confirmed`, `cancelled`. На границе
 эти языки переводятся явно.
 
 ---
@@ -244,9 +244,9 @@ final class Enrollment
 
 ### 2.3. Перевод через порт: Catalog → Enrollment
 
-В синхронном режиме Enrollment не импортирует `CatalogApi` в application layer.
-Он объявляет порт `SeatAllocator`, а адаптер в `Infrastructure` переводит
-исключения и DTO Catalog в локальный язык Enrollment.
+Резервирование места синхронно в обоих режимах, и Enrollment не импортирует
+`CatalogApi` в application layer. Он объявляет порт `SeatAllocator`, а адаптер в
+`Infrastructure` переводит исключения и DTO Catalog в локальный язык Enrollment.
 
 ```php
 /**
@@ -393,10 +393,10 @@ Billing должен быть идемпотентен по `enrollment_id`: п�
 
 [`src/Billing/Application/BillingService.php` L51-L91](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Billing/Application/BillingService.php#L51-L91)
 
-Это идемпотентность на уровне контекста, а не слушателя. Даже если
-`IdempotentListener` пропустит событие, Billing сам не спишет дважды. Две
-защиты дополняют друг друга: одна работает по `(listener, event id)`, другая —
-по `enrollment id`.
+Это идемпотентность на уровне контекста, а не слушателя. Даже если ключ
+`(listener, event id)` потеряется и событие обработается повторно, Billing сам
+не спишет дважды. Две защиты дополняют друг друга: одна работает по
+`(listener, event id)`, другая — по `enrollment id`.
 
 ### 2.6. Композиция контекстов
 
@@ -591,13 +591,15 @@ Reporting      ArchitectureLab\Reporting\PublicApi                9      0
 baseline shared model: 4 namespace-level layers, 2 layer violations
 ```
 
-Пять контекстов, двадцать файлов публичного API, двадцать публичных типов,
-ноль нарушений и циклов. Число `anti-corruption adapters: 4` считает не классы, а
+Пять контекстов, двадцать файлов публичного API, двадцать публичных типов, ноль
+нарушений и циклов. Число `anti-corruption adapters: 4` считает не классы, а
 импорты из `Infrastructure` в чужой `PublicApi`: адаптеров два —
-`CatalogSeatAllocator` (три импорта) и `BillingPaymentProcessor` (один). Baseline с общей моделью даёт
-четыре слоя и два нарушения. Это не значит, что любой shared model хуже
-bounded contexts; это значит, что в этом коде общая модель baseline не
-изолирована, и checker это показывает.
+`CatalogSeatAllocator` (три импорта) и `BillingPaymentProcessor` (один).
+Baseline с общей моделью даёт два нарушения. Это не значит, что любой shared
+model хуже bounded contexts; это значит, что в этом коде общая модель baseline
+не изолирована, и checker это показывает. Число «4 namespace-level layers» в той
+же строке — константа в `experiments/07-ddd/contexts.php`, а не результат
+анализа.
 
 Теперь полный сценарий:
 
