@@ -117,11 +117,12 @@ waiting on». Конфликт здесь разрешается отказом,
 | `REPEATABLE READ`               | Каждая прочитанная строка берётся под `SHARED` до конца транзакции — повторное чтение той же строки даёт тот же ответ.                                                                         |
 | `SERIALIZABLE`                  | То же плюс: **полный** скан таблицы (а не поиск по индексу) берёт общую блокировку таблицы, чтобы другая транзакция не вставила туда новую строку, — грубая, но корректная защита от фантомов. |
 
-`DECISIONS.md` называет то, что проект сознательно отдаёт вместе с MVCC: «MVCC
-is what most production databases actually use, and it has a real advantage this
-project is giving up: a reader never blocks a writer, or vice versa». Здесь
-читатель и писатель под `REPEATABLE READ`/ `SERIALIZABLE` могут блокировать друг
-друга — зато не нужны ни сборка мусора версий, ни упорядочение снимков.
+`DECISIONS.md` называет преимущество MVCC, от которого проект сознательно
+отказывается: «MVCC is what most production databases actually use, and it has a
+real advantage this project is giving up: a reader never blocks a writer, or
+vice versa». Здесь читатель и писатель под `REPEATABLE READ`/ `SERIALIZABLE`
+могут блокировать друг друга — зато не нужны ни сборка мусора версий, ни
+упорядочение снимков.
 
 Одна оговорка важнее таблицы: через SQL две транзакции в этом движке никогда не
 существуют одновременно. Второй `BEGIN` отвергается, пока открыт первый, а
@@ -162,9 +163,10 @@ project is giving up: a reader never blocks a writer, or vice versa». Здес�
 - `ROLLBACK TO SAVEPOINT s` откатывает всё, что занесено в лог после `s`, в
   обратном порядке, и забывает точки, объявленные позже; сама `s` остаётся и
   пригодна к повторному откату;
-- `RELEASE SAVEPOINT s` забывает `s` и всё объявленное после неё, **не откатывая
-  ни строки**: изменения остаются, уходит только возможность вернуться в эту
-  точку.
+- `RELEASE SAVEPOINT s` забывает `s` и всё объявленное после неё (в этом проекте
+  — и точки, объявленные на той же позиции лога раньше `s`; это расхождение с
+  правилом SQL), **не откатывая ни строки**: изменения остаются, уходит только
+  возможность вернуться в эту точку.
 
 Обе — стандартные правила SQL, и обе опираются на одно: точка сохранения — это
 индекс в истории одной транзакции, поэтому вне открытой транзакции `SAVEPOINT`
@@ -242,7 +244,7 @@ enum IsolationLevel: string
 [`src/Transaction/IsolationLevel.php#L7-L43`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/IsolationLevel.php#L7-L43)
 
 **Перевод комментариев:**
-- `IsolationLevel` (PHPDoc): от сколькой части конкурентной активности другой
+- `IsolationLevel` (PHPDoc): от какой части конкурентной активности другой
   транзакции транзакция защищена. Здесь это реализовано через блокировки
   (2-phase locking), а не версионирование строк — MVCC в этом движке нет (фаза 2
   выбрала отсутствие буферного пула, и с тех пор многоверсионное хранилище не
@@ -420,8 +422,8 @@ private function acquire(string $resource, int $txId, LockMode $mode, string $de
 - `// already holds the strongest lock there is` — уже держит самую сильную
   блокировку из возможных.
 - `// Exclusive tolerates no other holder at all, not even another` —
-  `EXCLUSIVE` не терпит никакого другого держателя, даже другого `SHARED`
-  -читателя.
+  `EXCLUSIVE` не терпит никакого другого держателя, даже другого
+  `SHARED`-читателя.
 - `// Shared tolerates other shared holders, but not an exclusive one.` —
   `SHARED` терпит других `SHARED`-держателей, но не `EXCLUSIVE`.
 
@@ -944,7 +946,7 @@ private function withTransaction(Closure $work): mixed
 
 [`src/Execution/Executor.php#L862-L891`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L862-L891)
 
-### Запись всегда берёт таблицу целиком
+### `INSERT` берёт таблицу целиком
 
 `INSERT` под любым уровнем изоляции берёт исключительную блокировку таблицы —
 парную к общей блокировке, которую берёт полный скан под `SERIALIZABLE`. Это и
@@ -2000,10 +2002,14 @@ A: COMMIT                               -> FAILED: "No transaction is active"
 и в эксперименте 3, но внутри одного процесса и без прямого `LockManager`),
 `testReadCommittedHoldsNoLockPastTheStatement` и
 `testASecondExecutorSeesTheFirstsOpenTransaction` — эксперимент 1 одним тестом.
-Остальные восемь — про идемпотентность отката и повторный проход восстановления:
-`testARollbackRetriedAfterAFailedSyncDoesNotUndoTheSameChangeTwice`,
-`testACrashBetweenARollbacksUndoAndItsWalRecordStillRecoversCleanly`,
-`testRecoveryRepairsAnIndexLeftBehindByAHalfAppliedUndo`.
+Ещё восемь — про идемпотентность отката и повторный проход восстановления,
+среди них `testARollbackRetriedAfterAFailedSyncDoesNotUndoTheSameChangeTwice`,
+`testACrashBetweenARollbacksUndoAndItsWalRecordStillRecoversCleanly` и
+`testRecoveryRepairsAnIndexLeftBehindByAHalfAppliedUndo`. Оставшиеся четыре —
+`testACommittedInsertSurvives`,
+`testRollingBackToASavepointUndoesOnlyWhatCameAfterIt`,
+`testRecoveryUndoesATransactionThatNeverCommitted` и
+`testRepeatableReadLocksTheRowsOfBothSidesOfAJoin`.
 
 Живые отказы проверяются на реальных перезапусках процесса:
 `tests/Integration/TransactionTest.php` — 4 теста на 8 утверждений
