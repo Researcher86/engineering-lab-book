@@ -616,7 +616,7 @@ Delayed enqueue дешевле ready, потому что не конкурир�
 оптимизация, а условие корректного порядка.
 
 **Голодание.** Приоритет без aging или fair queueing может навсегда оставить
-низкий уровень без выполнения. Эксперимент с статическим батчем показывает
+низкий уровень без выполнения. Эксперимент со статическим батчем показывает
 порядок, но не проверяет бесконечный поток.
 
 **Backlog.** Очередь не бесконечна по полезности. Producer быстрее consumer-а
@@ -644,8 +644,9 @@ state machine, а не production-кластер.
 - `tests/Queue/JobQueueTest.php` покрывает приоритет, FIFO, delayed jobs,
   истечение lease, stale completion/failure, duplicate enqueue и dead letters.
 - `tests/Queue/ExponentialBackoffTest.php` проверяет рост, cap и jitter.
-- `tests/Queue/ProcessedJobStoreTest.php` проверяет TTL, очистку и повторный
-  enqueue.
+- `tests/Queue/ProcessedJobStoreTest.php` проверяет TTL, очистку, нулевой и
+  отрицательный TTL и пустой id; отказ в повторном enqueue после `complete()`
+  проверяет `JobQueueTest::testCompleteMarksTheJobProcessedAndRejectsAReplay`.
 - Эксперименты `queue:retry`, `queue:leases`, `queue:priority` и `queue:backlog`
   дают независимые счётчики для каждой гарантии.
 
