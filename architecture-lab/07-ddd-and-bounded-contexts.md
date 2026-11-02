@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: событийная доставка. Это последняя глава книги.
 
 Domain-Driven Design начинается не с папки `Domain` и не с слова «агрегат».
@@ -128,7 +128,7 @@ final class CourseOffering
     }
 ```
 
-[`src/Catalog/Domain/CourseOffering.php` L13-L60](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Catalog/Domain/CourseOffering.php#L13-L60)
+[`src/Catalog/Domain/CourseOffering.php` L13-L60](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Catalog/Domain/CourseOffering.php#L13-L60)
 
 `Invoice` знает зачисление только по id. Он не содержит объекта `Enrollment` и
 не зависит от его формулировок.
@@ -180,7 +180,7 @@ final class Invoice
     }
 ```
 
-[`src/Billing/Domain/Invoice.php` L15-L58](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Billing/Domain/Invoice.php#L15-L58)
+[`src/Billing/Domain/Invoice.php` L15-L58](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Billing/Domain/Invoice.php#L15-L58)
 
 `Enrollment` владеет переходом состояния, но не местом и не платежом:
 
@@ -235,7 +235,7 @@ final class Enrollment
     }
 ```
 
-[`src/Enrollment/Domain/Enrollment.php` L15-L62](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Enrollment/Domain/Enrollment.php#L15-L62)
+[`src/Enrollment/Domain/Enrollment.php` L15-L62](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Enrollment/Domain/Enrollment.php#L15-L62)
 
 Три агрегата не ссылаются друг на друга объектами. Они разделяют
 идентификаторы. Это позволяет контекстам развиваться независимо, но означает,
@@ -287,7 +287,7 @@ final readonly class CatalogSeatAllocator implements SeatAllocator
     }
 ```
 
-[`src/Enrollment/Infrastructure/CatalogSeatAllocator.php` L15-L50](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Enrollment/Infrastructure/CatalogSeatAllocator.php#L15-L50)
+[`src/Enrollment/Infrastructure/CatalogSeatAllocator.php` L15-L50](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Enrollment/Infrastructure/CatalogSeatAllocator.php#L15-L50)
 
 Здесь два разных исключения Catalog (`NoSeatsAvailable` и `OfferingNotFound`)
 сводятся в одно исключение Enrollment (`EnrollmentNoSeatsAvailable`). Это
@@ -333,7 +333,7 @@ final readonly class EnrollmentRequestedListener implements EventListener
     }
 ```
 
-[`src/Billing/Application/Event/EnrollmentRequestedListener.php` L16-L44](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Billing/Application/Event/EnrollmentRequestedListener.php#L16-L44)
+[`src/Billing/Application/Event/EnrollmentRequestedListener.php` L16-L44](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Billing/Application/Event/EnrollmentRequestedListener.php#L16-L44)
 
 Событие — это не объект `Enrollment`, а набор скаляров. Billing создаёт свои
 `EnrollmentId`, `StudentId`, `OfferingId` и `Money`. Если Enrollment изменит
@@ -391,7 +391,7 @@ Billing должен быть идемпотентен по `enrollment_id`: п�
             $result = $this->gateway->charge($invoice);
 ```
 
-[`src/Billing/Application/BillingService.php` L51-L91](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Billing/Application/BillingService.php#L51-L91)
+[`src/Billing/Application/BillingService.php` L51-L91](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Billing/Application/BillingService.php#L51-L91)
 
 Это идемпотентность на уровне контекста, а не слушателя. Даже если
 `IdempotentListener` пропустит событие, Billing сам не спишет дважды. Две
@@ -431,7 +431,7 @@ Billing должен быть идемпотентен по `enrollment_id`: п�
         );
 ```
 
-[`src/Runtime/LabRuntime.php` L91-L115](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Runtime/LabRuntime.php#L91-L115)
+[`src/Runtime/LabRuntime.php` L91-L115](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Runtime/LabRuntime.php#L91-L115)
 
 В sync-режиме `$payment` — это `BillingPaymentProcessor`, и зачисление получает
 терминальный результат до возврата команды. В event-driven режиме `$payment`
@@ -501,7 +501,7 @@ Billing должен быть идемпотентен по `enrollment_id`: п�
     }
 ```
 
-[`src/Integration/CourseEnrollmentScenario.php` L26-L80](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Integration/CourseEnrollmentScenario.php#L26-L80)
+[`src/Integration/CourseEnrollmentScenario.php` L26-L80](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Integration/CourseEnrollmentScenario.php#L26-L80)
 
 Проверки — это не «код запустился», а согласованность пяти языков:
 
@@ -554,7 +554,7 @@ Billing должен быть идемпотентен по `enrollment_id`: п�
         ];
 ```
 
-[`src/Integration/CourseEnrollmentScenario.php` L171-L216](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Integration/CourseEnrollmentScenario.php#L171-L216)
+[`src/Integration/CourseEnrollmentScenario.php` L171-L216](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Integration/CourseEnrollmentScenario.php#L171-L216)
 
 `catalog-conserved` сравнивает зарезервированные места в Catalog с суммой
 подтверждённых и ожидающих зачислений. `capacity-conserved` делает то же для
@@ -797,6 +797,6 @@ capacity каждого курса.
 здесь сознательно не сделаны: HTTP API, реальный брокер, отдельные схемы для
 контекстов, replay проекций, backoff и мониторинг outbox, конкурентные тесты,
 аутентификация и авторизация. Каждый из них меняет архитектуру, а не только
-код. Лаборатория останавливается на `v1.0.0` с работающим сценарием, измеренными
+код. Лаборатория останавливается на `v1.0.1` с работающим сценарием, измеренными
 числами и честно названными ограничениями — чтобы следующий шаг можно было
 обсуждать на фактах, а не на диаграммах.

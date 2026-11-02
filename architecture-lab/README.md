@@ -1,7 +1,7 @@
 # Книга Architecture Lab
 
 > Статус: **7 глав готовы**. Код закреплён тегом
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 
 Учебник по архитектуре backend-приложения, написанный по коду лаборатории
 [`architecture-lab`](https://github.com/Researcher86/architecture-lab). Каждая
@@ -53,7 +53,7 @@
 7. **Упражнения** — задачи на понимание и измерение.
 
 Выдержки кода скопированы из файлов как есть и снабжены ссылкой на GitHub с
-диапазоном строк. Ссылки привязаны к тегу `v1.0.0`, а не к ветке `master`,
+диапазоном строк. Ссылки привязаны к тегу `v1.0.1`, а не к ветке `master`,
 поэтому номера строк не «уплывут» после следующих коммитов. Комментарии в коде
 лаборатории на английском; книга на русском.
 
@@ -90,7 +90,7 @@ make scenario           # интеграционный сценарий
 
 Полный список экспериментов и бенчмарков — в `make experiment` и
 `make benchmark`; измеренные таблицы с окружением лежат в
-[`docs/BENCHMARKS.md`](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/docs/BENCHMARKS.md).
+[`docs/BENCHMARKS.md`](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/docs/BENCHMARKS.md).
 Числа в главах — один прогон в Docker на виртуализированном Linux, а не
 универсальная константа. Сравнивайте форму кривых, счётчики и зависимости, а не
 только миллисекунды.
@@ -132,6 +132,6 @@ checker запускается с `--expected-chapters=7` для Architecture La
 - Код:
   [`Researcher86/architecture-lab`](https://github.com/Researcher86/architecture-lab)
 - Релиз:
-  [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0)
+  [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1)
 - Проверки релиза: 172 теста / 1 270 утверждений, PHPStan level 8 без ошибок на
   178 файлах, PHP-CS-Fixer чист на 178 файлах.

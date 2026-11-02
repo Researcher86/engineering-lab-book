@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: Clean Architecture. Дальше: CQRS (глава 5).
 
 Модульный монолит — это одна развёртываемая единица, внутри которой есть
@@ -96,7 +96,7 @@
     }
 ```
 
-[`src/Architecture/ModuleMap.php` L21-L55](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/ModuleMap.php#L21-L55)
+[`src/Architecture/ModuleMap.php` L21-L55](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/ModuleMap.php#L21-L55)
 
 `Module` — простой value object: имя, корень, публичный namespace, описание.
 Карта не является контейнером и не создаёт объекты. Она нужна анализатору,
@@ -133,7 +133,7 @@ interface CatalogApi
 }
 ```
 
-[`src/Catalog/PublicApi/CatalogApi.php` L15-L29](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Catalog/PublicApi/CatalogApi.php#L15-L29)
+[`src/Catalog/PublicApi/CatalogApi.php` L15-L29](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Catalog/PublicApi/CatalogApi.php#L15-L29)
 
 В сигнатурах нет `CourseOffering`, `CatalogService`, `PDO` или массива из базы.
 Есть value objects из `Shared` и DTO `OfferingView`. Это важно: вызывающий
@@ -181,7 +181,7 @@ final readonly class CatalogService implements CatalogApi
     }
 ```
 
-[`src/Catalog/Application/CatalogService.php` L28-L63](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Catalog/Application/CatalogService.php#L28-L63)
+[`src/Catalog/Application/CatalogService.php` L28-L63](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Catalog/Application/CatalogService.php#L28-L63)
 
 Модуль владеет своим агрегатом, своим репозиторием и своей записью в outbox.
 Публичный метод не возвращает агрегат и не раскрывает транзакцию. Событие
@@ -224,7 +224,7 @@ Checker уже умеет проверять направление импорт
                 }
 ```
 
-[`src/Architecture/RuleChecker.php` L75-L102](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/RuleChecker.php#L75-L102)
+[`src/Architecture/RuleChecker.php` L75-L102](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/RuleChecker.php#L75-L102)
 
 Правило работает на уровне импортов, а не вызовов. Если `Enrollment` напишет
 `use ArchitectureLab\Catalog\Domain\CourseOffering;`, checker увидит нарушение,
@@ -289,7 +289,7 @@ runtime подписывает слушателей Reporting и Notifications �
         }
 ```
 
-[`src/Runtime/LabRuntime.php` L117-L163](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Runtime/LabRuntime.php#L117-L163)
+[`src/Runtime/LabRuntime.php` L117-L163](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Runtime/LabRuntime.php#L117-L163)
 
 `Reporting` не импортирует `Enrollment`, `Billing` или `Catalog`. Он подписан на
 имена событий и читает payload. `Notifications` вообще не знает контекстов: это

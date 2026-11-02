@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: слоистый baseline. Дальше: Clean Architecture (глава 3).
 
 В главе 1 приложение знало `PDO`, а контроллер — репозиторий. Hexagonal
@@ -73,7 +73,7 @@ interface DocumentStore extends UnitOfWork
 }
 ```
 
-[`src/Shared/Port/DocumentStore.php` L13-L29](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Shared/Port/DocumentStore.php#L13-L29)
+[`src/Shared/Port/DocumentStore.php` L13-L29](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Shared/Port/DocumentStore.php#L13-L29)
 
 Транзакция вынесена в отдельный интерфейс, потому что не каждому адаптеру есть
 что откатывать:
@@ -85,7 +85,7 @@ interface UnitOfWork
 }
 ```
 
-[`src/Shared/Port/UnitOfWork.php` L13-L16](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Shared/Port/UnitOfWork.php#L13-L16)
+[`src/Shared/Port/UnitOfWork.php` L13-L16](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Shared/Port/UnitOfWork.php#L13-L16)
 
 `DocumentStore extends UnitOfWork` означает: адаптер хранилища умеет и хранить,
 и выполнять работу атомарно. Это не обязательно свойство любой базы, но в этом
@@ -118,7 +118,7 @@ final readonly class RequestEnrollmentHandler
     }
 ```
 
-[`src/Enrollment/Application/Command/RequestEnrollmentHandler.php` L35-L47](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Enrollment/Application/Command/RequestEnrollmentHandler.php#L35-L47)
+[`src/Enrollment/Application/Command/RequestEnrollmentHandler.php` L35-L47](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Enrollment/Application/Command/RequestEnrollmentHandler.php#L35-L47)
 
 Сценарий тоже не знает адаптеров: он работает внутри `transactional()` и
 оперирует доменными объектами и событиями.
@@ -153,7 +153,7 @@ final readonly class RequestEnrollmentHandler
             });
 ```
 
-[`src/Enrollment/Application/Command/RequestEnrollmentHandler.php` L52-L78](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Enrollment/Application/Command/RequestEnrollmentHandler.php#L52-L78)
+[`src/Enrollment/Application/Command/RequestEnrollmentHandler.php` L52-L78](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Enrollment/Application/Command/RequestEnrollmentHandler.php#L52-L78)
 
 Обратите внимание: здесь нет ни `beginTransaction()`, ни `commit()`, ни имени
 таблицы. Есть `UnitOfWork`, который обещает атомарность, и `Outbox`, который
@@ -211,7 +211,7 @@ final class InMemoryDocumentStore implements DocumentStore
 }
 ```
 
-[`src/Persistence/InMemoryDocumentStore.php` L17-L60](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Persistence/InMemoryDocumentStore.php#L17-L60)
+[`src/Persistence/InMemoryDocumentStore.php` L17-L60](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Persistence/InMemoryDocumentStore.php#L17-L60)
 
 Этот адаптер — не «фейковая база для красоты». Он доказывает, что сценарий не
 требует `PDO`: тесты и эксперимент действительно проходят без SQL. Но у него
@@ -242,7 +242,7 @@ SQLite-адаптер хранит документы как JSON в одной 
     }
 ```
 
-[`src/Persistence/SqliteDocumentStore.php` L36-L50](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Persistence/SqliteDocumentStore.php#L36-L50)
+[`src/Persistence/SqliteDocumentStore.php` L36-L50](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Persistence/SqliteDocumentStore.php#L36-L50)
 
 Транзакция использует savepoint, если внешняя транзакция уже открыта. Это
 позволяет обработчику комбинировать две единицы работы, не теряя внешнюю:
@@ -282,7 +282,7 @@ SQLite-адаптер хранит документы как JSON в одной 
     }
 ```
 
-[`src/Persistence/SqliteDocumentStore.php` L102-L133](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Persistence/SqliteDocumentStore.php#L102-L133)
+[`src/Persistence/SqliteDocumentStore.php` L102-L133](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Persistence/SqliteDocumentStore.php#L102-L133)
 
 Это реальная транзакция SQLite, а не имитация. В главе 6 та же транзакция
 охватит запись агрегата и строку outbox. Здесь важно, что приложение об этом не
@@ -309,7 +309,7 @@ SQLite-адаптер хранит документы как JSON в одной 
     }
 ```
 
-[`src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php` L31-L43](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php#L31-L43)
+[`src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php` L31-L43](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php#L31-L43)
 
 При чтении документ снова становится агрегатом, а инвариант восстанавливается
 через публичные методы:
@@ -333,7 +333,7 @@ SQLite-адаптер хранит документы как JSON в одной 
     }
 ```
 
-[`src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php` L69-L84](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php#L69-L84)
+[`src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php` L69-L84](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Catalog/Infrastructure/DocumentCourseOfferingRepository.php#L69-L84)
 
 Восстановление через `reserveSeat()` выглядит медленнее, чем присвоение поля, но
 оно проходит через инвариант: если в базе окажется `reserved_seats > capacity`,
@@ -365,7 +365,7 @@ SQLite-адаптер хранит документы как JSON в одной 
     }
 ```
 
-[`src/Runtime/LabRuntime.php` L218-L234](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Runtime/LabRuntime.php#L218-L234)
+[`src/Runtime/LabRuntime.php` L218-L234](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Runtime/LabRuntime.php#L218-L234)
 
 В `inMemory()` те же роли играют `InMemoryDocumentStore`, `InMemoryOutbox` и
 `InMemoryProcessedEventStore`. Приложение и сценарий не меняются: они получают

@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Это первая глава. Дальше: порты и адаптеры (глава 2).
 
 Слоистая архитектура — это архитектура по умолчанию. Почти любой PHP-проект
@@ -86,7 +86,7 @@ final readonly class LayeredEnrollmentService
     }
 ```
 
-[`src/Baseline/Layered/Application/LayeredEnrollmentService.php` L24-L32](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Baseline/Layered/Application/LayeredEnrollmentService.php#L24-L32)
+[`src/Baseline/Layered/Application/LayeredEnrollmentService.php` L24-L32](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Baseline/Layered/Application/LayeredEnrollmentService.php#L24-L32)
 
 Здесь ещё нет SQL, но уже есть зависимость от драйвера. Сервис нельзя
 инстанцировать без `PDO`; в тестах это означает настоящую SQLite-базу или
@@ -147,7 +147,7 @@ mock драйвера. Порты, через которые приложени�
     }
 ```
 
-[`src/Baseline/Layered/Application/LayeredEnrollmentService.php` L37-L83](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Baseline/Layered/Application/LayeredEnrollmentService.php#L37-L83)
+[`src/Baseline/Layered/Application/LayeredEnrollmentService.php` L37-L83](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Baseline/Layered/Application/LayeredEnrollmentService.php#L37-L83)
 
 Это классический transaction script. Он работает и даже транзакционен. Но
 границы ответственности размыты: сервис знает и сценарий, и схему хранения, и
@@ -195,7 +195,7 @@ final readonly class LayeredEnrollmentController
 }
 ```
 
-[`src/Baseline/Layered/Presentation/LayeredEnrollmentController.php` L17-L40](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Baseline/Layered/Presentation/LayeredEnrollmentController.php#L17-L40)
+[`src/Baseline/Layered/Presentation/LayeredEnrollmentController.php` L17-L40](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Baseline/Layered/Presentation/LayeredEnrollmentController.php#L17-L40)
 
 Строка `return $this->enrollments->forCourse($courseId);` — и есть layer skip.
 Проблема не в том, что контроллер умеет читать список. Проблема в том, что он
@@ -239,7 +239,7 @@ final class Schema
     }
 ```
 
-[`src/Baseline/Layered/Infrastructure/Schema.php` L10-L36](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Baseline/Layered/Infrastructure/Schema.php#L10-L36)
+[`src/Baseline/Layered/Infrastructure/Schema.php` L10-L36](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Baseline/Layered/Infrastructure/Schema.php#L10-L36)
 
 `course_title` в `layered_enrollments` — это денормализация, которая когда-то
 была осознанной. Но вместе с ней в зачисление попадает копия названия, которую
@@ -299,7 +299,7 @@ final class Schema
     }
 ```
 
-[`src/Architecture/RuleChecker.php` L117-L159](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/RuleChecker.php#L117-L159)
+[`src/Architecture/RuleChecker.php` L117-L159](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/RuleChecker.php#L117-L159)
 
 Checker не исполняет код и не строит AST. Он читает `use`-импорты и сравнивает
 пространства имён. Этого достаточно, чтобы поймать оба намеренных нарушения:

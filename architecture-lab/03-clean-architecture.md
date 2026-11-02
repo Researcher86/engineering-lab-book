@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: порты и адаптеры. Дальше: модульный монолит (глава 4).
 
 Clean Architecture часто показывают как диаграмму концентрических кругов:
@@ -77,7 +77,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
             }
 ```
 
-[`src/Architecture/SourceScanner.php` L58-L79](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/SourceScanner.php#L58-L79)
+[`src/Architecture/SourceScanner.php` L58-L79](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/SourceScanner.php#L58-L79)
 
 Глубина нужна, чтобы не принимать `use` внутри функции за импорт пространства
 имён. PHP разрешает `use` для замыканий, и без проверки `$depth === 0` сканер
@@ -114,7 +114,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
             }
 ```
 
-[`src/Architecture/SourceScanner.php` L93-L117](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/SourceScanner.php#L93-L117)
+[`src/Architecture/SourceScanner.php` L93-L117](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/SourceScanner.php#L93-L117)
 
 Объявления классов определяются по токенам `T_CLASS`, `T_INTERFACE`, `T_TRAIT`,
 `T_ENUM`. Анонимный класс (`new class`) пропускается, потому что перед `T_CLASS`
@@ -163,7 +163,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
     }
 ```
 
-[`src/Architecture/SourceScanner.php` L119-L157](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/SourceScanner.php#L119-L157)
+[`src/Architecture/SourceScanner.php` L119-L157](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/SourceScanner.php#L119-L157)
 
 Сканер не различает `use Foo\Bar` и фактическое обращение к `Bar`. Импорт —
 это намерение зависимости, а не доказательство вызова. Для архитектурного
@@ -203,7 +203,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
     }
 ```
 
-[`src/Architecture/DependencyGraph.php` L17-L38](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/DependencyGraph.php#L17-L38)
+[`src/Architecture/DependencyGraph.php` L17-L38](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/DependencyGraph.php#L17-L38)
 
 Ребро направлено от класса-источника к импортированному классу. Из этих рёбер
 строится два представления:
@@ -325,7 +325,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
     }
 ```
 
-[`src/Architecture/RuleChecker.php` L21-L107](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/RuleChecker.php#L21-L107)
+[`src/Architecture/RuleChecker.php` L21-L107](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/RuleChecker.php#L21-L107)
 
 Правила проверяют импорты, а не размещение файлов. Класс может лежать в
 `Domain`, но импортировать `Persistence` — это нарушение. И наоборот: файл может
@@ -407,7 +407,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
     }
 ```
 
-[`src/Architecture/CycleDetector.php` L15-L79](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/CycleDetector.php#L15-L79)
+[`src/Architecture/CycleDetector.php` L15-L79](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/CycleDetector.php#L15-L79)
 
 Почему не на графе классов? Цикл между двумя классами внутри одного модуля —
 это проблема связности, но не архитектурный цикл между контекстами. Граф
@@ -456,7 +456,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
             );
 ```
 
-[`src/Architecture/ArchitectureAnalyzer.php` L135-L162](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/ArchitectureAnalyzer.php#L135-L162)
+[`src/Architecture/ArchitectureAnalyzer.php` L135-L162](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/ArchitectureAnalyzer.php#L135-L162)
 
 Метрики считаются по уникальным рёбрам между модулями, а не по числу импортов.
 Если `Enrollment` импортирует три класса из `Catalog\PublicApi`, это одно ребро
@@ -490,7 +490,7 @@ entities внутри, use cases вокруг, адаптеры снаружи. 
     }
 ```
 
-[`src/Architecture/ArchitectureAnalyzer.php` L27-L44](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Architecture/ArchitectureAnalyzer.php#L27-L44)
+[`src/Architecture/ArchitectureAnalyzer.php` L27-L44](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Architecture/ArchitectureAnalyzer.php#L27-L44)
 
 `ArchitectureReport` — это факты, а не вердикт: файлы, рёбра, нарушения,
 метрики, циклы. Вердикт выносит тест или CI, который требует `violations = []`

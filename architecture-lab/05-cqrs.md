@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: модульный монолит. Дальше: событийная доставка (глава 6).
 
 CQRS расшифровывается как Command Query Responsibility Segregation: команды
@@ -88,7 +88,7 @@ final class CommandBus
 }
 ```
 
-[`src/Cqrs/CommandBus.php` L10-L41](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Cqrs/CommandBus.php#L10-L41)
+[`src/Cqrs/CommandBus.php` L10-L41](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Cqrs/CommandBus.php#L10-L41)
 
 `QueryBus` устроен так же, но метод называется `ask()`. Это не косметика: имя
 подчёркивает, что запрос не меняет состояние и не обязан возвращать агрегат.
@@ -123,7 +123,7 @@ final class QueryBus
 }
 ```
 
-[`src/Cqrs/QueryBus.php` L10-L36](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Cqrs/QueryBus.php#L10-L36)
+[`src/Cqrs/QueryBus.php` L10-L36](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Cqrs/QueryBus.php#L10-L36)
 
 Шины не являются event bus. Они не доставляют сообщения подписчикам и не
 хранят историю. Их задача — отделить delivery-код от конкретных обработчиков и
@@ -179,7 +179,7 @@ final class QueryBus
     }
 ```
 
-[`src/Reporting/Projection/OfferingCapacityProjection.php` L31-L72](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Reporting/Projection/OfferingCapacityProjection.php#L31-L72)
+[`src/Reporting/Projection/OfferingCapacityProjection.php` L31-L72](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Reporting/Projection/OfferingCapacityProjection.php#L31-L72)
 
 Здесь важно не то, что проекция «считает», а **как** она считает. События
 содержат не абсолютное число мест, а факт изменения: `seat_reserved` —
@@ -206,7 +206,7 @@ final class QueryBus
     }
 ```
 
-[`src/Reporting/Projection/OfferingCapacityProjection.php` L86-L99](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Reporting/Projection/OfferingCapacityProjection.php#L86-L99)
+[`src/Reporting/Projection/OfferingCapacityProjection.php` L86-L99](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Reporting/Projection/OfferingCapacityProjection.php#L86-L99)
 
 `max(0, ...)` защищает от отрицательного pending при повторной доставке. Но это
 защита от конкретной ошибки, а не полноценная идемпотентность: повторный
@@ -256,7 +256,7 @@ final class QueryBus
     }
 ```
 
-[`src/Reporting/Projection/StudentScheduleProjection.php` L24-L57](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Reporting/Projection/StudentScheduleProjection.php#L24-L57)
+[`src/Reporting/Projection/StudentScheduleProjection.php` L24-L57](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Reporting/Projection/StudentScheduleProjection.php#L24-L57)
 
 Документ — это map, а не список. Это осознанный выбор: статус зачисления — это
 последнее известное состояние, а не журнал переходов. Если нужна история, нужен
@@ -293,7 +293,7 @@ final readonly class OfferingCapacityQueryHandler
 }
 ```
 
-[`src/Reporting/Application/OfferingCapacityQueryHandler.php` L12-L34](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Reporting/Application/OfferingCapacityQueryHandler.php#L12-L34)
+[`src/Reporting/Application/OfferingCapacityQueryHandler.php` L12-L34](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Reporting/Application/OfferingCapacityQueryHandler.php#L12-L34)
 
 `?? []` и значения по умолчанию означают: неизвестный курс возвращает нулевую
 view, а не исключение. Это решение read-side: пустой экран лучше 500-й ошибки,
@@ -326,7 +326,7 @@ outbox. Проекции обновляются только после `pump()`
         $readElapsed = (hrtime(true) - $readStart) / 1e9;
 ```
 
-[`experiments/05-cqrs/queries.php` L26-L42](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/experiments/05-cqrs/queries.php#L26-L42)
+[`experiments/05-cqrs/queries.php` L26-L42](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/experiments/05-cqrs/queries.php#L26-L42)
 
 Это и есть CQRS в одном абзаце: запись уже произошла, чтение ещё не обязано
 увидеть её. Окно измеряется числом pending events и содержимым проекции.

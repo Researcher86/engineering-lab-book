@@ -2,7 +2,7 @@
 
 > Проект: [`architecture-lab`](https://github.com/Researcher86/architecture-lab),
 > тег
-> [`v1.0.0`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.0).
+> [`v1.0.1`](https://github.com/Researcher86/architecture-lab/releases/tag/v1.0.1).
 > Предыдущая глава: CQRS. Дальше: DDD и bounded contexts (глава 7).
 
 Событийная архитектура начинается не с брокера. Она начинается с вопроса: что
@@ -85,7 +85,7 @@ final readonly class EventEnvelope
     }
 ```
 
-[`src/Eventing/EventEnvelope.php` L9-L40](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Eventing/EventEnvelope.php#L9-L40)
+[`src/Eventing/EventEnvelope.php` L9-L40](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Eventing/EventEnvelope.php#L9-L40)
 
 Скалярный payload — это граница опубликованного языка. Подписчик не получает
 ссылку на агрегат и не может его изменить. Он также не получает объект
@@ -119,7 +119,7 @@ interface Outbox
 }
 ```
 
-[`src/Eventing/Outbox.php` L7-L24](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Eventing/Outbox.php#L7-L24)
+[`src/Eventing/Outbox.php` L7-L24](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Eventing/Outbox.php#L7-L24)
 
 SQLite-реализация создаёт реальную таблицу с автоинкрементной позицией. Позиция
 задаёт порядок, в котором сообщения выбираются:
@@ -154,7 +154,7 @@ final class SqliteOutbox implements Outbox
         );
 ```
 
-[`src/Persistence/SqliteOutbox.php` L13-L39](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Persistence/SqliteOutbox.php#L13-L39)
+[`src/Persistence/SqliteOutbox.php` L13-L39](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Persistence/SqliteOutbox.php#L13-L39)
 
 Запись события — обычный `INSERT`; транзакцию открывает вызывающий код.
 
@@ -176,7 +176,7 @@ final class SqliteOutbox implements Outbox
     }
 ```
 
-[`src/Persistence/SqliteOutbox.php` L42-L56](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Persistence/SqliteOutbox.php#L42-L56)
+[`src/Persistence/SqliteOutbox.php` L42-L56](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Persistence/SqliteOutbox.php#L42-L56)
 
 В основном сценарии `record()` вызывается внутри `UnitOfWork::transactional()`.
 `CatalogService::publish()` открывает транзакцию явно; `reserveSeat()` и
@@ -239,7 +239,7 @@ final readonly class OutboxDispatcher
 }
 ```
 
-[`src/Eventing/OutboxDispatcher.php` L9-L51](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Eventing/OutboxDispatcher.php#L9-L51)
+[`src/Eventing/OutboxDispatcher.php` L9-L51](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Eventing/OutboxDispatcher.php#L9-L51)
 
 Здесь есть тонкость: `pending($limit)` возвращает снимок на начало прохода.
 События, созданные слушателями во время этого прохода, попадут в следующий
@@ -268,7 +268,7 @@ final readonly class OutboxDispatcher
     }
 ```
 
-[`src/Runtime/LabRuntime.php` L304-L322](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Runtime/LabRuntime.php#L304-L322)
+[`src/Runtime/LabRuntime.php` L304-L322](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Runtime/LabRuntime.php#L304-L322)
 
 `maxRounds = 100` — предохранитель от бесконечного цикла, а не часть бизнес-
 логики. Если событие продолжает порождать события, сценарий остановится и
@@ -312,7 +312,7 @@ final class IdempotentListener implements EventListener
 }
 ```
 
-[`src/Eventing/IdempotentListener.php` L9-L38](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Eventing/IdempotentListener.php#L9-L38)
+[`src/Eventing/IdempotentListener.php` L9-L38](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Eventing/IdempotentListener.php#L9-L38)
 
 Ключ включает имя слушателя, поэтому два разных слушателя могут обработать одно
 событие независимо. Если третий слушатель в той же шине падает, диспетчер
@@ -368,7 +368,7 @@ final class InMemoryEventBus implements EventBus
 }
 ```
 
-[`src/Eventing/InMemoryEventBus.php` L9-L42](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Eventing/InMemoryEventBus.php#L9-L42)
+[`src/Eventing/InMemoryEventBus.php` L9-L42](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Eventing/InMemoryEventBus.php#L9-L42)
 
 Синхронность означает: медленный слушатель задерживает диспетчер, а исключение
 одного слушателя отменяет доставку остальным в этом проходе. Диспетчер поймает
@@ -412,7 +412,7 @@ final class InMemoryEventBus implements EventBus
     }
 ```
 
-[`src/Enrollment/Application/Event/PaymentResultListener.php` L38-L65](https://github.com/Researcher86/architecture-lab/blob/v1.0.0/src/Enrollment/Application/Event/PaymentResultListener.php#L38-L65)
+[`src/Enrollment/Application/Event/PaymentResultListener.php` L38-L65](https://github.com/Researcher86/architecture-lab/blob/v1.0.1/src/Enrollment/Application/Event/PaymentResultListener.php#L38-L65)
 
 Слушатель идемпотентен не только обёрткой: он проверяет, что зачисление всё ещё
 `PendingPayment`. Если событие пришло повторно после подтверждения, переход не

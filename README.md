@@ -10,7 +10,7 @@
 - [Algorithms Lab](algorithms-lab/README.md) — 7 готовых глав об алгоритмах,
   сложности и поведении на реальных данных; код закреплён тегом `v1.0.0`.
 - [Architecture Lab](architecture-lab/README.md) — 7 готовых глав о структуре
-  кода и управлении зависимостями; код закреплён тегом `v1.0.0`.
+  кода и управлении зависимостями; код закреплён тегом `v1.0.1`.
 - [Architecture Decision Lab](architecture-decision-lab/README.md) — 7 готовых
   глав о trade-off архитектурных решений; код закреплён тегом `v1.0.0`.
 - [System Design Lab](system-design-lab/README.md) — 7 готовых глав о
