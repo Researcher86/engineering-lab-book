@@ -1,7 +1,7 @@
 # Глава 12. TTL, Pub/Sub и снапшоты
 
 > Проект: [`php-mini-cache`](https://github.com/Researcher86/php-mini-cache),
-> релиз `v1.1.1`, коммит `9bccbcc`. Нужно знать: соединения и буферы (→
+> релиз `v1.1.2`, коммит `82840da`. Нужно знать: соединения и буферы (→
 > глава 10) и протокол (→ глава 11). Связанное, уже пройденное: разделяемая
 > память и семафоры (→ глава 3) и `fork`/copy-on-write (→ глава 2).
 
@@ -274,7 +274,7 @@ final readonly class StoredValue
 }
 ```
 
-[`src/Storage/StoredValue.php#L7-L22`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/StoredValue.php#L7-L22)
+[`src/Storage/StoredValue.php#L7-L22`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Storage/StoredValue.php#L7-L22)
 
 **Перевод комментариев:**
 - `StoredValue` (PHPDoc): сохранённое значение плюс необязательные метаданные
@@ -322,7 +322,7 @@ public function sweepExpired(): int
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L78-L109`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L78-L109)
+[`src/Storage/InMemoryStore.php#L78-L109`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Storage/InMemoryStore.php#L78-L109)
 
 **Перевод комментариев:**
 - `// The top of the heap is the earliest due entry, so once it is` — вершина
@@ -375,7 +375,7 @@ private function entryOrNull(string $key): ?StoredValue
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L150-L179`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L150-L179)
+[`src/Storage/InMemoryStore.php#L150-L179`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Storage/InMemoryStore.php#L150-L179)
 
 **Перевод комментариев:**
 - `put()` (PHPDoc): сохраняет запись и, если у неё есть срок, ставит её в
@@ -432,7 +432,7 @@ public function restore(array $entries): void
 }
 ```
 
-[`src/Storage/InMemoryStore.php#L111-L148`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Storage/InMemoryStore.php#L111-L148)
+[`src/Storage/InMemoryStore.php#L111-L148`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Storage/InMemoryStore.php#L111-L148)
 
 **Перевод комментариев:**
 - `snapshot()` (PHPDoc): сериализуемая копия каждой записи, включая TTL, для
@@ -509,7 +509,7 @@ final class ChannelRegistry
 }
 ```
 
-[`src/PubSub/ChannelRegistry.php#L9-L63`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/PubSub/ChannelRegistry.php#L9-L63)
+[`src/PubSub/ChannelRegistry.php#L9-L63`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/PubSub/ChannelRegistry.php#L9-L63)
 
 **Перевод комментариев:**
 - `ChannelRegistry` (PHPDoc): отслеживает, какие соединения подписаны на какие
@@ -557,7 +557,7 @@ public function handle(Command $command, Store $store, ClientConnection $connect
 }
 ```
 
-[`src/Command/Handler/PublishCommand.php#L27-L47`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Command/Handler/PublishCommand.php#L27-L47)
+[`src/Command/Handler/PublishCommand.php#L27-L47`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Command/Handler/PublishCommand.php#L27-L47)
 
 Сообщение кодируется **один раз** в `$payload` и рассылается как готовые байты.
 Полезная нагрузка — обычный RESP-массив `["message", channel, body]`, то есть
@@ -598,7 +598,7 @@ private function deliverToSubscriber(ClientConnection $subscriber, string $paylo
 }
 ```
 
-[`src/Server/CacheServer.php#L689-L715`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L689-L715)
+[`src/Server/CacheServer.php#L689-L715`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L689-L715)
 
 **Перевод комментариев:**
 - `deliverToSubscriber()` (PHPDoc): доставка Pub/Sub не похожа на ответ на
@@ -636,7 +636,7 @@ if ($this->snapshots !== null && $snapshotIntervalSeconds !== null) {
 }
 ```
 
-[`src/Server/CacheServer.php#L207-L219`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L207-L219)
+[`src/Server/CacheServer.php#L207-L219`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L207-L219)
 
 **Перевод комментариев:**
 - `// Active expiration: expired keys are also removed on a timer,` — активное
@@ -670,7 +670,7 @@ public function save(InMemoryStore $store): void
 }
 ```
 
-[`src/Persistence/SnapshotStore.php#L39-L54`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/SnapshotStore.php#L39-L54)
+[`src/Persistence/SnapshotStore.php#L39-L54`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Persistence/SnapshotStore.php#L39-L54)
 
 Четыре строки, три гарантии. Временный путь уникален по pid, поэтому
 параллельные писатели не мешают друг другу. `rename()` атомарен, поэтому
@@ -713,7 +713,7 @@ public function load(InMemoryStore $store): void
 }
 ```
 
-[`src/Persistence/SnapshotStore.php#L56-L86`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/SnapshotStore.php#L56-L86)
+[`src/Persistence/SnapshotStore.php#L56-L86`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Persistence/SnapshotStore.php#L56-L86)
 
 **Перевод комментариев:**
 - `load()` (PHPDoc): загружает содержимое хранилища из ранее сохранённого
@@ -775,7 +775,7 @@ public function save(InMemoryStore $store): bool
 }
 ```
 
-[`src/Persistence/ForkingSnapshotWorker.php#L58-L94`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Persistence/ForkingSnapshotWorker.php#L58-L94)
+[`src/Persistence/ForkingSnapshotWorker.php#L58-L94`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Persistence/ForkingSnapshotWorker.php#L58-L94)
 
 **Перевод комментариев:**
 - `// Parent: the child writes the snapshot; it is reaped through the` —
@@ -818,31 +818,20 @@ GET session (immediately)
 
 Waiting 3 seconds for the TTL to pass...
 
+INFO expired_keys during the wait, with nobody reading the key
+-> 1
+
 GET session (after the TTL)
 -> (nil)
 ```
 
 Ключ создан с `EX 2`, прочитан сразу (ещё жив), затем сценарий спит 3 секунды и
-читает снова. Этот вывод не отличает таймер от ленивой проверки: второй `GET`
-вернул бы `(nil)`, даже если бы таймер не сработал, — ленивая проверка удалила
-бы ключ прямо при чтении. Таймер виден по счётчику, если спросить `INFO` до
-второго чтения:
-
-```bash
-docker compose exec php php bin/client.php SET session abc EX 2
-docker compose exec php php bin/client.php INFO | grep expired
-sleep 3
-docker compose exec php php bin/client.php INFO | grep expired
-```
-
-```text
-OK
-expired_keys:0
-expired_keys:1
-```
-
-Между двумя `INFO` ключ **никто не читал**, а счётчик вырос: ключ убрал
-активный проход по таймеру.
+читает снова. Один второй `GET` не отличил бы таймер от ленивой проверки: она
+тоже вернула бы `(nil)`, удалив ключ прямо при чтении. Поэтому сценарий
+спрашивает `INFO` **до** второго чтения: за время ожидания ключ никто не читал,
+а счётчик `expired_keys` вырос на единицу — ключ убрал активный проход по
+таймеру. `INFO` считает с запуска сервера, поэтому сценарий печатает разницу,
+а не само значение.
 
 ### Pub/Sub: сообщение доходит до другого соединения
 

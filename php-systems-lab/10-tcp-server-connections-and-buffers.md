@@ -1,7 +1,7 @@
 # Глава 10. TCP-сервер на одном цикле: соединения и буферы
 
 > Проект: [`php-mini-cache`](https://github.com/Researcher86/php-mini-cache),
-> релиз `v1.1.1`, коммит `9bccbcc`. Нужно знать: цикл событий и неблокирующий
+> релиз `v1.1.2`, коммит `82840da`. Нужно знать: цикл событий и неблокирующий
 > ввод-вывод (→ глава 4). Пригодится дальше: протокол и pipelining (→ глава 11),
 > TTL, Pub/Sub и снапшоты (→ глава 12).
 
@@ -246,7 +246,7 @@ public function accept(?float $timeoutSeconds = null)
 }
 ```
 
-[`src/Server/ServerSocket.php#L69-L88`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/ServerSocket.php#L69-L88)
+[`src/Server/ServerSocket.php#L69-L88`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/ServerSocket.php#L69-L88)
 
 **Перевод комментариев:**
 - `accept()` (PHPDoc): блокируется, пока не подключится клиент или не истечёт
@@ -301,7 +301,7 @@ final class ReadBuffer
 }
 ```
 
-[`src/Connection/ReadBuffer.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/ReadBuffer.php#L7-L41)
+[`src/Connection/ReadBuffer.php#L7-L41`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Connection/ReadBuffer.php#L7-L41)
 
 **Перевод комментариев:**
 - `ReadBuffer` (PHPDoc): накапливает байты, прочитанные из сокета. Одно
@@ -371,7 +371,7 @@ final class WriteBuffer
     }
 ```
 
-[`src/Connection/WriteBuffer.php#L7-L56`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/WriteBuffer.php#L7-L56)
+[`src/Connection/WriteBuffer.php#L7-L56`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Connection/WriteBuffer.php#L7-L56)
 
 **Перевод комментариев:**
 - `WriteBuffer` (PHPDoc): ставит в очередь байты, ожидающие записи в сокет. Одна
@@ -432,7 +432,7 @@ public function consume(int $length): void
 }
 ```
 
-[`src/Connection/WriteBuffer.php#L68-L87`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Connection/WriteBuffer.php#L68-L87)
+[`src/Connection/WriteBuffer.php#L68-L87`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Connection/WriteBuffer.php#L68-L87)
 
 **Перевод комментариев:**
 - `consume()` (PHPDoc): помечает первые `$length` байт очереди записанными,
@@ -485,7 +485,7 @@ private function watchForIncomingData(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L431-L466`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L431-L466)
+[`src/Server/CacheServer.php#L431-L466`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L431-L466)
 
 **Перевод комментариев:**
 - `// Empty means two different things on a non-blocking socket, and` — пустая
@@ -592,7 +592,7 @@ private function processBufferedCommands(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L468-L544`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L468-L544)
+[`src/Server/CacheServer.php#L468-L544`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L468-L544)
 
 **Перевод комментариев:**
 - `processBufferedCommands()` (PHPDoc): выполняет полные команды, лежащие в
@@ -692,7 +692,7 @@ private function flushWriteBuffer(ClientConnection $connection): void
 }
 ```
 
-[`src/Server/CacheServer.php#L622-L666`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L622-L666)
+[`src/Server/CacheServer.php#L622-L666`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L622-L666)
 
 **Перевод комментариев:**
 - `flushWriteBuffer()` (PHPDoc): записывает столько `WriteBuffer` соединения,
@@ -743,7 +743,7 @@ private function pauseReadingIfWriteBufferTooLarge(ClientConnection $connection)
 }
 ```
 
-[`src/Server/CacheServer.php#L668-L687`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/Server/CacheServer.php#L668-L687)
+[`src/Server/CacheServer.php#L668-L687`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/Server/CacheServer.php#L668-L687)
 
 **Перевод комментариев:**
 - `pauseReadingIfWriteBufferTooLarge()` (PHPDoc): обратное давление: соединение,
@@ -782,7 +782,7 @@ private function forgetClosedStreams(): void
 }
 ```
 
-[`src/EventLoop/SelectLoop.php#L132-L149`](https://github.com/Researcher86/php-mini-cache/blob/9bccbcc8c1a0d2ec258a9a3b52e727256c1033a5/src/EventLoop/SelectLoop.php#L132-L149)
+[`src/EventLoop/SelectLoop.php#L132-L149`](https://github.com/Researcher86/php-mini-cache/blob/82840da9dc0fcfb73d81deefbaaf71857b5f81f6/src/EventLoop/SelectLoop.php#L132-L149)
 
 **Перевод комментариев:**
 - `forgetClosedStreams()` (PHPDoc): выбрасывает стримы, закрытые их владельцами,
