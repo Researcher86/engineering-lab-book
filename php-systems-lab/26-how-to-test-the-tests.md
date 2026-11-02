@@ -771,7 +771,7 @@ printf("operations: %d\n", OPERATIONS);
 printf("documents the index holds: %d\n", $index->documentCount());
 printf("terms in the index: %d\n", $index->termCount());
 printf("\nsearches compared against the oracle: %d\n", $searches);
-printf("equal-score groups the comparison met: %d\n", $ties);
+printf("equal-score hits the comparison met: %d\n", $ties);
 printf("disagreements: %d\n", count($disagreements));
 printf("invariant violations after %d operations: %d\n", OPERATIONS, $violations);
 
@@ -801,18 +801,17 @@ documents the index holds: 32
 terms in the index: 16
 
 searches compared against the oracle: 805
-equal-score groups the comparison met: 139
+equal-score hits the comparison met: 139
 disagreements: 0
 invariant violations after 2000 operations: 0
 ```
 
 `disagreements: 0` — это и есть результат оракула: две независимые реализации
 согласились на 805 поисках. Но отдельного внимания стоит строка
-`equal-score groups the comparison met: 139`: она говорит, что проверка
-**дошла** до равных очков. Несмотря на имя, считает она не группы, а попадания,
-совпавшие по очкам: `count(scores) − count(unique(scores))`. Без этого числа
-«0 расхождений» можно было бы прочитать и так, что интересный случай просто не
-встретился.
+`equal-score hits the comparison met: 139`: она говорит, что проверка **дошла**
+до равных очков. Считаются попадания, совпавшие по очкам с другими:
+`count(scores) − count(unique(scores))`. Без этого числа «0 расхождений» можно
+было бы прочитать и так, что интересный случай просто не встретился.
 
 Обратите внимание и на то, чего в выводе нет: времени. Оракул отвечает на вопрос
 «верный ли ответ», а не «быстрый ли он». Наивная реализация обязана быть
