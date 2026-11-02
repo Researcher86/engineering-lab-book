@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-mini-database`](https://github.com/Researcher86/php-mini-database)
-> (релиз `v1.1.0`, коммит `9adde5d`). Нужно знать: страницу, кучу и B-дерево (→
+> (релиз `v1.1.1`, коммит `38708a8`). Нужно знать: страницу, кучу и B-дерево (→
 > глава 15) — выбранное здесь индексное сканирование читает ровно то дерево.
 > Пригодятся дальше: транзакции и изоляция (→ глава 17), WAL, fsync и
 > восстановление (→ глава 18), анализ текста: Unicode, токены, стемминг (→ глава
@@ -177,7 +177,7 @@ private function run(): array
 }
 ```
 
-[`src/Sql/Lexer.php#L41-L62`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Lexer.php#L41-L62)
+[`src/Sql/Lexer.php#L41-L62`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Lexer.php#L41-L62)
 
 **Перевод комментариев:**
 - `run()` (`@return`): возвращает полный список токенов `Token` в порядке
@@ -201,7 +201,7 @@ private function next(): Token
 }
 ```
 
-[`src/Sql/Lexer.php#L64-L75`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Lexer.php#L64-L75)
+[`src/Sql/Lexer.php#L64-L75`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Lexer.php#L64-L75)
 
 Ключевое свойство токена: его `text` — это уже **значение**, а не написание.
 Удвоенная кавычка схлопывается лексером (`delimited()` ниже), и парсер никогда
@@ -245,7 +245,7 @@ private function delimited(string $quote, string $kind): string
 }
 ```
 
-[`src/Sql/Lexer.php#L100-L132`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Lexer.php#L100-L132)
+[`src/Sql/Lexer.php#L100-L132`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Lexer.php#L100-L132)
 
 **Перевод комментариев:**
 - `// opening quote` — открывающая кавычка.
@@ -273,7 +273,7 @@ public static function parseOne(string $sql): Statement
 }
 ```
 
-[`src/Sql/Parser.php#L130-L139`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Parser.php#L130-L139)
+[`src/Sql/Parser.php#L130-L139`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Parser.php#L130-L139)
 
 Приоритеты — рекурсивный спуск, по одному методу на уровень. Каждый уровень
 разбирает свой тип связки левым циклом, поэтому цепочки `a AND b AND c`
@@ -320,7 +320,7 @@ private function notExpression(): Expression
 }
 ```
 
-[`src/Sql/Parser.php#L747-L781`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Parser.php#L747-L781)
+[`src/Sql/Parser.php#L747-L781`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Parser.php#L747-L781)
 
 Отказ парсера несёт в себе и позицию. `ParserException` хранит строку и столбец
 отдельно от сообщения и переводит байтовую позицию в пару «строка : столбец»
@@ -356,7 +356,7 @@ private static function lineAndColumn(string $source, int $position): array
 }
 ```
 
-[`src/Exception/ParserException.php#L19-L45`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Exception/ParserException.php#L19-L45)
+[`src/Exception/ParserException.php#L19-L45`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Exception/ParserException.php#L19-L45)
 
 **Перевод комментариев:**
 - `lineAndColumn()` (PHPDoc): возвращает `[строка, столбец]`, оба считаются с 1:
@@ -378,7 +378,7 @@ interface LogicalPlan
 }
 ```
 
-[`src/Sql/Planner/LogicalPlan.php#L27-L34`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Planner/LogicalPlan.php#L27-L34)
+[`src/Sql/Planner/LogicalPlan.php#L27-L34`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Planner/LogicalPlan.php#L27-L34)
 
 **Перевод комментариев:**
 - `describe()` (PHPDoc): одна строка, описывающая только этот узел, без его
@@ -411,7 +411,7 @@ interface LogicalPlan
  */
 ```
 
-[`src/Sql/Planner/Planner.php#L32-L49`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Planner/Planner.php#L32-L49)
+[`src/Sql/Planner/Planner.php#L32-L49`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Planner/Planner.php#L32-L49)
 
 **Перевод комментариев:**
 - `Planner` (PHPDoc): превращает `SelectStatement` с секцией `FROM` в
@@ -465,7 +465,7 @@ private function tail(LogicalPlan $plan, SelectStatement $statement, array $item
 }
 ```
 
-[`src/Sql/Planner/Planner.php#L120-L145`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Planner/Planner.php#L120-L145)
+[`src/Sql/Planner/Planner.php#L120-L145`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Planner/Planner.php#L120-L145)
 
 Верхний узел — всегда `Limit`, даже когда `LIMIT` не написан: у плана есть дно,
 и это дно называется «все строки». Тест `testEveryPlanEndsInALimitNode`
@@ -513,7 +513,7 @@ final readonly class Optimizer
 }
 ```
 
-[`src/Sql/Optimizer/Optimizer.php#L13-L46`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Optimizer/Optimizer.php#L13-L46)
+[`src/Sql/Optimizer/Optimizer.php#L13-L46`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Optimizer/Optimizer.php#L13-L46)
 
 **Перевод комментариев:**
 - `Optimizer` (PHPDoc): переписывает `LogicalPlan` в тот единственный, который
@@ -589,7 +589,7 @@ private function isConstant(Expression $expression): bool
 }
 ```
 
-[`src/Sql/Optimizer/Rule/IndexSelection.php#L59-L109`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Optimizer/Rule/IndexSelection.php#L59-L109)
+[`src/Sql/Optimizer/Rule/IndexSelection.php#L59-L109`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Optimizer/Rule/IndexSelection.php#L59-L109)
 
 **Перевод комментариев:**
 - `indexablePredicate()` (`@return`): возвращает `column` /`op`/`value` для
@@ -634,7 +634,7 @@ private function isConstant(Expression $expression): bool
  */
 ```
 
-[`src/Sql/Optimizer/Rule/PredicatePushdown.php#L33-L55`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Optimizer/Rule/PredicatePushdown.php#L33-L55)
+[`src/Sql/Optimizer/Rule/PredicatePushdown.php#L33-L55`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Optimizer/Rule/PredicatePushdown.php#L33-L55)
 
 **Перевод комментариев:**
 - `PredicatePushdown` (PHPDoc): спускает каждый конъюнкт верхнего уровня `AND`
@@ -693,7 +693,7 @@ public function children(): array
 }
 ```
 
-[`src/Sql/Planner/Plan/Scan.php#L41-L60`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Sql/Planner/Plan/Scan.php#L41-L60)
+[`src/Sql/Planner/Plan/Scan.php#L41-L60`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Sql/Planner/Plan/Scan.php#L41-L60)
 
 Исполнитель `EXPLAIN` — рекурсия в восемь строк: план строится, но не
 компилируется, и печатается по одному строковому представлению на узел:
@@ -722,7 +722,7 @@ private function explainLines(LogicalPlan $plan, int $depth, array &$lines): voi
 }
 ```
 
-[`src/Execution/Executor.php#L425-L445`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L425-L445)
+[`src/Execution/Executor.php#L425-L445`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L425-L445)
 
 Отступ `str_repeat('  ', $depth)` — тот самый двухпробельный из `docs/sql.md`.
 Результат `EXPLAIN` — обычный `QueryResult` с одним столбцом `plan`, поэтому его
@@ -775,7 +775,7 @@ private function compile(LogicalPlan $plan, bool $isJoin, array $parameters, Clo
 }
 ```
 
-[`src/Execution/Executor.php#L288-L325`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L288-L325)
+[`src/Execution/Executor.php#L288-L325`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L288-L325)
 
 `$contextFor` — замыкание, которое для каждой строки строит её контекст
 вычисления: `RowContext` для одной таблицы, `QualifiedRowContext` для
@@ -804,7 +804,7 @@ interface Operator extends IteratorAggregate
 }
 ```
 
-[`src/Execution/Operator/Operator.php#L11-L26`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/Operator.php#L11-L26)
+[`src/Execution/Operator/Operator.php#L11-L26`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/Operator.php#L11-L26)
 
 **Перевод комментариев:**
 - `Operator` (PHPDoc): шаг пути чтения, из которого строится `SELECT`: нечто,
@@ -846,7 +846,7 @@ final readonly class SeqScan implements Operator
 }
 ```
 
-[`src/Execution/Operator/SeqScan.php#L12-L35`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/SeqScan.php#L12-L35)
+[`src/Execution/Operator/SeqScan.php#L12-L35`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/SeqScan.php#L12-L35)
 
 **Перевод комментариев:**
 - `SeqScan` (PHPDoc): читает каждую живую строку таблицы в том физическом
@@ -894,7 +894,7 @@ final readonly class Filter implements Operator
 }
 ```
 
-[`src/Execution/Operator/Filter.php#L14-L44`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/Filter.php#L14-L44)
+[`src/Execution/Operator/Filter.php#L14-L44`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/Filter.php#L14-L44)
 
 **Перевод комментариев:**
 - `Filter` (PHPDoc): выдаёт только те строки источника, для которых `$predicate`
@@ -937,7 +937,7 @@ final readonly class Filter implements Operator
 }
 ```
 
-[`src/Execution/Operator/Limit.php#L23-L46`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/Limit.php#L23-L46)
+[`src/Execution/Operator/Limit.php#L23-L46`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/Limit.php#L23-L46)
 
 ### Трёхзначная логика: два ворота с зеркальными правилами
 
@@ -970,7 +970,7 @@ public function isFalse(mixed $value): bool
 }
 ```
 
-[`src/Execution/Expression/Evaluator.php#L74-L96`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Expression/Evaluator.php#L74-L96)
+[`src/Execution/Expression/Evaluator.php#L74-L96`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Expression/Evaluator.php#L74-L96)
 
 **Перевод комментариев:**
 - `isTrue()` (PHPDoc): считается ли вычисленное значение удовлетворяющим условию
@@ -1024,7 +1024,7 @@ private function logical(BinaryOp $expression, EvaluationContext $context): ?boo
 }
 ```
 
-[`src/Execution/Expression/Evaluator.php#L140-L172`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Expression/Evaluator.php#L140-L172)
+[`src/Execution/Expression/Evaluator.php#L140-L172`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Expression/Evaluator.php#L140-L172)
 
 **Перевод комментариев:**
 - `logical()` (PHPDoc): `AND` /`OR` замыкаются на операнде, который уже решает
@@ -1067,7 +1067,7 @@ private function substituteAggregates(Expression $expression, array $rows): Expr
 }
 ```
 
-[`src/Execution/Operator/Aggregate.php#L131-L150`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/Aggregate.php#L131-L150)
+[`src/Execution/Operator/Aggregate.php#L131-L150`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/Aggregate.php#L131-L150)
 
 Подстановка вместо передачи контекста — это разделение, которое обходится
 дешевле: `Evaluator` не меняется вовсе, `HAVING COUNT(*) > 1` работает без
@@ -1145,7 +1145,7 @@ private function executeUpdate(UpdateStatement $statement, array $parameters): i
 }
 ```
 
-[`src/Execution/Executor.php#L557-L615`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L557-L615)
+[`src/Execution/Executor.php#L557-L615`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L557-L615)
 
 **Перевод комментариев:**
 - `// Collected - and uniqueness-checked - before anything is written:` — всё
@@ -2120,8 +2120,8 @@ silently wrong results») вместо того, чтобы делать вид,
 
 Сборка всех кандидатов `UPDATE` до записи закреплена тестом
 `testGrowingARowDuringUpdateDoesNotVisitItTwice` — прямая защита ловушки
-эксперимента 4, — а целостность после обновления — `ExecutorTransactionTest` (21
-тест), где проверяется и то, что нарушение уникальности не оставляет изменённой
+эксперимента 4, — а целостность после обновления — `ExecutorTransactionTest` (22
+теста), где проверяется и то, что нарушение уникальности не оставляет изменённой
 половины таблицы.
 
 Сквозная проверка — `tests/Integration/SqlEndToEndTest.php`: 5 тестов, 20
@@ -2134,7 +2134,7 @@ silently wrong results») вместо того, чтобы делать вид,
 
 ## 7. Цифры
 
-Размеры кода главы (все числа — из файлов релиза `v1.1.0`):
+Размеры кода главы (все числа — из файлов релиза `v1.1.1`):
 
 | Файл                                     | Строк     | Что делает                                                 |
 | ---------------------------------------- | --------- | ---------------------------------------------------------- |

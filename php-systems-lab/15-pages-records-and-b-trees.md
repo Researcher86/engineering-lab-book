@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-mini-database`](https://github.com/Researcher86/php-mini-database)
-> (релиз `v1.1.0`, коммит `9adde5d`). Нужно знать: память процесса и устройство
+> (релиз `v1.1.1`, коммит `38708a8`). Нужно знать: память процесса и устройство
 > байтов (→ глава 1). Пригодятся дальше: SQL от текста к плану выполнения (→
 > глава 16), транзакции и изоляция (→ глава 17), WAL, fsync и восстановление
 > после сбоя (→ глава 18), инвертированный индекс (→ глава 20), `kill -9` как
@@ -297,8 +297,8 @@ byte strings and the answer matches comparing the numbers». Без инверс
 
 ## 3. Код
 
-Все выдержки ниже взяты из релиза `v1.1.0` проекта `php-mini-database` (коммит
-`9adde5d`) через `git show`, поэтому номера строк в ссылках совпадают с текстом
+Все выдержки ниже взяты из релиза `v1.1.1` проекта `php-mini-database` (коммит
+`38708a8`) через `git show`, поэтому номера строк в ссылках совпадают с текстом
 выдержек.
 
 ### Размеры страницы — все решения, принятые в шести строках
@@ -320,7 +320,7 @@ final class Page
     public const MAX_RECORD_SIZE = self::SIZE - self::HEADER_SIZE - self::SLOT_SIZE;
 ```
 
-[`src/Storage/Page.php#L48-L61`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/Page.php#L48-L61)
+[`src/Storage/Page.php#L48-L61`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/Page.php#L48-L61)
 
 **Перевод комментариев:**
 - `MAX_RECORD_SIZE` (PHPDoc): самая большая запись, которую вообще можно
@@ -375,7 +375,7 @@ public static function fromBytes(int $expectedId, string $bytes): self
 }
 ```
 
-[`src/Storage/Page.php#L89-L124`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/Page.php#L89-L124)
+[`src/Storage/Page.php#L89-L124`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/Page.php#L89-L124)
 
 **Перевод комментариев:**
 - `$header` (`@var`): разобранный заголовок страницы: `id`, `type`, `slotCount`,
@@ -426,7 +426,7 @@ public function toBytes(): string
 }
 ```
 
-[`src/Storage/Page.php#L126-L151`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/Page.php#L126-L151)
+[`src/Storage/Page.php#L126-L151`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/Page.php#L126-L151)
 
 **Перевод комментариев:**
 - `// Records are laid out back to front, so each one's offset is known` —
@@ -467,7 +467,7 @@ public function insert(string $record): ?int
 }
 ```
 
-[`src/Storage/Page.php#L158-L178`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/Page.php#L158-L178)
+[`src/Storage/Page.php#L158-L178`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/Page.php#L158-L178)
 
 Две мелочи, на которых держится вся экономия удалений. Первая: новая запись
 стоит на 4 байта дороже своей длины — директорная запись тоже размечается из
@@ -523,7 +523,7 @@ public function write(Page $page): void
 }
 ```
 
-[`src/Storage/PageManager.php#L63-L104`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/PageManager.php#L63-L104)
+[`src/Storage/PageManager.php#L63-L104`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/PageManager.php#L63-L104)
 
 **Перевод комментариев:**
 - `// A single fread() can return fewer bytes than asked for even on a` — один
@@ -567,7 +567,7 @@ public function insert(string $record): RecordId
 }
 ```
 
-[`src/Storage/HeapFile.php#L55-L74`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/HeapFile.php#L55-L74)
+[`src/Storage/HeapFile.php#L55-L74`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/HeapFile.php#L55-L74)
 
 **Перевод комментариев:**
 - `// A record too large for an empty page cannot be stored at all,` — запись,
@@ -604,7 +604,7 @@ public function update(RecordId $id, string $record): RecordId
 }
 ```
 
-[`src/Storage/HeapFile.php#L101-L119`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/HeapFile.php#L101-L119)
+[`src/Storage/HeapFile.php#L101-L119`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/HeapFile.php#L101-L119)
 
 **Перевод комментариев:**
 - `// Refused before the old copy is deleted, not by the insert()` — отказ
@@ -647,7 +647,7 @@ public function vacuum(): int
 }
 ```
 
-[`src/Storage/HeapFile.php#L178-L200`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/HeapFile.php#L178-L200)
+[`src/Storage/HeapFile.php#L178-L200`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/HeapFile.php#L178-L200)
 
 **Перевод комментариев:**
 - `vacuum()` (PHPDoc): переписывает файл, выбрасывая удалённые записи и плотно
@@ -688,7 +688,7 @@ public function serialize(array $values, array $types): string
 }
 ```
 
-[`src/Storage/RecordSerializer.php#L31-L47`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/RecordSerializer.php#L31-L47)
+[`src/Storage/RecordSerializer.php#L31-L47`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/RecordSerializer.php#L31-L47)
 
 Битмап идёт первым, значения — вторым, и NULL-значение просто не попадает в
 тело: при разборе тип читает бит и либо возвращает `null`, либо декодирует
@@ -716,7 +716,7 @@ public function serialize(array $values, array $types): string
  * grows a level.
 ```
 
-[`src/Storage/BTreeIndex.php#L36-L51`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L36-L51)
+[`src/Storage/BTreeIndex.php#L36-L51`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L36-L51)
 
 Это докблок к классу, а не отдельная реализация: у дерева нет собственной работы
 с файлом, только способ упаковать запись в слот, который страница уже размечает.
@@ -747,7 +747,7 @@ shapes». Восемь байт `RecordId` при этом живут внутр
  * as if they were ordinary, unique ones.
 ```
 
-[`src/Storage/BTreeIndex.php#L19-L34`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L19-L34)
+[`src/Storage/BTreeIndex.php#L19-L34`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L19-L34)
 
 ### Вставка: быстрый путь и разделение
 
@@ -785,7 +785,7 @@ private function insertIntoNode(int $pageId, string $fullKey): ?array
 }
 ```
 
-[`src/Storage/BTreeIndex.php#L381-L411`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L381-L411)
+[`src/Storage/BTreeIndex.php#L381-L411`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L381-L411)
 
 Весь быстрый путь — это первые пять строк ветки листа: если `Page::insert()`
 вернул номер слота, запись уже лежит в дереве, страница переписана, и сплит не
@@ -827,7 +827,7 @@ private function writeLeafWithSplit(int $pageId, array $entries, ?int $nextLeafP
 }
 ```
 
-[`src/Storage/BTreeIndex.php#L507-L526`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L507-L526)
+[`src/Storage/BTreeIndex.php#L507-L526`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L507-L526)
 
 Сначала `buildLeaf()` пытается собрать страницу из всех записей — и, если это
 удаётся, сплита нет и функция возвращает `null` (тот же метод отвечает и на
@@ -855,7 +855,7 @@ private function childFor(array $entries, string $key): int
 }
 ```
 
-[`src/Storage/BTreeIndex.php#L536-L547`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L536-L547)
+[`src/Storage/BTreeIndex.php#L536-L547`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L536-L547)
 
 Одна функция — весь спуск. Запись с `key === null` — это тот самый
 `0x00`-слот-сентинел, «меньше всех ключей здесь»; сортировка
@@ -908,7 +908,7 @@ private function scanPrefix(string $prefix): Generator
 }
 ```
 
-[`src/Storage/BTreeIndex.php#L267-L305`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Storage/BTreeIndex.php#L267-L305)
+[`src/Storage/BTreeIndex.php#L267-L305`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Storage/BTreeIndex.php#L267-L305)
 
 **Перевод комментариев:**
 - `scanPrefix()` (PHPDoc): возвращает генератор `RecordId`.

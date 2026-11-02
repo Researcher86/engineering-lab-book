@@ -2,7 +2,7 @@
 
 > Проект:
 > [`php-mini-database`](https://github.com/Researcher86/php-mini-database)
-> (релиз `v1.1.0`, коммит `9adde5d`). Нужно знать: страницы, кучу и адрес строки
+> (релиз `v1.1.1`, коммит `38708a8`). Нужно знать: страницы, кучу и адрес строки
 > `RecordId` (→ глава 15); порядок «сначала мутация, потом запись в журнал» и
 > ленивый конвейер операторов (→ глава 16). Пригодятся дальше: WAL, fsync и
 > восстановление после сбоя (→ глава 18) и `kill -9` как проверка (→ глава 26).
@@ -133,11 +133,12 @@ project is giving up: a reader never blocks a writer, or vice versa». Здес�
 Пробел назван, а не умолчан: блокировки чтения берутся только внутри явной,
 всё ещё открытой транзакции **этого** соединения — у автокоммитного `SELECT` нет
 более позднего утверждения, которое надо защищать, и он не наследует уровень
-изоляции чужой открытой транзакции. `JOIN` пробелом не является, хотя докблок
-`Executor` и `DECISIONS.md` до сих пор говорят обратное: `compileScan()`
+изоляции чужой открытой транзакции. `JOIN` пробелом не является: `compileScan()`
 вызывает `lockForRead()` для каждой стороны соединения **до** того, как
 оборачивает её в `Qualify`, поэтому строка блокируется по своему пер-табличному
-`RecordId` ещё до слияния.
+`RecordId` ещё до слияния. Раньше это был названный пробел, и `DECISIONS.md`
+рассказывает, как он исчез; закрепляет это
+`testRepeatableReadLocksTheRowsOfBothSidesOfAJoin`.
 
 ### Точки сохранения: позиции в логе
 
@@ -197,9 +198,11 @@ project is giving up: a reader never blocks a writer, or vice versa». Здес�
 enum IsolationLevel: string
 {
     /**
-     * The default. A statement sees whatever is currently committed; locks
-     * taken to read a row are not held past the statement, only writes are
-     * held until commit (so a lost update is still prevented).
+     * The default. A statement sees whatever is currently committed; reads
+     * take no lock at all, and only writes are held until commit. That stops
+     * two transactions writing one row at once, not a lost read-modify-write
+     * update; inside a transaction that is prevented by there being only one
+     * open transaction at a time (see `Executor::withTransaction()`).
      */
     case READ_COMMITTED = 'READ COMMITTED';
 
@@ -222,7 +225,7 @@ enum IsolationLevel: string
 }
 ```
 
-[`src/Transaction/IsolationLevel.php#L7-L41`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/IsolationLevel.php#L7-L41)
+[`src/Transaction/IsolationLevel.php#L7-L43`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/IsolationLevel.php#L7-L43)
 
 **Перевод комментариев:**
 - `IsolationLevel` (PHPDoc): от сколькой части конкурентной активности другой
@@ -233,9 +236,11 @@ enum IsolationLevel: string
   нужных блокировок на всю транзакцию, а не чтением замороженного снимка. См.
   DECISIONS.md.
 - `READ_COMMITTED` (PHPDoc): значение по умолчанию. Утверждение видит всё, что
-  уже закоммичено; блокировки, взятые для чтения строки, не удерживаются после
-  утверждения, только записи держатся до коммита (так потерянное обновление всё
-  равно предотвращается).
+  уже закоммичено; чтение блокировок не берёт вовсе, до коммита держатся только
+  записи. Это мешает двум транзакциям одновременно писать одну строку, но не
+  потерянному обновлению «прочитал — посчитал — записал»; внутри транзакции его
+  предотвращает то, что открытая транзакция в каждый момент только одна (см.
+  `Executor::withTransaction()`).
 - `REPEATABLE_READ` (PHPDoc): как `READ COMMITTED`, но каждая прочитанная
   утверждением строка дополнительно блокируется в режиме `SHARED` до конца
   транзакции — другая транзакция не может изменить строку, которую эта уже
@@ -245,12 +250,6 @@ enum IsolationLevel: string
   таблицу до конца транзакции, поэтому другая транзакция не может вставить в неё
   строку — грубая, но корректная защита от новых строк, ради которых и названы
   «фантомные чтения».
-
-Слова в скобках у `READ_COMMITTED` шире того, что делает код: удержанная
-блокировка записи не даёт двум транзакциям одновременно писать одну строку, но
-от потерянного обновления «прочитал — посчитал — записал» не защищает — чтение
-под этим уровнем ничего не блокирует. Внутри транзакции в этом движке его
-предотвращает правило одной открытой транзакции, а не уровень изоляции.
 
 Два режима — ровно те же, что у файловой блокировки, но живут в памяти и
 применяются к таблице или строке:
@@ -270,7 +269,7 @@ enum LockMode
 }
 ```
 
-[`src/Transaction/LockMode.php#L7-L18`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/LockMode.php#L7-L18)
+[`src/Transaction/LockMode.php#L7-L18`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/LockMode.php#L7-L18)
 
 **Перевод комментариев:**
 - `LockMode` (PHPDoc): блокировки `SHARED` сосуществуют с любым числом других
@@ -304,7 +303,7 @@ enum LockMode
  */
 ```
 
-[`src/Transaction/LockManager.php#L10-L26`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/LockManager.php#L10-L26)
+[`src/Transaction/LockManager.php#L10-L26`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/LockManager.php#L10-L26)
 
 **Перевод комментариев:**
 - `LockManager` (PHPDoc): кто держит какую блокировку, в памяти, ровно столько,
@@ -353,7 +352,7 @@ public function releaseAll(int $txId): void
 }
 ```
 
-[`src/Transaction/LockManager.php#L32-L56`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/LockManager.php#L32-L56)
+[`src/Transaction/LockManager.php#L32-L56`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/LockManager.php#L32-L56)
 
 **Перевод комментариев:**
 - `acquireTableLock()` (`@throws`): бросает `TransactionException`, если
@@ -401,7 +400,7 @@ private function acquire(string $resource, int $txId, LockMode $mode, string $de
 }
 ```
 
-[`src/Transaction/LockManager.php#L58-L86`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/LockManager.php#L58-L86)
+[`src/Transaction/LockManager.php#L58-L86`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/LockManager.php#L58-L86)
 
 **Перевод комментариев:**
 - `// already holds the strongest lock there is` — уже держит самую сильную
@@ -427,7 +426,7 @@ final class TransactionException extends DatabaseException
 }
 ```
 
-[`src/Exception/TransactionException.php#L7-L15`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Exception/TransactionException.php#L7-L15)
+[`src/Exception/TransactionException.php#L7-L15`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Exception/TransactionException.php#L7-L15)
 
 **Перевод комментариев:**
 - `TransactionException` (PHPDoc): бросается при любом сбое транзакционного
@@ -479,7 +478,7 @@ final class Transaction
     }
 ```
 
-[`src/Transaction/Transaction.php#L9-L43`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Transaction.php#L9-L43)
+[`src/Transaction/Transaction.php#L9-L43`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Transaction.php#L9-L43)
 
 **Перевод комментариев:**
 - `Transaction` (PHPDoc): состояние одной открытой транзакции: какие изменения
@@ -532,7 +531,7 @@ public function releaseSavepoint(string $name): void
 }
 ```
 
-[`src/Transaction/Transaction.php#L50-L78`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Transaction.php#L50-L78)
+[`src/Transaction/Transaction.php#L50-L78`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Transaction.php#L50-L78)
 
 **Перевод комментариев:**
 - `recordsSince()` (PHPDoc): все записи журнала с момента объявления `$name`,
@@ -569,7 +568,7 @@ public function forgetAllRecords(): void
 }
 ```
 
-[`src/Transaction/Transaction.php#L86-L101`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Transaction.php#L86-L101)
+[`src/Transaction/Transaction.php#L86-L101`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Transaction.php#L86-L101)
 
 **Перевод комментариев:**
 - `forgetAllRecords()` (PHPDoc): очищает журнал, когда все изменения в нём
@@ -623,7 +622,7 @@ public function forgetAllRecords(): void
  */
 ```
 
-[`src/Transaction/TransactionManager.php#L11-L42`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L11-L42)
+[`src/Transaction/TransactionManager.php#L11-L42`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L11-L42)
 
 **Перевод комментариев:**
 - `TransactionManager` (PHPDoc): `BEGIN` /`COMMIT`/`ROLLBACK`/`SAVEPOINT` и
@@ -673,7 +672,7 @@ public function begin(IsolationLevel $level = IsolationLevel::READ_COMMITTED, mi
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L110-L122`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L110-L122)
+[`src/Transaction/TransactionManager.php#L110-L122`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L110-L122)
 
 `commit()` и `rollback()` начинаются с одной и той же проверки владельца;
 `rollback()` дополнительно очищает лог между откатом и барьером — ровно так же,
@@ -720,7 +719,7 @@ public function rollback(mixed $owner = null): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L124-L161`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L124-L161)
+[`src/Transaction/TransactionManager.php#L124-L161`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L124-L161)
 
 **Перевод комментариев:**
 - `commit()` (PHPDoc): `$sync` выполняется *до* добавления записи `COMMIT`, а не
@@ -754,7 +753,7 @@ private function finish(Transaction $tx): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L344-L354`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L344-L354)
+[`src/Transaction/TransactionManager.php#L344-L354`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L344-L354)
 
 **Перевод комментариев:**
 - `// Safe only because exactly one transaction can ever be open at a` — это
@@ -791,7 +790,7 @@ private function requireOwnedCurrent(mixed $owner): Transaction
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L356-L378`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L356-L378)
+[`src/Transaction/TransactionManager.php#L356-L378`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L356-L378)
 
 **Перевод комментариев:**
 - `requireCurrent()` (PHPDoc): собственная проверка `logInsert()`
@@ -824,7 +823,7 @@ public function transactions(): TransactionManager
 }
 ```
 
-[`src/Schema/Database.php#L389-L403`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Schema/Database.php#L389-L403)
+[`src/Schema/Database.php#L389-L403`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Schema/Database.php#L389-L403)
 
 **Перевод комментариев:**
 - `locks()` (PHPDoc): таблица блокировок, за которую конкурирует каждая
@@ -872,7 +871,7 @@ private function lockForRead(Operator $pipeline, string $table, bool $isFullScan
 }
 ```
 
-[`src/Execution/Executor.php#L391-L419`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L391-L419)
+[`src/Execution/Executor.php#L391-L419`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L391-L419)
 
 **Перевод комментариев:**
 - `lockForRead()` (PHPDoc): блокировка чтения для `REPEATABLE_READ`
@@ -929,7 +928,7 @@ private function withTransaction(Closure $work): mixed
 }
 ```
 
-[`src/Execution/Executor.php#L862-L891`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L862-L891)
+[`src/Execution/Executor.php#L862-L891`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L862-L891)
 
 ### Запись всегда берёт таблицу целиком
 
@@ -947,7 +946,7 @@ private function withTransaction(Closure $work): mixed
 $this->locks->acquireTableLock($table->name, $txId, LockMode::EXCLUSIVE);
 ```
 
-[`src/Execution/Executor.php#L513-L519`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L513-L519)
+[`src/Execution/Executor.php#L513-L519`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L513-L519)
 
 **Перевод комментариев:**
 - `// An exclusive table lock, held until commit/rollback like every` —
@@ -1008,7 +1007,7 @@ private function executeRollbackToSavepoint(RollbackToSavepointStatement $statem
 }
 ```
 
-[`src/Execution/Executor.php#L1087-L1127`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L1087-L1127)
+[`src/Execution/Executor.php#L1087-L1127`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L1087-L1127)
 
 ### Блокировка как стадия конвейера
 
@@ -1051,7 +1050,7 @@ final readonly class LockRows implements Operator
 }
 ```
 
-[`src/Execution/Operator/LockRows.php#L12-L42`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Operator/LockRows.php#L12-L42)
+[`src/Execution/Operator/LockRows.php#L12-L42`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Operator/LockRows.php#L12-L42)
 
 **Перевод комментариев:**
 - `LockRows` (PHPDoc): берёт блокировку на каждую строку, которую посещает скан,
@@ -1977,7 +1976,7 @@ A: COMMIT                               -> FAILED: "No transaction is active"
 `testTheSyncHandlerRunsBeforeTheCommitRecordIsEvenWritten` — тот самый порядок,
 который упомянут в разделе 2 и разобран в главе 18.
 
-`tests/Unit/Execution/ExecutorTransactionTest.php` — 21 тест на 41 утверждение,
+`tests/Unit/Execution/ExecutorTransactionTest.php` — 22 теста на 44 утверждения,
 уровень SQL: `testRollbackUndoesAn{Insert,Update,Delete}`,
 `testASavepointCanBeReusedAfterRollingBackToIt`, `testAMultiRowInsertIsAtomic`,
 `testDdlIsNotTransactional`,
@@ -2011,24 +2010,24 @@ A: COMMIT                               -> FAILED: "No transaction is active"
 теряют подтверждённых вставок.
 
 Прогоны при написании главы (Docker, PHP 8.5.11): `tests/Unit/Transaction` — OK,
-70 тестов, 103 утверждения; `ExecutorTransactionTest` — OK, 21/41;
+70 тестов, 103 утверждения; `ExecutorTransactionTest` — OK, 22/44;
 `tests/Integration/TransactionTest.php` — OK, 4/8; `ConcurrencyTest` +
 `EmbeddedConcurrencyTest` — OK, 3/23; `ServerClientTest` — OK, 7/21; `make test`
-— OK, **1082 теста, 3338 утверждений** (набор уже включает интеграционные;
-полный `phpunit` добавляет бенчмарки — 1093 теста, 3354 утверждения).
+— OK, **1083 теста, 3341 утверждение** (набор уже включает интеграционные;
+полный `phpunit` добавляет бенчмарки — 1094 теста, 3357 утверждений).
 
 ## 7. Цифры
 
-Размеры кода главы (все числа — из файлов релиза `v1.1.0`):
+Размеры кода главы (все числа — из файлов релиза `v1.1.1`):
 
 | Файл                                     | Строк | Что делает                                                          |
 | ---------------------------------------- | ----- | ------------------------------------------------------------------- |
-| `src/Transaction/IsolationLevel.php`     | 41    | три уровня, каждый — набор блокировок                               |
+| `src/Transaction/IsolationLevel.php`     | 43    | три уровня, каждый — набор блокировок                               |
 | `src/Transaction/LockMode.php`           | 18    | `SHARED`/`EXCLUSIVE`                                              |
 | `src/Transaction/LockManager.php`        | 87    | таблица «ресурс → (txId → режим)», отказ вместо ожидания            |
 | `src/Transaction/Transaction.php`        | 116   | лог изменений и позиции точек сохранения                            |
 | `src/Transaction/TransactionManager.php` | 379   | `BEGIN`/`COMMIT`/`ROLLBACK`/`SAVEPOINT` и восстановление            |
-| `src/Transaction/Wal.php`                | 257   | журнал записей на диске (→ глава 18)                                |
+| `src/Transaction/Wal.php`                | 259   | журнал записей на диске (→ глава 18)                                |
 | `src/Exception/TransactionException.php` | 15    | один класс на все транзакционные отказы                             |
 | `src/Execution/Operator/LockRows.php`    | 42    | блокировка строка-за-строкой в конвейере                            |
 | `src/Infrastructure/FileLock.php`        | 108   | межпроцессная блокировка — ждёт таймаут, в отличие от `LockManager` |
@@ -2043,11 +2042,11 @@ A: COMMIT                               -> FAILED: "No transaction is active"
 | `ch17-isolation`                    | 18 строк; `READ COMMITTED` — 0 удержанных блокировок, `REPEATABLE READ` — строка, `SERIALIZABLE` — строка и таблица |
 | `ch17-savepoints`                   | 12 строк; откат к `s1` убрал строку 2, `RELEASE s2` не убрал ничего, второй откат к `s1` убрал строки 3 и 4         |
 | Тесты `tests/Unit/Transaction`      | 70 тестов, 103 утверждения                                                                                          |
-| `ExecutorTransactionTest`           | 21 тест, 41 утверждение                                                                                             |
+| `ExecutorTransactionTest`           | 22 теста, 44 утверждения                                                                                            |
 | `tests/Integration/TransactionTest` | 4 теста, 8 утверждений                                                                                              |
 | `ServerClientTest`                  | 7 тестов, 21 утверждение                                                                                            |
-| `make test` (unit + интеграционные) | 1082 теста, 3338 утверждений                                                                                        |
-| Полный `phpunit` (+ benchmark)      | 1093 теста, 3354 утверждения                                                                                        |
+| `make test` (unit + интеграционные) | 1083 теста, 3341 утверждение                                                                                         |
+| Полный `phpunit` (+ benchmark)      | 1094 теста, 3357 утверждений                                                                                        |
 
 ## 8. Упражнения
 

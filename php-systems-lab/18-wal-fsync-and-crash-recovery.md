@@ -2,7 +2,7 @@
 
 > Проекты:
 > [`php-mini-database`](https://github.com/Researcher86/php-mini-database)
-> (релиз `v1.1.0`, коммит `9adde5d`) и
+> (релиз `v1.1.1`, коммит `38708a8`) и
 > [`php-mini-search`](https://github.com/Researcher86/php-mini-search) (релиз
 > `v1.0.1`, коммит `3014fa5`). Нужно знать: страницы и кучу (→ глава 15),
 > порядок «сначала мутация, потом журнал» (→ глава 16) и откат с блокировками (→
@@ -197,13 +197,12 @@ LazyFS) — это вне области обоих проектов.
 
 ### Журнал: запись и чтение
 
-Докблок `Wal` объясняет сразу и формат, и главное обещание журнала предзаписи:
-запись существует на диске **до** того, как изменение доходит до кучи. В этой
-реализации порядок обратный, и докблок здесь отстал от кода: `Executor` сначала
-вызывает `$heap->insert()` и только потом `logInsert()` (то же для `UPDATE` и
-`DELETE`), а `DECISIONS.md` называет это прямо — «A row is mutated before its
-WAL record is appended». Это та самая граница из главы 16, и она уже названа
-выше, среди трёх честных границ.
+Докблок `Wal` объясняет сразу и формат, и честную оговорку о порядке: учебный
+журнал предзаписи пишет запись **до** того, как изменение доходит до кучи, а
+этот — после. `Executor` сначала вызывает `$heap->insert()` и только потом
+`logInsert()` (то же для `UPDATE` и `DELETE`), потому что `RecordId` новой
+строки известен только после вставки. Это та самая граница из главы 16, и она
+уже названа выше, среди трёх честных границ.
 
 ```php
 /**
@@ -211,11 +210,13 @@ WAL record is appended». Это та самая граница из главы 
  * shape PLAN.md §6.5 shows — `{"lsn":1,"tx":1,"op":"BEGIN"}` and so on —
  * one record per line, each carrying its own sequence number.
  *
- * Every write goes through `append()` before the corresponding change
- * reaches the heap file, and every `append()` is flushed and `fsync()`'d
- * before it returns — the log line for a change exists on disk before the
- * change itself is made, which is the one property "write-ahead" promises
- * and the one thing recovery depends on.
+ * Every `append()` is flushed and `fsync()`'d before it returns. Textbook
+ * write-ahead logging also appends before the change reaches the heap
+ * file; this engine does not: `Executor` mutates the heap and its indexes
+ * first and logs the change after, because a new row's `RecordId` is only
+ * known once it is inserted. A crash in between leaves a change with no
+ * log record — a named gap (see DECISIONS.md, "A row is mutated before its
+ * WAL record is appended").
  *
  * A row value can be a `DateTimeImmutable` or an arbitrary byte string
  * (`BLOB`), neither of which `json_encode()` handles on its own — a date
@@ -235,17 +236,19 @@ WAL record is appended». Это та самая граница из главы 
  */
 ```
 
-[`src/Transaction/Wal.php#L13-L39`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Wal.php#L13-L39)
+[`src/Transaction/Wal.php#L13-L41`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Wal.php#L13-L41)
 
 **Перевод комментариев:**
 - `Wal` (PHPDoc): журнал предзаписи — один растущий файл записей в формате
   JSON-lines, в форме из `PLAN.md` §6.5 (`{"lsn":1,"tx":1,"op":"BEGIN"}` и так
-  далее), одна запись на строку, у каждой свой порядковый номер. Каждая запись
-  проходит через `append()` до того, как соответствующее изменение доходит до
-  файла кучи, и каждый `append()` делает flush и `fsync()` до возврата: строка
-  журнала для изменения существует на диске раньше самого изменения — это
-  единственное свойство, которое обещает «write-ahead», и единственное, на что
-  опирается восстановление. Значением строки может быть `DateTimeImmutable` или
+  далее), одна запись на строку, у каждой свой порядковый номер. Каждый
+  `append()` делает flush и `fsync()` до возврата. Учебный журнал предзаписи
+  вдобавок пишет запись до того, как изменение доходит до файла кучи; этот
+  движок — нет: `Executor` сначала меняет кучу и её индексы, а изменение
+  записывает в журнал после, потому что `RecordId` новой строки известен только
+  после вставки. Сбой между этими шагами оставляет изменение без записи в
+  журнале — названный пробел (см. DECISIONS.md, «A row is mutated before its WAL
+  record is appended»). Значением строки может быть `DateTimeImmutable` или
   произвольная байтовая строка (`BLOB`); `json_encode()` не справляется ни с
   тем, ни с другим сам: у даты нет нативного представления в JSON, а байтовая
   строка, не являющаяся валидным UTF-8, заставляет `json_encode()` падать. Оба
@@ -280,7 +283,7 @@ public function append(WalRecord $record): void
 }
 ```
 
-[`src/Transaction/Wal.php#L61-L73`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Wal.php#L61-L73)
+[`src/Transaction/Wal.php#L63-L75`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Wal.php#L63-L75)
 
 Чтение устроено интереснее, чем кажется: оборванная **последняя** строка
 завершает журнал, а не ломает его. Это не поблажка, а прямое следствие того, что
@@ -334,7 +337,7 @@ public function readAll(): array
 }
 ```
 
-[`src/Transaction/Wal.php#L75-L117`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Wal.php#L75-L117)
+[`src/Transaction/Wal.php#L77-L119`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Wal.php#L77-L119)
 
 **Перевод комментариев:**
 - `readAll()` (PHPDoc): все записи, которые сейчас есть в журнале, в порядке
@@ -378,7 +381,7 @@ public function close(): void
 }
 ```
 
-[`src/Transaction/Wal.php#L119-L141`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Wal.php#L119-L141)
+[`src/Transaction/Wal.php#L121-L143`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Wal.php#L121-L143)
 
 **Перевод комментариев:**
 - `checkpoint()` (PHPDoc): выбрасывает все записи, которые сейчас есть в
@@ -427,7 +430,7 @@ private function seekPastLastCompleteRecord(): void
 }
 ```
 
-[`src/Transaction/Wal.php#L143-L169`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/Wal.php#L143-L169)
+[`src/Transaction/Wal.php#L145-L171`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/Wal.php#L145-L171)
 
 **Перевод комментариев:**
 - `seekPastLastCompleteRecord()` (PHPDoc): ставит курсор туда, где должна быть
@@ -460,7 +463,7 @@ enum WalOperation: string
 }
 ```
 
-[`src/Transaction/WalOperation.php#L7-L19`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/WalOperation.php#L7-L19)
+[`src/Transaction/WalOperation.php#L7-L19`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/WalOperation.php#L7-L19)
 
 **Перевод комментариев:**
 - `WalOperation` (PHPDoc): все виды записей, которые пишет WAL, по собственному
@@ -487,7 +490,7 @@ enum WalOperation: string
  */
 ```
 
-[`src/Transaction/WalRecord.php#L9-L22`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/WalRecord.php#L9-L22)
+[`src/Transaction/WalRecord.php#L9-L22`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/WalRecord.php#L9-L22)
 
 **Перевод комментариев:**
 - `WalRecord` (PHPDoc): одна запись журнала предзаписи — достаточно, чтобы
@@ -530,7 +533,7 @@ public function setSyncHandler(Closure $handler): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L63-L81`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L63-L81)
+[`src/Transaction/TransactionManager.php#L63-L81`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L63-L81)
 
 **Перевод комментариев:**
 - `setUndoHandler()` (`@param`): обработчик отмены, `Closure(WalRecord): void`.
@@ -587,7 +590,7 @@ private function append(Closure $build): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L188-L226`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L188-L226)
+[`src/Transaction/TransactionManager.php#L188-L226`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L188-L226)
 
 **Перевод комментариев:**
 - `logInsert()` (PHPDoc): `Executor` вызывает один из этих трёх методов на
@@ -663,7 +666,7 @@ public function recover(): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L228-L281`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L228-L281)
+[`src/Transaction/TransactionManager.php#L228-L281`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L228-L281)
 
 **Перевод комментариев:**
 - `recover()` (PHPDoc): отменяет каждую транзакцию, оставленную открытой
@@ -728,7 +731,7 @@ private function replayStillLiveRecords(int $txId, array $records): array
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L283-L317`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L283-L317)
+[`src/Transaction/TransactionManager.php#L283-L317`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L283-L317)
 
 **Перевод комментариев:**
 - `replayStillLiveRecords()` (PHPDoc): перестраивает журнал изменений одной
@@ -768,7 +771,7 @@ private function finish(Transaction $tx): void
 }
 ```
 
-[`src/Transaction/TransactionManager.php#L337-L354`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Transaction/TransactionManager.php#L337-L354)
+[`src/Transaction/TransactionManager.php#L337-L354`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Transaction/TransactionManager.php#L337-L354)
 
 **Перевод комментариев:**
 - `finish()` (PHPDoc): `commit()` /`rollback()` уже сами синхронизировали
@@ -819,7 +822,7 @@ public function syncStorage(): void
 }
 ```
 
-[`src/Schema/Database.php#L405-L432`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Schema/Database.php#L405-L432)
+[`src/Schema/Database.php#L405-L432`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Schema/Database.php#L405-L432)
 
 **Перевод комментариев:**
 - `syncStorage()` (PHPDoc): проталкивает каждый открытый файл кучи и индекс до
@@ -860,7 +863,7 @@ public function __construct(
 }
 ```
 
-[`src/Execution/Executor.php#L162-L176`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L162-L176)
+[`src/Execution/Executor.php#L162-L176`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L162-L176)
 
 ### Отмена идемпотентна — и обязана быть
 
@@ -901,7 +904,7 @@ private function undo(WalRecord $record): void
 }
 ```
 
-[`src/Execution/Executor.php#L1129-L1157`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L1129-L1157)
+[`src/Execution/Executor.php#L1129-L1157`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L1129-L1157)
 
 **Перевод комментариев:**
 - `undo()` (PHPDoc): обработчик отмены `TransactionManager` — физически
@@ -941,7 +944,7 @@ private function undoInsert(WalRecord $record): void
 }
 ```
 
-[`src/Execution/Executor.php#L1159-L1172`](https://github.com/Researcher86/php-mini-database/blob/9adde5d113786ae8730a89721302270e1130c3e9/src/Execution/Executor.php#L1159-L1172)
+[`src/Execution/Executor.php#L1159-L1172`](https://github.com/Researcher86/php-mini-database/blob/38708a81d715ba3c6f6d6cddc88c20407be56b05/src/Execution/Executor.php#L1159-L1172)
 
 ### Второй проект: журнал — единственное состояние
 
@@ -2285,7 +2288,7 @@ test cannot prove that `fsync()` is called at all».
 «что-то осталось в журнале», а **отсутствие** маркера — именно это отличает
 правильный порядок от первого, недостаточного варианта исправления.
 
-`ExecutorTransactionTest` — 21 тест на 41 утверждение; здесь проверяется
+`ExecutorTransactionTest` — 22 теста на 44 утверждения; здесь проверяется
 идемпотентность на уровне SQL:
 `testRecoveryUndoesATransactionThatNeverCommitted`,
 `testARollbackRetriedAfterAFailedSyncDoesNotUndoTheSameChangeTwice`,
@@ -2327,9 +2330,9 @@ test cannot prove that `fsync()` is called at all».
 ### Прогоны при написании главы
 
 Docker, PHP 8.5.11. `WalTest` — OK, 16/29; `TransactionManagerTest` — OK, 34/49;
-`ExecutorTransactionTest` — OK, 21/41; `tests/Integration/TransactionTest.php` —
-OK, 4/8; набор модульных тестов `php-mini-database` (`make test`) — OK, **1082
-теста, 3338 утверждений** (полный `phpunit` — 1093/3354). В `php-mini-search`:
+`ExecutorTransactionTest` — OK, 22/44; `tests/Integration/TransactionTest.php` —
+OK, 4/8; набор модульных тестов `php-mini-database` (`make test`) — OK, **1083
+теста, 3341 утверждение** (полный `phpunit` — 1094/3357). В `php-mini-search`:
 `tests/Storage/LogTest.php` — OK, 12/133; `tests/Reliability` — OK, 6/809;
 полный набор — OK, **181 тест, 47 232 утверждения**.
 
@@ -2337,7 +2340,7 @@ OK, 4/8; набор модульных тестов `php-mini-database` (`make t
 
 | Файл                                        | Строк | Что делает                                                    |
 | ------------------------------------------- | ----- | ------------------------------------------------------------- |
-| `php-mini-database/src/Transaction/Wal.php` | 257   | журнал: JSON-строки, `fsync()` на каждой записи, усечение     |
+| `php-mini-database/src/Transaction/Wal.php` | 259   | журнал: JSON-строки, `fsync()` на каждой записи, усечение     |
 | `…/WalRecord.php`                           | 114   | одна логическая запись: `before`, `after`, `row_id`           |
 | `…/WalOperation.php`                        | 19    | девять операций журнала                                       |
 | `…/TransactionManager.php`                  | 379   | `BEGIN`/`COMMIT`/`ROLLBACK`, восстановление, два хендлера     |
@@ -2363,7 +2366,7 @@ OK, 4/8; набор модульных тестов `php-mini-database` (`make t
 | `WalTest`                              | 16 тестов, 29 утверждений                                                                                                           |
 | `LogTest`                              | 12 тестов, 133 утверждения                                                                                                          |
 | `Reliability` (`kill -9`, полный диск) | 6 тестов, 809 утверждений                                                                                                           |
-| Все тесты `php-mini-database`          | 1082 / 3338 (модульные), 1093 / 3354 (полный прогон)                                                                                |
+| Все тесты `php-mini-database`          | 1083 / 3341 (модульные), 1094 / 3357 (полный прогон)                                                                                |
 | Все тесты `php-mini-search`            | 181 / 47 232                                                                                                                        |
 
 ## 8. Упражнения
